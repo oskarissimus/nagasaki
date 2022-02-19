@@ -1,4 +1,4 @@
-from decimal import *
+from decimal import Decimal
 
 from nagasaki.enums import ActionTypeEnum, SideTypeEnum
 from nagasaki.schemas import (
@@ -7,8 +7,6 @@ from nagasaki.schemas import (
 )
 from nagasaki.state import State
 from nagasaki.strategy import BitcludeEpsilonStrategy
-
-getcontext().prec = 10
 
 
 def test_bidding_over_epsilon_simple_case():

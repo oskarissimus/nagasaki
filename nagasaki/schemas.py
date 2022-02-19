@@ -1,4 +1,4 @@
-from decimal import *
+from decimal import Decimal
 from typing import Optional
 
 from nagasaki.enums import (
@@ -7,8 +7,6 @@ from nagasaki.enums import (
     SideTypeEnum,
 )
 from pydantic import BaseModel, root_validator, validator
-
-getcontext().prec = 10
 
 
 class BitcludeOrder(BaseModel):

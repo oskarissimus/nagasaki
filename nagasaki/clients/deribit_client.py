@@ -1,9 +1,7 @@
 import requests
 from pydantic import BaseModel
 from datetime import datetime, timedelta
-from decimal import *
-
-getcontext().prec = 10
+from decimal import Decimal
 
 
 class DeribitClientException(Exception):
@@ -175,4 +173,4 @@ class DeribitClient:
         for d in response_json["result"]:
             total_interest = total_interest + d["interest_1h"]
             current = current * (1 + d["interest_1h"])
-        self.perp_yield = round(((current ** 12) - 1) * 100, 4)
+        self.perp_yield = round(((current**12) - 1) * 100, 4)

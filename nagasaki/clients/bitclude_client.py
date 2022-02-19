@@ -1,3 +1,5 @@
+from decimal import Decimal
+from enum import Enum
 from os import wait
 import requests
 from typing import List, Dict
@@ -29,13 +31,13 @@ class HashableBaseModel(BaseModel):
 
 
 class Ticker(BaseModel):
-    ask: float
-    bid: float
+    ask: Decimal
+    bid: Decimal
 
 
 class Balance(BaseModel):
-    active: float
-    inactive: float
+    active: Decimal
+    inactive: Decimal
 
 
 class AccountInfo(BaseModel):
@@ -45,24 +47,34 @@ class AccountInfo(BaseModel):
 class AccountHistoryItem(HashableBaseModel):
     currency1: str
     currency2: str
-    amount: float
+    amount: Decimal
     time_close: datetime.datetime
-    price: float
+    price: Decimal
     fee_taker: int
     fee_maker: int
     type: str
     action: str
 
 
+class OfferTypeEnum(Enum, str):
+    bid = "bid"
+    ask = "ask"
+
+
+class OfferCurrencyEnum(Enum, str):
+    btc = "btc"
+    pln = "pln"
+
+
 class Offer(BaseModel):
     nr: str
-    currency1: str
-    currency2: str
-    amount: float
-    price: float
+    currency1: OfferCurrencyEnum
+    currency2: OfferCurrencyEnum
+    amount: Decimal
+    price: Decimal
     id_user_open: str
     time_open: datetime.datetime
-    offertype: str
+    offertype: OfferTypeEnum
 
 
 class BitcludeClient:
@@ -95,7 +107,7 @@ class BitcludeClient:
         else:
             raise BitcludeClientException(response_json)
 
-    def get_bitclude_btcs(self, account_info: AccountInfo) -> float:
+    def get_bitclude_btcs(self, account_info: AccountInfo) -> Decimal:
         """
         B_active - nie są w zleceniach
         B_inactive - są w zleceniach
@@ -105,18 +117,18 @@ class BitcludeClient:
         btc_inactive = account_info.balances["BTC"].inactive
         return btc_active + btc_inactive
 
-    def get_bitclude_btcs_inactive(self, account_info: AccountInfo) -> float:
+    def get_bitclude_btcs_inactive(self, account_info: AccountInfo) -> Decimal:
         return account_info.balances["BTC"].inactive
 
-    def get_bitclude_btcs_active(self, account_info: AccountInfo) -> float:
+    def get_bitclude_btcs_active(self, account_info: AccountInfo) -> Decimal:
         return account_info.balances["BTC"].active
 
-    def get_bitclude_plns(self, account_info: AccountInfo) -> float:
+    def get_bitclude_plns(self, account_info: AccountInfo) -> Decimal:
         pln_active = account_info.balances["PLN"].active
         pln_inactive = account_info.balances["PLN"].inactive
         return pln_active + pln_inactive
 
-    def get_bitclude_plns_active(self, account_info: AccountInfo) -> float:
+    def get_bitclude_plns_active(self, account_info: AccountInfo) -> Decimal:
         return account_info.balances["PLN"].active
 
     def fetch_ticker_btc_pln(self):
@@ -193,13 +205,13 @@ class BitcludeClient:
         )
 
     def create_market_order_buy(
-        self, amount_in_btc: float, ticker_btc_pln: Ticker, dry_run=False
+        self, amount_in_btc: Decimal, ticker_btc_pln: Ticker, dry_run=False
     ):
         rate = ticker_btc_pln.bid + ticker_btc_pln.bid * 0.0001
         return self.create_order(amount_in_btc, rate, "buy", dry_run=dry_run)
 
     def create_market_order_sell(
-        self, amount_in_btc: float, ticker_btc_pln: Ticker, dry_run=False
+        self, amount_in_btc: Decimal, ticker_btc_pln: Ticker, dry_run=False
     ):
         rate = ticker_btc_pln.ask - ticker_btc_pln.ask * 0.0001
         return self.create_order(amount_in_btc, rate, "sell", dry_run=dry_run)
@@ -294,7 +306,7 @@ class BitcludeClient:
         curr = set(current_account_history)
         return list(curr.difference(prev))
 
-    def cancel_ask_offers_that_are_not_on_top(self, ASK: float, dry_run=False):
+    def cancel_ask_offers_that_are_not_on_top(self, ASK: Decimal, dry_run=False):
         for offer in self.active_offers:
             if offer.offertype == "ask" and offer.price > ASK:
                 self.cancel_offer(offer, dry_run=dry_run)
@@ -311,7 +323,7 @@ class BitcludeClient:
                 self.wait_for_offer_cancellation(offer)
                 self.active_offers.remove(offer)
 
-    def cancel_bid_offers_that_are_not_on_top(self, BID: float, dry_run=False):
+    def cancel_bid_offers_that_are_not_on_top(self, BID: Decimal, dry_run=False):
         for offer in self.active_offers:
             if offer.offertype == "bid" and offer.price < BID:
                 self.cancel_offer(offer, dry_run=dry_run)
@@ -329,7 +341,7 @@ class BitcludeClient:
                 self.active_offers.remove(offer)
 
     def get_inventory_parameter(
-        self, account_info: AccountInfo, btc_mark_price_pln: float
+        self, account_info: AccountInfo, btc_mark_price_pln: Decimal
     ):
         total_pln = (
             account_info.balances["PLN"].active + account_info.balances["PLN"].inactive

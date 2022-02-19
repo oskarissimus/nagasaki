@@ -13,9 +13,7 @@ from nagasaki.schemas import (
 )
 from nagasaki.state import State
 from typing import List
-from decimal import *
-
-getcontext().prec = 10
+from decimal import Decimal
 
 
 class Strategy(ABC):
@@ -48,18 +46,17 @@ class BitcludeEpsilonStrategy(Strategy):
                 price=self.state.get_top_bid() + self.EPSILON,
             ),
         )
-        action_cancel = Action(
-            action_type=ActionTypeEnum.CANCEL, order=self.state.own_bid
-        )
+        own_bid = self.state.get_own_bid_max()
+        action_cancel = Action(action_type=ActionTypeEnum.CANCEL, order=own_bid)
         action_noop = Action(action_type=ActionTypeEnum.NOOP)
 
         if self.bidding_is_profitable():
-            if self.state.own_bid is None:
+            if own_bid is None:
                 return [action_bid_over]
             else:
                 return [action_cancel, action_bid_over]
         else:
-            if self.state.own_bid is None:
+            if own_bid is None:
                 return [action_noop]
             else:
                 return [action_cancel]

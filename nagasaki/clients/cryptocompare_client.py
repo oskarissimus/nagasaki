@@ -1,9 +1,7 @@
 import requests
 import pandas as pd
 import json
-from decimal import *
-
-getcontext().prec = 10
+from decimal import Decimal
 
 
 class CannotParseResponse(Exception):
