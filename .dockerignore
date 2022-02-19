@@ -1,0 +1,11 @@
+poetry.lock
+run.sh
+requirements.txt
+README.md
+.env
+.env_dev
+.gitignore
+todo.txt
+.vscode
+.pytest_cache
+__pycache__

@@ -1,0 +1,71 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [kacper-prod]
+
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Docker Login
+        uses: docker/login-action@v1.10.0
+        with:
+          username: phoebe1337
+          password: ${{ secrets.DOCKER_HUB }}
+
+      - name: Git checkout
+        uses: actions/checkout@v2
+
+      - name: Docker build
+        run: docker build --tag phoebe1337/hiroshima:$GITHUB_SHA .
+
+      - name: Push to dockerhub
+        run: docker push phoebe1337/hiroshima:$GITHUB_SHA
+
+      - name: Deploy to hetzner
+        uses: appleboy/ssh-action@master
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          DOCKERHUB_TOKEN: ${{ secrets.DOCKER_HUB }}
+          DERIBIT_URL_BASE: ${{ secrets.DERIBIT_URL_BASE }}
+          DERIBIT_CLIENT_ID: ${{ secrets.DERIBIT_CLIENT_ID }}
+          DERIBIT_CLIENT_SECRET: ${{ secrets.DERIBIT_CLIENT_SECRET }}
+          BITCLUDE_URL_BASE: ${{ secrets.BITCLUDE_URL_BASE }}
+          BITCLUDE_ID: ${{ secrets.BITCLUDE_ID }}
+          BITCLUDE_KEY: ${{ secrets.BITCLUDE_KEY }}
+          LOKI_URL: ${{ secrets.LOKI_URL }}
+        with:
+          host: "95.216.141.68"
+          username: root
+          key: ${{ secrets.ID_HIROSHIMA_PROD }}
+          envs: COMMIT_SHA,DOCKERHUB_TOKEN,DERIBIT_URL_BASE,DERIBIT_CLIENT_ID,DERIBIT_CLIENT_SECRET,BITCLUDE_URL_BASE,BITCLUDE_ID,BITCLUDE_KEY,LOKI_URL
+          script: |
+            echo $DOCKERHUB_TOKEN | docker login --username phoebe1337 --password-stdin
+            docker image prune -af
+            docker pull phoebe1337/hiroshima:$COMMIT_SHA
+            docker rm -f hiroshima || echo no such container
+            docker run --rm -d --name hiroshima --log-driver=loki \
+            --log-opt loki-url=$LOKI_URL \
+            --log-opt loki-batch-size=400 \
+            -e DERIBIT_URL_BASE=$DERIBIT_URL_BASE \
+            -e DERIBIT_CLIENT_ID=$DERIBIT_CLIENT_ID \
+            -e DERIBIT_CLIENT_SECRET=$DERIBIT_CLIENT_SECRET \
+            -e BITCLUDE_URL_BASE=$BITCLUDE_URL_BASE \
+            -e BITCLUDE_ID=$BITCLUDE_ID \
+            -e BITCLUDE_KEY=$BITCLUDE_KEY \
+            phoebe1337/hiroshima:$COMMIT_SHA
+            cat > ~/cipsko.txt << EOF
+            docker run --rm -d --name hiroshima --log-driver=loki \
+            --log-opt loki-url=$LOKI_URL \
+            --log-opt loki-batch-size=400 \
+            -e DERIBIT_URL_BASE=$DERIBIT_URL_BASE \
+            -e DERIBIT_CLIENT_ID=$DERIBIT_CLIENT_ID \
+            -e DERIBIT_CLIENT_SECRET=$DERIBIT_CLIENT_SECRET \
+            -e BITCLUDE_URL_BASE=$BITCLUDE_URL_BASE \
+            -e BITCLUDE_ID=$BITCLUDE_ID \
+            -e BITCLUDE_KEY=$BITCLUDE_KEY \
+            phoebe1337/hiroshima:$COMMIT_SHA
+            EOF
+            docker logout

@@ -1,0 +1,72 @@
+name: Build and deploy
+
+on:
+  push:
+    branches: [oskar-prod]
+
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Docker Login
+        uses: docker/login-action@v1.10.0
+        with:
+          username: oskarissimus
+          password: ${{ secrets.OSKARISSIMUS_DOCKERHUB_TOKEN }}
+
+      - name: Git checkout
+        uses: actions/checkout@v2
+
+      - name: Docker build
+        run: docker build --tag oskarissimus/hiroshima:$GITHUB_SHA .
+
+      - name: Push to dockerhub
+        run: docker push oskarissimus/hiroshima:$GITHUB_SHA
+
+      - name: Deploy to kimsufi
+        uses: appleboy/ssh-action@master
+        env:
+          COMMIT_SHA: ${{ github.sha }}
+          DOCKERHUB_TOKEN: ${{ secrets.OSKARISSIMUS_DOCKERHUB_TOKEN }}
+          DERIBIT_URL_BASE: ${{ secrets.DERIBIT_URL_BASE }}
+          DERIBIT_CLIENT_ID: ${{ secrets.DERIBIT_CLIENT_ID }}
+          DERIBIT_CLIENT_SECRET: ${{ secrets.DERIBIT_CLIENT_SECRET }}
+          BITCLUDE_URL_BASE: ${{ secrets.BITCLUDE_URL_BASE }}
+          BITCLUDE_ID: ${{ secrets.BITCLUDE_ID }}
+          BITCLUDE_KEY: ${{ secrets.BITCLUDE_KEY }}
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          TWILIO_SOURCE_PHONE_NUMBER: ${{ secrets.TWILIO_SOURCE_PHONE_NUMBER }}
+          TWILIO_TARGET_PHONE_NUMBER: ${{ secrets.TWILIO_TARGET_PHONE_NUMBER }}
+          LOKI_URL: ${{ secrets.LOKI_URL }}
+          YAHOO_FINANCE_KEY: ${{ secrets.YAHOO_FINANCE_KEY }}
+          OPEN_EXCHANGE_RATES_APP_ID: ${{ secrets.OPEN_EXCHANGE_RATES_APP_ID }}
+
+        with:
+          host: "51.68.141.165"
+          username: ubuntu
+          key: ${{ secrets.ID_HIROSHIMA_PROD }}
+          envs: TWILIO_TARGET_PHONE_NUMBER,TWILIO_SOURCE_PHONE_NUMBER,TWILIO_AUTH_TOKEN,TWILIO_ACCOUNT_SID,COMMIT_SHA,DOCKERHUB_TOKEN,DERIBIT_URL_BASE,DERIBIT_CLIENT_ID,DERIBIT_CLIENT_SECRET,BITCLUDE_URL_BASE,BITCLUDE_ID,BITCLUDE_KEY,LOKI_URL,YAHOO_FINANCE_KEY,OPEN_EXCHANGE_RATES_APP_ID
+          script: |
+            echo $DOCKERHUB_TOKEN | docker login --username oskarissimus --password-stdin
+            docker image prune -af
+            docker pull oskarissimus/hiroshima:$COMMIT_SHA
+            docker rm -f hiroshima || echo no such container
+            docker run --rm -d --name hiroshima --log-driver=loki \
+            --log-opt loki-url=$LOKI_URL \
+            --log-opt loki-batch-size=400 \
+            -e DERIBIT_URL_BASE=$DERIBIT_URL_BASE \
+            -e DERIBIT_CLIENT_ID=$DERIBIT_CLIENT_ID \
+            -e DERIBIT_CLIENT_SECRET=$DERIBIT_CLIENT_SECRET \
+            -e BITCLUDE_URL_BASE=$BITCLUDE_URL_BASE \
+            -e BITCLUDE_ID=$BITCLUDE_ID \
+            -e BITCLUDE_KEY=$BITCLUDE_KEY \
+            -e TWILIO_ACCOUNT_SID=$TWILIO_ACCOUNT_SID \
+            -e TWILIO_AUTH_TOKEN=$TWILIO_AUTH_TOKEN \
+            -e TWILIO_SOURCE_PHONE_NUMBER=$TWILIO_SOURCE_PHONE_NUMBER \
+            -e TWILIO_TARGET_PHONE_NUMBER=$TWILIO_TARGET_PHONE_NUMBER \
+            -e YAHOO_FINANCE_KEY=$YAHOO_FINANCE_KEY \
+            -e OPEN_EXCHANGE_RATES_APP_ID=$OPEN_EXCHANGE_RATES_APP_ID \
+            oskarissimus/hiroshima:$COMMIT_SHA
+            docker logout
