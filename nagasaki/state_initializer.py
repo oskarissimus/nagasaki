@@ -3,6 +3,9 @@ from nagasaki.clients.bitclude_client import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.state import State
 from nagasaki.clients.coinbase_client import CoinbaseClient
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class StateInitializer:
@@ -19,6 +22,7 @@ class StateInitializer:
         self.state = state
 
     def initialize_state(self):
+        logger.info("initialize_state")
         self.state.bitclude_account_info = self.bitclude_client.fetch_account_info()
         self.state.bitclude_active_offers = self.bitclude_client.fetch_active_offers()
         self.state.btc_mark_usd = self.deribit_client.fetch_index_price_btc_usd()
@@ -28,3 +32,4 @@ class StateInitializer:
         ticker = self.bitclude_client.fetch_ticker_btc_pln()
         self.state.ask_orderbook.append(ticker.ask)
         self.state.bid_orderbook.append(ticker.bid)
+        logger.info("initialized")

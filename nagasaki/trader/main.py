@@ -15,13 +15,11 @@ from nagasaki.strategy_executor import StrategyExecutor
 from nagasaki.trader.trader_app import TraderApp
 from pytz_deprecation_shim import PytzUsageWarning
 from nagasaki.logger import logger
-import logging
 
 filterwarnings("ignore", category=PytzUsageWarning)
 
 if __name__ == "__main__":
-    logger.setLevel(logging.INFO)
-
+    logger.info("start")
     bitclude_client_url_base: str = os.getenv("BITCLUDE_URL_BASE")
     bitclude_client_id: str = os.getenv("BITCLUDE_ID")
     bitclude_client_key: str = os.getenv("BITCLUDE_KEY")
@@ -59,6 +57,13 @@ if __name__ == "__main__":
 
     cryptocompare_client = CryptocompareClient()
 
+    state_initializer = StateInitializer(
+        bitclude_client,
+        deribit_client,
+        coinbase_client,
+        state,
+    )
+
     app = TraderApp(
         bitclude_client=bitclude_client,
         bitclude_websocket_client=bitclude_websocket_client,
@@ -69,6 +74,7 @@ if __name__ == "__main__":
         scheduler=scheduler,
         cryptocompare_client=cryptocompare_client,
         strategy_executor=strategy_executor,
+        state_initializer=state_initializer,
     )
 
     app.run()

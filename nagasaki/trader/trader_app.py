@@ -5,9 +5,12 @@ from nagasaki.clients.cryptocompare_client import CryptocompareClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.event_manager import EventManager
 from nagasaki.state import State
+from nagasaki.state_initializer import StateInitializer
 from nagasaki.strategy import Strategy
 from nagasaki.strategy_executor import StrategyExecutor
-from nagasaki.logger import logger
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class TraderApp:
@@ -22,6 +25,7 @@ class TraderApp:
         scheduler: BackgroundScheduler,
         cryptocompare_client: CryptocompareClient,
         strategy_executor: StrategyExecutor,
+        state_initializer: StateInitializer,
     ):
         self.bitclude_client = bitclude_client
         self.bitclude_websocket_client = bitclude_websocket_client
@@ -32,6 +36,7 @@ class TraderApp:
         self.scheduler = scheduler
         self.cryptocompare_client = cryptocompare_client
         self.strategy_executor = strategy_executor
+        self.state_initializer = state_initializer
 
     def attach_strategy_handlers_to_events(self):
         logger.info("attach_strategy_handlers_to_events")
@@ -75,9 +80,11 @@ class TraderApp:
         # print(f"{self.state.usd_pln=}")
 
     def run(self):
+        self.state_initializer.initialize_state()
         self.attach_strategy_handlers_to_events()
         self.attach_bitclude_handlers_to_events()
         self.attach_jobs_to_scheduler()
+
         try:
             self.scheduler.start()
             logger.info("scheduler started")
