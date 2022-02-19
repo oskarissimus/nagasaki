@@ -25,3 +25,6 @@ class StateInitializer:
         self.state.usd_pln = Decimal(1) / (
             self.coinbase_client.fetch_pln_mark_price_usd()
         )
+        ticker = self.bitclude_client.fetch_ticker_btc_pln()
+        self.state.ask_orderbook.append(ticker.ask)
+        self.state.bid_orderbook.append(ticker.bid)

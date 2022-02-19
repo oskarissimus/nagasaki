@@ -2,13 +2,10 @@ from abc import ABC, abstractmethod
 
 from nagasaki.enums import (
     ActionTypeEnum,
-    OrderActionEnum,
     SideTypeEnum,
 )
-from nagasaki.event_manager import EventManager
 from nagasaki.schemas import (
     Action,
-    BitcludeEventOrderbook,
     BitcludeOrder,
 )
 from nagasaki.state import State

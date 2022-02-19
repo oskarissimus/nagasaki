@@ -1,9 +1,10 @@
 from decimal import Decimal
 from enum import Enum
 from os import wait
+from wsgiref.validate import validator
 import requests
 from typing import List, Dict
-from pydantic import BaseModel
+from pydantic import BaseModel, validator
 from nagasaki.enums import (
     ActionTypeEnum,
     OrderActionEnum,
@@ -56,12 +57,7 @@ class AccountHistoryItem(HashableBaseModel):
     action: str
 
 
-class OfferTypeEnum(Enum, str):
-    bid = "bid"
-    ask = "ask"
-
-
-class OfferCurrencyEnum(Enum, str):
+class OfferCurrencyEnum(str, Enum):
     btc = "btc"
     pln = "pln"
 
@@ -74,7 +70,11 @@ class Offer(BaseModel):
     price: Decimal
     id_user_open: str
     time_open: datetime.datetime
-    offertype: OfferTypeEnum
+    offertype: SideTypeEnum
+
+    @validator("offertype", pre=True)
+    def convert_to_uppercase(cls, v):
+        return v.upper()
 
 
 class BitcludeClient:

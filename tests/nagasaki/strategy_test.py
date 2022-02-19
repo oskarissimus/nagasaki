@@ -1,4 +1,5 @@
 from decimal import Decimal
+from nagasaki.clients.bitclude_client import Offer
 
 from nagasaki.enums import ActionTypeEnum, SideTypeEnum
 from nagasaki.schemas import (
@@ -7,6 +8,7 @@ from nagasaki.schemas import (
 )
 from nagasaki.state import State
 from nagasaki.strategy import BitcludeEpsilonStrategy
+import pytest
 
 
 def test_bidding_over_epsilon_simple_case():
@@ -51,16 +53,42 @@ def test_bidding_over_multiple_bids():
     assert expected_actions == result_actions
 
 
-def test_cancelling_before_bidding():
+@pytest.fixture
+def initialized_state() -> State:
     state = State()
     state.btc_mark_usd = Decimal("44156")
     state.usd_pln = Decimal("3.87579")
-    state.bid_orderbook = [Decimal("169854"), Decimal("169855"), Decimal("169856")]
-    bes = BitcludeEpsilonStrategy(state)
+    state.bid_orderbook = [Decimal("169856")]
+    state.bitclude_active_offers = [
+        Offer(
+            price=Decimal("2138"),
+            amount=Decimal("0.1"),
+            nr="420",
+            offertype="bid",
+            currency1="btc",
+            currency2="pln",
+            id_user_open="1337",
+            time_open="2020-01-01T00:00:00Z",
+        )
+    ]
+    return state
 
-    state.own_bid = BitcludeOrder(price=2138, order_id=420, side=SideTypeEnum.BID)
+
+def test_cancelling_before_bidding(initialized_state: State):
+    initialized_state.bid_orderbook = [
+        Decimal("169854"),
+        Decimal("169855"),
+        Decimal("169856"),
+    ]
+    bes = BitcludeEpsilonStrategy(initialized_state)
+
+    own_bid = BitcludeOrder(
+        side=SideTypeEnum.BID,
+        price=Decimal("2138"),
+        order_id=420,
+    )
     expected_actions = [
-        Action(action_type=ActionTypeEnum.CANCEL, order=state.own_bid),
+        Action(action_type=ActionTypeEnum.CANCEL, order=own_bid),
         Action(
             action_type=ActionTypeEnum.CREATE,
             order=BitcludeOrder(
@@ -73,19 +101,12 @@ def test_cancelling_before_bidding():
     assert expected_actions == result_actions
 
 
-def test_bidding_is_profitable():
-    state = State()
-    state.btc_mark_usd = Decimal("44156")
-    state.usd_pln = Decimal("3.87579")
-    state.bid_orderbook = [Decimal("169856")]
-    bes = BitcludeEpsilonStrategy(state)
+def test_bidding_is_profitable(initialized_state: State):
+    bes = BitcludeEpsilonStrategy(initialized_state)
     assert bes.bidding_is_profitable() is True
 
 
-def test_bidding_is_not_profitable():
-    state = State()
-    state.btc_mark_usd = Decimal("44156") - Decimal("200")
-    state.usd_pln = Decimal("3.87579")
-    state.bid_orderbook = [Decimal("169856")]
-    bes = BitcludeEpsilonStrategy(state)
+def test_bidding_is_not_profitable(initialized_state: State):
+    initialized_state.btc_mark_usd = Decimal("44156") - Decimal("200")
+    bes = BitcludeEpsilonStrategy(initialized_state)
     assert bes.bidding_is_profitable() is False

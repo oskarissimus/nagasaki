@@ -1,6 +1,7 @@
 from decimal import Decimal
+from nagasaki.enums import SideTypeEnum
 from nagasaki.schemas import BitcludeOrder
-from nagasaki.clients.bitclude_client import AccountInfo, Offer, OfferTypeEnum
+from nagasaki.clients.bitclude_client import AccountInfo, Offer
 from typing import List
 
 
@@ -23,10 +24,12 @@ class State:
     bitclude_active_offers: List[Offer] = None
 
     def get_own_bid_max(self) -> BitcludeOrder:
+        if self.bitclude_active_offers is None:
+            return None
         own_bid_offers = [
             offer
             for offer in self.bitclude_active_offers
-            if offer.offertype == OfferTypeEnum.bid
+            if offer.offertype == SideTypeEnum.BID
         ]
         own_bid_max_offer = max(own_bid_offers, key=lambda offer: offer.price)
         return BitcludeOrder(
@@ -36,10 +39,12 @@ class State:
         )
 
     def get_own_ask_min(self) -> BitcludeOrder:
+        if self.bitclude_active_offers is None:
+            return None
         own_ask_offers = [
             offer
             for offer in self.bitclude_active_offers
-            if offer.offertype == OfferTypeEnum.ask
+            if offer.offertype == SideTypeEnum.ASK
         ]
         own_ask_min_offer = min(own_ask_offers, key=lambda offer: offer.price)
         return BitcludeOrder(
