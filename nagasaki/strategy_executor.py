@@ -1,3 +1,4 @@
+from nagasaki.logger import logger
 from nagasaki.enums import OrderActionEnum
 from nagasaki.event_manager import EventManager
 from nagasaki.schemas import BitcludeEventOrderbook
@@ -18,8 +19,14 @@ class StrategyExecutor:
 
     def on_orderbook_changed(self, orderbook_event: BitcludeEventOrderbook):
         s = self.state
+        logger.debug("orderbook changed")
         if orderbook_event.symbol == "BTC_PLN":
+            logger.debug("BTC_PLN orderbook changed")
+            logger.info(f"{s.bid_orderbook=}")
+            logger.debug(f"{s.ask_orderbook=}")
+
             if orderbook_event.side == "ask":
+                logger.debug("ask orderbook changed")
                 if orderbook_event.order_action == OrderActionEnum.CREATED:
                     s.ask_orderbook.append(orderbook_event.price)
                 else:
@@ -29,6 +36,7 @@ class StrategyExecutor:
                         print(f"{orderbook_event.price} is not in orderbook")
 
             if orderbook_event.side == "bid":
+                logger.debug("bid orderbook changed")
                 if orderbook_event.order_action == OrderActionEnum.CREATED:
                     s.bid_orderbook.append(orderbook_event.price)
                 else:

@@ -373,16 +373,17 @@ class BitcludeClient:
         # Fetching account info once and passing it to another methods
         # account_info = self.fetch_account_info()
         # amount_btc = self.get_bitclude_btcs_active(account_info)
-        dry_run = True
+        dry_run = False
         if dry_run:
             print(f"dry run ececuting on bitclude {action}")
             return
         if action.action_type == ActionTypeEnum.CREATE:
             order_type = "buy" if action.order.side == SideTypeEnum.BID else "sell"
             self.create_order(
-                amount_in_btc=1, rate=action.order.price, order_type=order_type
+                amount_in_btc=action.order.amount,
+                rate=action.order.price,
+                order_type=order_type,
             )
-            # TODO: amount should be attribute of action not 1
 
     def execute_actions_list(self, actions: List[Action]):
         for action in actions:

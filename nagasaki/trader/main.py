@@ -75,6 +75,7 @@ if __name__ == "__main__":
         cryptocompare_client=cryptocompare_client,
         strategy_executor=strategy_executor,
         state_initializer=state_initializer,
+        coinbase_client=coinbase_client,
     )
 
     app.run()

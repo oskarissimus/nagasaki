@@ -1,6 +1,8 @@
+from decimal import Decimal
 from apscheduler.schedulers.background import BackgroundScheduler
 from nagasaki.clients.bitclude_client import BitcludeClient
 from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
+from nagasaki.clients.coinbase_client import CoinbaseClient
 from nagasaki.clients.cryptocompare_client import CryptocompareClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.event_manager import EventManager
@@ -8,9 +10,7 @@ from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.strategy import Strategy
 from nagasaki.strategy_executor import StrategyExecutor
-import logging
-
-logger = logging.getLogger(__name__)
+from nagasaki.logger import logger
 
 
 class TraderApp:
@@ -26,6 +26,7 @@ class TraderApp:
         cryptocompare_client: CryptocompareClient,
         strategy_executor: StrategyExecutor,
         state_initializer: StateInitializer,
+        coinbase_client: CoinbaseClient,
     ):
         self.bitclude_client = bitclude_client
         self.bitclude_websocket_client = bitclude_websocket_client
@@ -37,6 +38,7 @@ class TraderApp:
         self.cryptocompare_client = cryptocompare_client
         self.strategy_executor = strategy_executor
         self.state_initializer = state_initializer
+        self.coinbase_client = coinbase_client
 
     def attach_strategy_handlers_to_events(self):
         logger.info("attach_strategy_handlers_to_events")
@@ -78,6 +80,11 @@ class TraderApp:
         )
         self.state.usd_pln = cryptocompare_usd_mark_price_pln
         # print(f"{self.state.usd_pln=}")
+
+    def get_usd_mark_pln_from_coinbase_and_write_to_state(self):
+        self.state.usd_pln = Decimal(1) / (
+            self.coinbase_client.fetch_pln_mark_price_usd()
+        )
 
     def run(self):
         self.state_initializer.initialize_state()

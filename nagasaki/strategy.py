@@ -11,6 +11,7 @@ from nagasaki.schemas import (
 from nagasaki.state import State
 from typing import List
 from decimal import Decimal
+from nagasaki.logger import logger
 
 
 class Strategy(ABC):
@@ -36,12 +37,13 @@ class BitcludeEpsilonStrategy(Strategy):
         self.state = state
 
     def get_actions_bid(self) -> List[Action]:
+        logger.info("CIPSKO")
+
+        price = self.state.get_top_bid() + self.EPSILON
+        amount = self.state.bitclude_account_info.balances["PLN"].active / price
         action_bid_over = Action(
             action_type=ActionTypeEnum.CREATE,
-            order=BitcludeOrder(
-                side=SideTypeEnum.BID,
-                price=self.state.get_top_bid() + self.EPSILON,
-            ),
+            order=BitcludeOrder(side=SideTypeEnum.BID, price=price, amount=amount),
         )
         own_bid = self.state.get_own_bid_max()
         action_cancel = Action(action_type=ActionTypeEnum.CANCEL, order=own_bid)
@@ -64,6 +66,7 @@ class BitcludeEpsilonStrategy(Strategy):
     def bidding_is_profitable(self) -> bool:
         MARK = self.state.btc_mark_usd * self.state.usd_pln
         TOP_BID = self.state.get_top_bid()
+        logger.info(f"{(MARK - (TOP_BID + self.EPSILON)) / MARK=}")
         return (MARK - (TOP_BID + self.EPSILON)) / MARK > self.BID_TRIGGER
 
     def print_state(self):

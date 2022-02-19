@@ -13,7 +13,7 @@ class BitcludeOrder(BaseModel):
     order_id: Optional[int]
     side: SideTypeEnum
     price: Decimal
-    # TODO: amount: Decimal
+    amount: Decimal
 
 
 class Action(BaseModel):
