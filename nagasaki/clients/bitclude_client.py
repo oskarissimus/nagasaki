@@ -1,7 +1,6 @@
 from decimal import Decimal
 from enum import Enum
 from os import wait
-from wsgiref.validate import validator
 import requests
 from typing import List, Dict
 from pydantic import BaseModel, validator
