@@ -15,10 +15,22 @@ class BitcludeOrder(BaseModel):
     price: Decimal
     amount: Decimal
 
+    def __str__(self):
+        return f"ORDER <{self.side} {self.price} {self.amount}>"
+
+    def __repr__(self):
+        return f"ORDER <{self.side} {self.price} {self.amount}>"
+
 
 class Action(BaseModel):
     action_type: ActionTypeEnum
     order: Optional[BitcludeOrder]
+
+    def __str__(self):
+        return f"ACTION <{self.action_type} {self.order}>"
+
+    def __repr__(self):
+        return f"ACTION <{self.action_type} {self.order}>"
 
 
 class BitcludeEventBase(BaseModel):

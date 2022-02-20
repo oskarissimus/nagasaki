@@ -16,13 +16,7 @@ import datetime
 from time import sleep
 from nagasaki.schemas import Action
 
-
-class BitcludeClientException(Exception):
-    pass
-
-
-class CannotParseResponse(BitcludeClientException):
-    pass
+from nagasaki.exceptions import BitcludeClientException, CannotParseResponse
 
 
 # https://github.com/samuelcolvin/pydantic/issues/1303
