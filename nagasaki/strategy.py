@@ -1,17 +1,11 @@
 from abc import ABC, abstractmethod
-
-from nagasaki.enums import (
-    ActionTypeEnum,
-    SideTypeEnum,
-)
-from nagasaki.schemas import (
-    Action,
-    BitcludeOrder,
-)
-from nagasaki.state import State
-from typing import List
 from decimal import Decimal
+from typing import List
+
+from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.logger import logger
+from nagasaki.schemas.bitclude import Action, BitcludeOrder
+from nagasaki.state import State
 
 
 class Strategy(ABC):

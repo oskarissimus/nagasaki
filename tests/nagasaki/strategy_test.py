@@ -2,8 +2,8 @@ from decimal import Decimal
 
 import pytest
 
-from nagasaki.clients.bitclude_client import AccountInfo, Balance, Offer
-from nagasaki.enums import ActionTypeEnum, SideTypeEnum
+from nagasaki.schemas.bitclude import AccountInfo, Balance, Offer
+from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.state import State
 from nagasaki.strategy import BitcludeEpsilonStrategy
 

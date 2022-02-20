@@ -18,11 +18,11 @@ class CoinbaseClient:
             )
         response_json = response.json()
         if "data" not in response_json:
-            raise CoinbaseClientException(f"Coinbase API returned no data")
+            raise CoinbaseClientException("Coinbase API returned no data")
         if "rates" not in response_json["data"]:
-            raise CoinbaseClientException(f"Coinbase API returned no rates")
+            raise CoinbaseClientException("Coinbase API returned no rates")
         if "PLN" not in response_json["data"]["rates"]:
-            raise CoinbaseClientException(f"Coinbase API returned no PLN rate")
+            raise CoinbaseClientException("Coinbase API returned no PLN rate")
         return Decimal(response_json["data"]["rates"]["PLN"])
 
     def fetch_pln_mark_price_usd(self):
@@ -33,9 +33,9 @@ class CoinbaseClient:
             )
         response_json = response.json()
         if "data" not in response_json:
-            raise CoinbaseClientException(f"Coinbase API returned no data")
+            raise CoinbaseClientException("Coinbase API returned no data")
         if "rates" not in response_json["data"]:
-            raise CoinbaseClientException(f"Coinbase API returned no rates")
+            raise CoinbaseClientException("Coinbase API returned no rates")
         if "USD" not in response_json["data"]["rates"]:
-            raise CoinbaseClientException(f"Coinbase API returned no USD rate")
+            raise CoinbaseClientException("Coinbase API returned no USD rate")
         return Decimal(response_json["data"]["rates"]["USD"])

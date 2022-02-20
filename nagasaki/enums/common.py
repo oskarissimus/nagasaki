@@ -15,3 +15,8 @@ class ActionTypeEnum(str, Enum):
 class SideTypeEnum(str, Enum):
     ASK = "ASK"
     BID = "BID"
+
+
+class OfferCurrencyEnum(str, Enum):
+    btc = "btc"
+    pln = "pln"

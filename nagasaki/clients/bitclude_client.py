@@ -1,73 +1,19 @@
-from decimal import Decimal
-from enum import Enum
-from os import wait
-import requests
-from typing import List, Dict
-from pydantic import BaseModel, validator
-from nagasaki.enums import (
-    ActionTypeEnum,
-    OrderActionEnum,
-    SideTypeEnum,
-)
-from nagasaki.utils import round_decimals_down
 import json
-import datetime
+from decimal import Decimal
 from time import sleep
-from nagasaki.schemas import Action
+from typing import List
 
+import requests
+from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.exceptions import BitcludeClientException, CannotParseResponse
-
-
-# https://github.com/samuelcolvin/pydantic/issues/1303
-class HashableBaseModel(BaseModel):
-    def __hash__(self):
-        return hash((type(self),) + tuple(self.__dict__.values()))
-
-
-class Ticker(BaseModel):
-    ask: Decimal
-    bid: Decimal
-
-
-class Balance(BaseModel):
-    active: Decimal
-    inactive: Decimal
-
-
-class AccountInfo(BaseModel):
-    balances: Dict[str, Balance]
-
-
-class AccountHistoryItem(HashableBaseModel):
-    currency1: str
-    currency2: str
-    amount: Decimal
-    time_close: datetime.datetime
-    price: Decimal
-    fee_taker: int
-    fee_maker: int
-    type: str
-    action: str
-
-
-class OfferCurrencyEnum(str, Enum):
-    btc = "btc"
-    pln = "pln"
-
-
-class Offer(BaseModel):
-    nr: str
-    currency1: OfferCurrencyEnum
-    currency2: OfferCurrencyEnum
-    amount: Decimal
-    price: Decimal
-    id_user_open: str
-    time_open: datetime.datetime
-    offertype: SideTypeEnum
-
-    @validator("offertype", pre=True)
-    def convert_to_uppercase(cls, v):
-        return v.upper()
+from nagasaki.schemas.bitclude import (
+    AccountHistoryItem,
+    AccountInfo,
+    Action,
+    Offer,
+    Ticker,
+)
+from nagasaki.utils.common import round_decimals_down
 
 
 class BitcludeClient:
@@ -92,10 +38,10 @@ class BitcludeClient:
         )
         try:
             response_json = response.json()
-        except json.decoder.JSONDecodeError:
+        except json.decoder.JSONDecodeError as json_decode_error:
             print(response.text)
-            raise CannotParseResponse()
-        if response_json["success"] == True:
+            raise CannotParseResponse() from json_decode_error
+        if response_json["success"] is True:
             return AccountInfo(**response_json)
         else:
             raise BitcludeClientException(response_json)
@@ -128,9 +74,8 @@ class BitcludeClient:
         response = requests.get(f"{self.bitclude_url_base}/stats/ticker.json")
         try:
             response_json = response.json()
-        except json.decoder.JSONDecodeError:
-            print(response.text)
-            raise CannotParseResponse()
+        except json.decoder.JSONDecodeError as json_decode_error:
+            raise CannotParseResponse(response.text) from json_decode_error
         return Ticker(**response_json["btc_pln"])
 
     def create_order(
@@ -176,14 +121,12 @@ class BitcludeClient:
             )
             try:
                 response_json = response.json()
-            except json.decoder.JSONDecodeError:
-                print(response.text)
-                raise CannotParseResponse()
-            if response_json["success"] == True:
+            except json.decoder.JSONDecodeError as json_decode_error:
+                raise CannotParseResponse(response.text) from json_decode_error
+            if response_json["success"] is True:
                 return response_json
-            else:
-                print(response_json)
-                return False
+            print(response_json)
+            return False
         else:
             print("order type must be buy or sell")
 
@@ -221,13 +164,11 @@ class BitcludeClient:
         )
         try:
             response_json = response.json()
-        except json.decoder.JSONDecodeError:
-            print(response.text)
-            raise CannotParseResponse()
-        if "success" in response_json and response_json["success"] == True:
+        except json.decoder.JSONDecodeError as json_decode_error:
+            raise CannotParseResponse(response.text) from json_decode_error
+        if "success" in response_json and response_json["success"] is True:
             return [Offer(**offer) for offer in response_json["offers"]]
-        else:
-            raise BitcludeClientException(response_json)
+        raise BitcludeClientException(response_json)
 
     def cancel_offer(self, offer: Offer, dry_run=False):
         if dry_run:
@@ -250,14 +191,12 @@ class BitcludeClient:
         )
         try:
             response_json = response.json()
-        except json.decoder.JSONDecodeError:
-            print(response.text)
-            raise CannotParseResponse()
-        if response_json["success"] == True:
+        except json.decoder.JSONDecodeError as json_decode_error:
+            raise CannotParseResponse(response.text) from json_decode_error
+        if response_json["success"] is True:
             return response_json
-        else:
-            print(response_json)
-            return False
+        print(response_json)
+        return False
 
     def wait_for_offer_cancellation(self, offer: Offer):
         while True:
@@ -282,13 +221,11 @@ class BitcludeClient:
         )
         try:
             response_json = response.json()
-        except json.decoder.JSONDecodeError:
-            print(response.text)
-            raise CannotParseResponse()
-        if response_json["success"] == True:
+        except json.decoder.JSONDecodeError as json_decode_error:
+            raise CannotParseResponse(response.text) from json_decode_error
+        if response_json["success"] is True:
             return [AccountHistoryItem(**item) for item in response_json["history"]]
-        else:
-            raise BitcludeClientException(response_json)
+        raise BitcludeClientException(response_json)
 
     @staticmethod
     def get_account_history_increment(
@@ -299,9 +236,9 @@ class BitcludeClient:
         curr = set(current_account_history)
         return list(curr.difference(prev))
 
-    def cancel_ask_offers_that_are_not_on_top(self, ASK: Decimal, dry_run=False):
+    def cancel_ask_offers_that_are_not_on_top(self, ask: Decimal, dry_run=False):
         for offer in self.active_offers:
-            if offer.offertype == "ask" and offer.price > ASK:
+            if offer.offertype == "ask" and offer.price > ask:
                 self.cancel_offer(offer, dry_run=dry_run)
                 self.wait_for_offer_cancellation(offer)
                 self.account_info.balances["BTC"].active += offer.amount
@@ -316,9 +253,9 @@ class BitcludeClient:
                 self.wait_for_offer_cancellation(offer)
                 self.active_offers.remove(offer)
 
-    def cancel_bid_offers_that_are_not_on_top(self, BID: Decimal, dry_run=False):
+    def cancel_bid_offers_that_are_not_on_top(self, bid: Decimal, dry_run=False):
         for offer in self.active_offers:
-            if offer.offertype == "bid" and offer.price < BID:
+            if offer.offertype == "bid" and offer.price < bid:
                 self.cancel_offer(offer, dry_run=dry_run)
                 self.wait_for_offer_cancellation(offer)
                 self.account_info.balances["PLN"].active += offer.amount * offer.price

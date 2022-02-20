@@ -1,8 +1,9 @@
 from decimal import Decimal
-from nagasaki.enums import SideTypeEnum
-from nagasaki.schemas import BitcludeOrder
-from nagasaki.clients.bitclude_client import AccountInfo, Offer
 from typing import List
+
+from nagasaki.clients.bitclude_client import AccountInfo, Offer
+from nagasaki.enums.common import SideTypeEnum
+from nagasaki.schemas.bitclude import BitcludeOrder
 
 
 class State:

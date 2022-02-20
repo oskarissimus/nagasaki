@@ -1,7 +1,8 @@
-import requests
-from pydantic import BaseModel
 from datetime import datetime, timedelta
 from decimal import Decimal
+
+import requests
+from pydantic import BaseModel
 
 
 class DeribitClientException(Exception):
@@ -91,35 +92,6 @@ class DeribitClient:
             raise DeribitClientException(response_json["error"])
         return AccountSummary(**response_json["result"])
 
-    def get_total_delta(self) -> float:
-        """
-        D = get delta position from api delta_total
-        MB = get margin balance from api margin_balance
-        MB - sald BTC na deribicie
-        grand_total_delta = MB + D
-        """
-        if self.account_summary is None:
-            raise DeribitClientException(
-                "account_summary attribute of this object is None, please run fetch_account_summary() method to initialize it!"
-            )
-        return self.account_summary.margin_balance + self.account_summary.delta_total
-
-    def get_equity_usd(self):
-        """
-        get private-get_account_summary   ›  equity 	number 	The account's current equity
-        """
-        if self.account_summary is None:
-            raise DeribitClientException(
-                "account_summary attribute of this object is None, please run fetch_account_summary() method to initialize it!"
-            )
-        if self.index_price_btc_usd is None:
-            raise DeribitClientException(
-                "index_price_btc_usd attribute of this object is None, please run fetch_index_price_btc_usd() method to initialize it!"
-            )
-        equity_btc = self.account_summary.equity
-        equity_usd = equity_btc * self.index_price_btc_usd
-        return equity_usd
-
     def create_order_perpetual(self, amount_in_usd, order_type, dry_run=False):
         if order_type in ("buy", "sell"):
             rounded_amount_in_usd = round(amount_in_usd, -1)
@@ -157,20 +129,3 @@ class DeribitClient:
             f"{self.deribit_url_base}/public/get_index_price?index_name=btc_usd"
         )
         return Decimal(response.json()["result"]["index_price"])
-
-    def fetch_get_funding_rate_history(
-        self,
-        start_timestamp_microseconds,
-        end_timestamp_microseconds,
-        instrument="BTC-PERPETUAL",
-    ):
-        response = requests.get(
-            f"{self.deribit_url_base}/public/get_funding_rate_history?&start_timestamp={start_timestamp_microseconds}&end_timestamp={end_timestamp_microseconds}&instrument_name={instrument}"
-        )
-        response_json = response.json()
-        current = 1
-        total_interest = 0
-        for d in response_json["result"]:
-            total_interest = total_interest + d["interest_1h"]
-            current = current * (1 + d["interest_1h"])
-        self.perp_yield = round(((current**12) - 1) * 100, 4)

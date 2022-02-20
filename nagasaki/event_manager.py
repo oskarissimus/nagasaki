@@ -1,6 +1,6 @@
 class EventManager:
     def __init__(self):
-        self.subscribers = dict()
+        self.subscribers = {}
 
     def subscribe(self, event_type: str, fn):
         if not event_type in self.subscribers:

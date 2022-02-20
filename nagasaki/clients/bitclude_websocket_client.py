@@ -1,10 +1,10 @@
+import _thread
 import json
 import time
-from nagasaki.event_manager import EventManager
 
-from nagasaki.schemas import BitcludeEventOrderbook
 import websocket
-import _thread
+from nagasaki.event_manager import EventManager
+from nagasaki.schemas.bitclude import BitcludeEventOrderbook
 
 
 class BitcludeWebsocketClient:
