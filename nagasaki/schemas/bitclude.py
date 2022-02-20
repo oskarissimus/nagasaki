@@ -1,7 +1,6 @@
-from pydantic import BaseModel, validator
-from typing import Dict
-from decimal import Decimal
 import datetime
+from decimal import Decimal
+from typing import Dict, Optional
 
 from nagasaki.enums.common import (
     ActionTypeEnum,
@@ -9,6 +8,8 @@ from nagasaki.enums.common import (
     OrderActionEnum,
     SideTypeEnum,
 )
+from pydantic import BaseModel, root_validator, validator
+
 
 # https://github.com/samuelcolvin/pydantic/issues/1303
 class HashableBaseModel(BaseModel):
@@ -55,12 +56,6 @@ class Offer(BaseModel):
     @validator("offertype", pre=True)
     def convert_to_uppercase(cls, v):
         return v.upper()
-
-
-from decimal import Decimal
-from typing import Optional
-
-from pydantic import BaseModel, root_validator, validator
 
 
 class BitcludeOrder(BaseModel):
