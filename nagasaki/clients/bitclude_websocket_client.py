@@ -4,7 +4,7 @@ import time
 
 import websocket
 from nagasaki.event_manager import EventManager
-from nagasaki.schemas.bitclude import BitcludeEventOrderbook
+from nagasaki.models.bitclude import BitcludeEventOrderbook
 
 
 class BitcludeWebsocketClient:

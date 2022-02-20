@@ -1,5 +1,5 @@
 from decimal import Decimal
-from nagasaki.clients.bitclude_client import BitcludeClient
+from nagasaki.clients.bitclude.client import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.state import State
 from nagasaki.clients.coinbase_client import CoinbaseClient

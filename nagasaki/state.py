@@ -1,18 +1,14 @@
 from decimal import Decimal
 from typing import List
 
-from nagasaki.clients.bitclude_client import AccountInfo, Offer
+from pydantic import BaseModel
+
 from nagasaki.enums.common import SideTypeEnum
-from nagasaki.schemas.bitclude import BitcludeOrder
+from nagasaki.models.bitclude import BitcludeOrder
+from nagasaki.clients.bitclude.models import AccountInfo, AccountHistory, Offer
 
 
 class State:
-    """
-    Modules in python are singletons by default.
-    So I created global state that can be accessed by all modules.
-    Shame on me.
-    I was thinking of using some kind of other pattern, but for now it's fine.
-    """
 
     ask_orderbook = []
     bid_orderbook = []
@@ -68,3 +64,8 @@ class State:
         self.own_ask = None
         self.own_bid = None
         self.bitclude_account_info = None
+
+
+class BitcludeState(BaseModel):
+    account_info: AccountInfo
+    account_history: AccountHistory

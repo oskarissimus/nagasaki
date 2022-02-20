@@ -1,7 +1,7 @@
 from nagasaki.logger import logger
 from nagasaki.enums.common import OrderActionEnum
 from nagasaki.event_manager import EventManager
-from nagasaki.schemas.bitclude import BitcludeEventOrderbook
+from nagasaki.models.bitclude import BitcludeEventOrderbook
 from nagasaki.strategy import Strategy
 from nagasaki.state import State
 

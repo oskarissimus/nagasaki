@@ -4,7 +4,7 @@ from typing import List
 
 from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.logger import logger
-from nagasaki.schemas.bitclude import Action, BitcludeOrder
+from nagasaki.models.bitclude import Action, BitcludeOrder
 from nagasaki.state import State
 
 

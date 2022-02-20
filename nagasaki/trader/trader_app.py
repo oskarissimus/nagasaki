@@ -1,6 +1,6 @@
 from decimal import Decimal
 from apscheduler.schedulers.background import BackgroundScheduler
-from nagasaki.clients.bitclude_client import BitcludeClient
+from nagasaki.clients.bitclude.client import BitcludeClient
 from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
 from nagasaki.clients.coinbase_client import CoinbaseClient
 from nagasaki.clients.cryptocompare_client import CryptocompareClient

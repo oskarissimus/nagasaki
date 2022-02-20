@@ -1,30 +1,32 @@
 import json
-from decimal import Decimal
 from time import sleep
 from typing import List
 
 import requests
 from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.exceptions import BitcludeClientException, CannotParseResponse
-from nagasaki.schemas.bitclude import (
+from nagasaki.clients.bitclude.models import (
+    AccountHistory,
     AccountHistoryItem,
     AccountInfo,
-    Action,
     Offer,
     Ticker,
 )
+from nagasaki.models.bitclude import Action
 from nagasaki.utils.common import round_decimals_down
 
 
 class BitcludeClient:
+    """
+    Client holds url, and credentials. It makes requests and parses them into models.
+    """
+
     def __init__(
         self, bitclude_url_base: str, bitclude_client_id: str, bitclude_client_key: str
     ):
         self.bitclude_url_base = bitclude_url_base
         self.bitclude_client_id = bitclude_client_id
         self.bitclude_client_key = bitclude_client_key
-        self.active_offers: List[Offer] = []
-        self.account_info: AccountInfo = None
 
     def fetch_account_info(self) -> AccountInfo:
         response = requests.get(
@@ -46,31 +48,7 @@ class BitcludeClient:
         else:
             raise BitcludeClientException(response_json)
 
-    def get_bitclude_btcs(self, account_info: AccountInfo) -> Decimal:
-        """
-        B_active - nie są w zleceniach
-        B_inactive - są w zleceniach
-        return B_active + B_inactive
-        """
-        btc_active = account_info.balances["BTC"].active
-        btc_inactive = account_info.balances["BTC"].inactive
-        return btc_active + btc_inactive
-
-    def get_bitclude_btcs_inactive(self, account_info: AccountInfo) -> Decimal:
-        return account_info.balances["BTC"].inactive
-
-    def get_bitclude_btcs_active(self, account_info: AccountInfo) -> Decimal:
-        return account_info.balances["BTC"].active
-
-    def get_bitclude_plns(self, account_info: AccountInfo) -> Decimal:
-        pln_active = account_info.balances["PLN"].active
-        pln_inactive = account_info.balances["PLN"].inactive
-        return pln_active + pln_inactive
-
-    def get_bitclude_plns_active(self, account_info: AccountInfo) -> Decimal:
-        return account_info.balances["PLN"].active
-
-    def fetch_ticker_btc_pln(self):
+    def fetch_ticker_btc_pln(self) -> Ticker:
         response = requests.get(f"{self.bitclude_url_base}/stats/ticker.json")
         try:
             response_json = response.json()
@@ -86,7 +64,7 @@ class BitcludeClient:
         dry_run=False,
         hidden=True,
         post_only=True,
-    ):
+    ) -> bool:
         if order_type in ("buy", "sell"):
             rounded_amount_in_btc = round_decimals_down(amount_in_btc, 4)
             if dry_run:
@@ -129,6 +107,7 @@ class BitcludeClient:
             return False
         else:
             print("order type must be buy or sell")
+            return False
 
     def create_order_sell(self, amount_in_btc, rate, dry_run=False, hidden=True):
         return self.create_order(
@@ -139,18 +118,6 @@ class BitcludeClient:
         return self.create_order(
             amount_in_btc, rate, "buy", dry_run=dry_run, hidden=hidden
         )
-
-    def create_market_order_buy(
-        self, amount_in_btc: Decimal, ticker_btc_pln: Ticker, dry_run=False
-    ):
-        rate = ticker_btc_pln.bid + ticker_btc_pln.bid * 0.0001
-        return self.create_order(amount_in_btc, rate, "buy", dry_run=dry_run)
-
-    def create_market_order_sell(
-        self, amount_in_btc: Decimal, ticker_btc_pln: Ticker, dry_run=False
-    ):
-        rate = ticker_btc_pln.ask - ticker_btc_pln.ask * 0.0001
-        return self.create_order(amount_in_btc, rate, "sell", dry_run=dry_run)
 
     def fetch_active_offers(self) -> List[Offer]:
         response = requests.get(
@@ -209,7 +176,7 @@ class BitcludeClient:
                 return True
             sleep(1)
 
-    def fetch_account_history(self):
+    def fetch_account_history(self) -> AccountHistory:
         response = requests.get(
             self.bitclude_url_base,
             params={
@@ -224,89 +191,12 @@ class BitcludeClient:
         except json.decoder.JSONDecodeError as json_decode_error:
             raise CannotParseResponse(response.text) from json_decode_error
         if response_json["success"] is True:
-            return [AccountHistoryItem(**item) for item in response_json["history"]]
+            return AccountHistory(
+                items=[AccountHistoryItem(**item) for item in response_json["history"]]
+            )
         raise BitcludeClientException(response_json)
 
-    @staticmethod
-    def get_account_history_increment(
-        previous_account_history: List[AccountHistoryItem],
-        current_account_history: List[AccountHistoryItem],
-    ) -> List[AccountHistoryItem]:
-        prev = set(previous_account_history)
-        curr = set(current_account_history)
-        return list(curr.difference(prev))
-
-    def cancel_ask_offers_that_are_not_on_top(self, ask: Decimal, dry_run=False):
-        for offer in self.active_offers:
-            if offer.offertype == "ask" and offer.price > ask:
-                self.cancel_offer(offer, dry_run=dry_run)
-                self.wait_for_offer_cancellation(offer)
-                self.account_info.balances["BTC"].active += offer.amount
-                self.active_offers.remove(offer)
-
-    def cancel_all_ask_offers(self, dry_run=False):
-        print("cancel_all_ask_offers")
-        print(self.active_offers)
-        for offer in self.active_offers:
-            if offer.offertype == "ask":
-                self.cancel_offer(offer, dry_run=dry_run)
-                self.wait_for_offer_cancellation(offer)
-                self.active_offers.remove(offer)
-
-    def cancel_bid_offers_that_are_not_on_top(self, bid: Decimal, dry_run=False):
-        for offer in self.active_offers:
-            if offer.offertype == "bid" and offer.price < bid:
-                self.cancel_offer(offer, dry_run=dry_run)
-                self.wait_for_offer_cancellation(offer)
-                self.account_info.balances["PLN"].active += offer.amount * offer.price
-                self.active_offers.remove(offer)
-
-    def cancel_all_bid_offers(self, dry_run=False):
-        print("cancel_all_bid_offers")
-        print(self.active_offers)
-        for offer in self.active_offers:
-            if offer.offertype == "bid":
-                self.cancel_offer(offer, dry_run=dry_run)
-                self.wait_for_offer_cancellation(offer)
-                self.active_offers.remove(offer)
-
-    def get_inventory_parameter(
-        self, account_info: AccountInfo, btc_mark_price_pln: Decimal
-    ):
-        total_pln = (
-            account_info.balances["PLN"].active + account_info.balances["PLN"].inactive
-        )
-        total_btc = (
-            account_info.balances["BTC"].active + account_info.balances["BTC"].inactive
-        )
-        total_btc_value_in_pln = total_btc * btc_mark_price_pln
-        wallet_sum_in_pln = total_pln + total_btc_value_in_pln
-        pln_to_sum_ratio = (
-            total_btc_value_in_pln / wallet_sum_in_pln
-        )  # values from 0 to 1
-        return pln_to_sum_ratio * 2 - 1
-
-    def optimal_ask_spread(self, inventory_param):
-        # TODO: Watch out for magic parameters. Refactor later
-        """
-        -0.018 and 0.01 are a and b respectively in ax + b
-        """
-        return max(-0.018 * inventory_param + 0.01, 0.002)
-
-    def optimal_bid_spread(self, inventory_param):
-        """
-        0.018 and 0.01 are a and b respectively in ax + b
-        """
-        return max(0.018 * inventory_param + 0.01, 0.002)
-
     def execute_action(self, action: Action):
-        # Fetching account info once and passing it to another methods
-        # account_info = self.fetch_account_info()
-        # amount_btc = self.get_bitclude_btcs_active(account_info)
-        dry_run = False
-        if dry_run:
-            print(f"dry run ececuting on bitclude {action}")
-            return
         if action.action_type == ActionTypeEnum.CREATE:
             order_type = "buy" if action.order.side == SideTypeEnum.BID else "sell"
             self.create_order(
@@ -314,6 +204,8 @@ class BitcludeClient:
                 rate=action.order.price,
                 order_type=order_type,
             )
+        elif action.action_type == ActionTypeEnum.CANCEL:
+            raise NotImplementedError("cancel action not implemented")
 
     def execute_actions_list(self, actions: List[Action]):
         for action in actions:

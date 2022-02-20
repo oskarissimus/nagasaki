@@ -1,61 +1,12 @@
-import datetime
 from decimal import Decimal
-from typing import Dict, Optional
+from typing import Optional
+from pydantic import BaseModel, root_validator, validator
 
 from nagasaki.enums.common import (
     ActionTypeEnum,
-    OfferCurrencyEnum,
     OrderActionEnum,
     SideTypeEnum,
 )
-from pydantic import BaseModel, root_validator, validator
-
-
-# https://github.com/samuelcolvin/pydantic/issues/1303
-class HashableBaseModel(BaseModel):
-    def __hash__(self):
-        return hash((type(self),) + tuple(self.__dict__.values()))
-
-
-class Ticker(BaseModel):
-    ask: Decimal
-    bid: Decimal
-
-
-class Balance(BaseModel):
-    active: Decimal
-    inactive: Decimal
-
-
-class AccountInfo(BaseModel):
-    balances: Dict[str, Balance]
-
-
-class AccountHistoryItem(HashableBaseModel):
-    currency1: str
-    currency2: str
-    amount: Decimal
-    time_close: datetime.datetime
-    price: Decimal
-    fee_taker: int
-    fee_maker: int
-    type: str
-    action: str
-
-
-class Offer(BaseModel):
-    nr: str
-    currency1: OfferCurrencyEnum
-    currency2: OfferCurrencyEnum
-    amount: Decimal
-    price: Decimal
-    id_user_open: str
-    time_open: datetime.datetime
-    offertype: SideTypeEnum
-
-    @validator("offertype", pre=True)
-    def convert_to_uppercase(cls, v):
-        return v.upper()
 
 
 class BitcludeOrder(BaseModel):
@@ -94,6 +45,7 @@ class BitcludeEventOrderbook(BitcludeEventBase):
     order_action: Optional[OrderActionEnum]
 
     @root_validator()
+    # pylint: disable=no-self-argument,no-self-use
     def infer_order_action_based_on_value(cls, values):
         if values["size"] == Decimal(0):
             values["order_action"] = OrderActionEnum.CANCELLED
@@ -111,10 +63,12 @@ class BitcludeEventTicker(BitcludeEventBase):
     change: Decimal
 
     @validator("change", pre=True)
+    # pylint: disable=no-self-argument,no-self-use
     def strip_percent_sign(cls, v):
         return v[:-2]
 
     @validator("change")
+    # pylint: disable=no-self-argument,no-self-use
     def convert_percent_to_number(cls, v):
         return v / Decimal(100)
 
