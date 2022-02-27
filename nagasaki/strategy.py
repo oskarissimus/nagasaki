@@ -24,8 +24,8 @@ class BitcludeEpsilonStrategy(Strategy):
     Bid top ASK - EPSILON
     """
 
-    def __init__(self, state: State):
-        self.EPSILON = Decimal("2.137")
+    def __init__(self, state: State, epsilon: Decimal = Decimal("2.137")):
+        self.EPSILON = epsilon
         self.ASK_TRIGGER = Decimal("0.004")
         self.BID_TRIGGER = Decimal("0.004")
         self.state = state
@@ -55,7 +55,13 @@ class BitcludeEpsilonStrategy(Strategy):
                 return [action_cancel]
 
     def get_actions_ask(self):
-        pass
+        action_bid_over = Action(
+            action_type=ActionTypeEnum.CREATE,
+            order=BitcludeOrder(
+                side=SideTypeEnum.ASK, price=Decimal("169997.863"), amount=Decimal(1)
+            ),
+        )
+        return [action_bid_over]
 
     def bidding_is_profitable(self) -> bool:
         MARK = self.state.btc_mark_usd * self.state.usd_pln
