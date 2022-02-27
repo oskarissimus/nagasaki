@@ -55,10 +55,14 @@ class BitcludeEpsilonStrategy(Strategy):
                 return [action_cancel]
 
     def get_actions_ask(self):
+        top_ask = self.state.get_top_ask()
+        price = top_ask - self.EPSILON
         action_bid_over = Action(
             action_type=ActionTypeEnum.CREATE,
             order=BitcludeOrder(
-                side=SideTypeEnum.ASK, price=Decimal("169997.863"), amount=Decimal(1)
+                side=SideTypeEnum.ASK,
+                price=price,
+                amount=Decimal(1),
             ),
         )
         return [action_bid_over]
