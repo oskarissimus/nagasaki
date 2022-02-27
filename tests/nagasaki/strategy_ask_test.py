@@ -7,9 +7,12 @@ from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.state import State
 from nagasaki.strategy import BitcludeEpsilonStrategy
 
+from hypothesis import given
+from hypothesis.strategies import decimals
 
-@pytest.fixture
-def initialized_state() -> State:
+
+@pytest.fixture(scope="class")
+def initialized_state():
     btc_price_deribit = 40_000
     usd_pln = 4
     top_bid_orderbook = 150_000
@@ -54,17 +57,38 @@ def initialized_state() -> State:
             "BTC": Balance(active=Decimal(active_btcs), inactive=Decimal("0")),
         }
     )
+    state.bitclude_active_offers = []
     return state
 
 
-def test_ask_bidding_over_epsilon_simple_case(initialized_state: State):
-    initialized_state.bitclude_active_offers = []
-    bes = BitcludeEpsilonStrategy(initialized_state)
+class TestBiddingOverEpsilonSimpleCase:
+    @given(btc_price=decimals(allow_nan=False, allow_infinity=False))
+    def test_ask_bidding_over_epsilon_simple_case(
+        self, initialized_state: State, btc_price
+    ):
 
-    result_actions = bes.get_actions_ask()
+        initialized_state.ask_orderbook = [Decimal(btc_price)]
+        bes = BitcludeEpsilonStrategy(initialized_state)
 
-    assert len(result_actions) == 1
-    assert result_actions[0].action_type == ActionTypeEnum.CREATE
-    assert result_actions[0].order.side == SideTypeEnum.ASK
-    assert result_actions[0].order.price == Decimal("170_000") - Decimal("2.137")
-    assert result_actions[0].order.amount == Decimal("1")
+        result_actions = bes.get_actions_ask()
+        price_to_ask = btc_price - Decimal("2.137")
+        assert len(result_actions) == 1
+        assert result_actions[0].action_type == ActionTypeEnum.CREATE
+        assert result_actions[0].order.side == SideTypeEnum.ASK
+        assert result_actions[0].order.price == price_to_ask
+        assert result_actions[0].order.amount == Decimal("1")
+
+
+class TestBiddingOverEpsilonIsPositive:
+    @given(btc_price=decimals(allow_nan=False, allow_infinity=False))
+    def test_ask_bidding_over_epsilon_is_positive(
+        self, initialized_state: State, btc_price
+    ):
+
+        initialized_state.ask_orderbook = [Decimal(btc_price)]
+        bes = BitcludeEpsilonStrategy(initialized_state)
+
+        result_actions = bes.get_actions_ask()
+        price_to_ask = btc_price - Decimal("2.137")
+        assert len(result_actions) == 1
+        assert result_actions[0].order.price > 0
