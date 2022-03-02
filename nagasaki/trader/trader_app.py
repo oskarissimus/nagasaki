@@ -11,6 +11,7 @@ from nagasaki.state_initializer import StateInitializer
 from nagasaki.strategy import Strategy
 from nagasaki.strategy_executor import StrategyExecutor
 from nagasaki.logger import logger
+from nagasaki.clients.trejdoo_client import get_price_usd_pln  # function to get USD_PLN
 
 
 class TraderApp:
@@ -61,7 +62,7 @@ class TraderApp:
             seconds=10,
         )
         self.scheduler.add_job(
-            self.get_usd_mark_pln_from_cryptocompare_and_write_to_state,
+            self.get_usd_mark_pln_from_trejdoo_and_write_to_state,
             "interval",
             seconds=10,
         )
@@ -71,15 +72,10 @@ class TraderApp:
         self.state.btc_mark_usd = self.deribit_client.fetch_index_price_btc_usd()
         # print(f"{self.state.btc_mark_usd=}")
 
-    def get_usd_mark_pln_from_cryptocompare_and_write_to_state(self):
-        cryptocompare_data = self.cryptocompare_client.fetch_histominute_data()
-        cryptocompare_usd_mark_price_pln = (
-            self.cryptocompare_client.calculate_mean_of_mids_from_last_20_minutes(
-                cryptocompare_data
-            )
-        )
-        self.state.usd_pln = cryptocompare_usd_mark_price_pln
-        # print(f"{self.state.usd_pln=}")
+    def get_usd_mark_pln_from_trejdoo_and_write_to_state(self):
+        usd_pln = get_price_usd_pln()
+        self.state.usd_pln = usd_pln
+        print(f"USD_PLN{self.state.usd_pln:.2f}")
 
     def get_usd_mark_pln_from_coinbase_and_write_to_state(self):
         self.state.usd_pln = Decimal(1) / (

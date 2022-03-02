@@ -111,12 +111,12 @@ class BitcludeClient:
 
     def create_order_sell(self, amount_in_btc, rate, dry_run=False, hidden=True):
         return self.create_order(
-            amount_in_btc, rate, "sell", dry_run=dry_run, hidden=hidden
+            amount_in_btc, rate, "sell", dry_run=dry_run, hidden=hidden, post_only=True
         )
 
     def create_order_buy(self, amount_in_btc, rate, dry_run=False, hidden=True):
         return self.create_order(
-            amount_in_btc, rate, "buy", dry_run=dry_run, hidden=hidden
+            amount_in_btc, rate, "buy", dry_run=dry_run, hidden=hidden, post_only=True
         )
 
     def fetch_active_offers(self) -> List[Offer]:
@@ -204,8 +204,12 @@ class BitcludeClient:
                 rate=action.order.price,
                 order_type=order_type,
             )
-        elif action.action_type == ActionTypeEnum.CANCEL:
-            raise NotImplementedError("cancel action not implemented")
+        if action.action_type == ActionTypeEnum.CANCEL:
+            print("Cancelling triggered")
+            offers = self.fetch_active_offers()
+            for offer in offers:
+                print("Cancelling all offers")
+                self.cancel_offer(offer=offer)
 
     def execute_actions_list(self, actions: List[Action]):
         for action in actions:

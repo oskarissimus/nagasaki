@@ -45,6 +45,7 @@ class State:
             ]
             if len(own_ask_offers) >= 1:
                 own_ask_min_offer = min(own_ask_offers, key=lambda offer: offer.price)
+                print(f"HEHEHE {own_ask_min_offer.nr}")
                 return BitcludeOrder(
                     side=own_ask_min_offer.offertype,
                     price=own_ask_min_offer.price,

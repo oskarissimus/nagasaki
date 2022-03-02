@@ -34,6 +34,10 @@ class StrategyExecutor:
                         s.ask_orderbook.remove(orderbook_event.price)
                     else:
                         print(f"{orderbook_event.price} is not in orderbook")
+                actions = self.strategy.get_actions_ask()
+                self.event_manager.post_event(
+                    "actions_execution_on_bitclude_requested", actions
+                )
 
             if orderbook_event.side == "bid":
                 logger.debug("bid orderbook changed")
