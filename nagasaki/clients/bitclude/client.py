@@ -71,8 +71,8 @@ class BitcludeClient:
                 print("DRY_RUN: ", end="")
             if rounded_amount_in_btc == 0:
                 print(
-                    f"attempted_order_{order_type}_rate={rate:.0f}",
-                    f"attempted_order_{order_type}_amount={amount_in_btc:.8f}",
+                    f"too_small_order_amount_{order_type}_rate={rate:.0f}",
+                    f"too_small_order_amount_{order_type}_amount={amount_in_btc:.8f}",
                 )
                 return False
             print(

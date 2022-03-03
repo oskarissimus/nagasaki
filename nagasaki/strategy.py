@@ -32,7 +32,6 @@ class BitcludeEpsilonStrategy(Strategy):
         self.state = state
 
     def get_actions_bid(self) -> List[Action]:
-        logger.info("CIPSKO")
         self.state.usd_pln = get_price_usd_pln()
         price = self.state.get_top_bid() + self.EPSILON
         amount = self.state.bitclude_account_info.balances["PLN"].active / price
@@ -75,8 +74,6 @@ class BitcludeEpsilonStrategy(Strategy):
         )
         if self.asking_is_profitable():
             if own_ask is None:
-                if btc_balance < 0.0001:
-                    return [action_noop]
                 return [action_ask_over]
             else:
                 return [action_cancel_ask, action_ask_over]
