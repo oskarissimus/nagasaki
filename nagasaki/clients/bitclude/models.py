@@ -1,6 +1,6 @@
 import datetime
 from decimal import Decimal
-from typing import Dict, List
+from typing import Dict, List, Union
 from pydantic import BaseModel, validator
 
 from nagasaki.enums.common import (
@@ -83,16 +83,19 @@ class Offer(BaseModel):
         return v.upper()
 
 
+# from pydantic import BaseModel
+# from typing import List, Dict, Union
+# bitclude_market_order_sell_dict = {
+#     "success": True,
+#     "code": "5053",
+#     "actions": {"sell": [], "order": "9400577"},
+#     "message": "Order has been submited",
+# }
+
+
 class ActionSellActionsResponseDTO(BaseModel):
     sell: List[str]
     order: str
-
-
-class ActionSellResponseDTO(BaseModel):
-    success: bool
-    code: str
-    actions: ActionSellActionsResponseDTO
-    message: str
 
 
 class ActionBuyActionsResponseDTO(BaseModel):
@@ -100,8 +103,16 @@ class ActionBuyActionsResponseDTO(BaseModel):
     order: str
 
 
-class ActionBuyResponseDTO(BaseModel):
+class ActionResponseDTO(BaseModel):
     success: bool
     code: str
-    actions: ActionBuyActionsResponseDTO
+    actions: Union[ActionSellActionsResponseDTO, ActionBuyActionsResponseDTO]
     message: str
+
+
+# a = ActionResponseDTO(**bitclude_market_order_sell_dict)
+# print(a.actions.order)
+# if isinstance(a.actions, ActionSellActionsResponseDTO):
+#     print("sell")
+# else:
+#     print("buy")
