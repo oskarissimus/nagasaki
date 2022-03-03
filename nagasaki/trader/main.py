@@ -24,12 +24,15 @@ if __name__ == "__main__":
     bitclude_client_url_base: str = os.getenv("BITCLUDE_URL_BASE")
     bitclude_client_id: str = os.getenv("BITCLUDE_ID")
     bitclude_client_key: str = os.getenv("BITCLUDE_KEY")
-    bitclude_client = BitcludeClient(
-        bitclude_client_url_base, bitclude_client_id, bitclude_client_key
-    )
+
     event_manager = EventManager()
     bitclude_websocket_client = BitcludeWebsocketClient(event_manager)
-
+    bitclude_client = BitcludeClient(
+        bitclude_client_url_base,
+        bitclude_client_id,
+        bitclude_client_key,
+        event_manager=event_manager,
+    )
     deribit_client_url_base: str = os.getenv("DERIBIT_URL_BASE")
     deribit_client_id: str = os.getenv("DERIBIT_CLIENT_ID")
     deribit_client_secret: str = os.getenv("DERIBIT_CLIENT_SECRET")

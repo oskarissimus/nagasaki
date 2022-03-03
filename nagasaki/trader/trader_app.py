@@ -54,6 +54,12 @@ class TraderApp:
             self.bitclude_client.execute_actions_list,
         )
 
+    def attach_state_handlers_to_events(self):
+        self.event_manager.subscribe(
+            "created_order",
+            self.state.set_own_order,
+        )
+
     def attach_jobs_to_scheduler(self):
         # self.scheduler.add_job(tick, "interval", seconds=3)
         self.scheduler.add_job(
@@ -70,12 +76,12 @@ class TraderApp:
 
     def get_btc_mark_usd_from_deribit_and_write_to_state(self):
         self.state.btc_mark_usd = self.deribit_client.fetch_index_price_btc_usd()
-        # print(f"{self.state.btc_mark_usd=}")
+        # logger.info(f"{self.state.btc_mark_usd=}")
 
     def get_usd_mark_pln_from_trejdoo_and_write_to_state(self):
         usd_pln = get_price_usd_pln()
         self.state.usd_pln = usd_pln
-        print(f"USD_PLN{self.state.usd_pln:.2f}")
+        logger.info(f"USD_PLN{self.state.usd_pln:.2f}")
 
     def get_usd_mark_pln_from_coinbase_and_write_to_state(self):
         self.state.usd_pln = Decimal(1) / (

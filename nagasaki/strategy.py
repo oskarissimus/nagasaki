@@ -73,24 +73,37 @@ class BitcludeEpsilonStrategy(Strategy):
             ),
         )
         if self.asking_is_profitable():
+            if btc_balance < 0.0001:
+                return [action_noop]
+            # fmt: off
             if own_ask is None:
+                self.state.bitclude_account_info.balances["BTC"].active -= action_ask_over.order.amount 
+                self.state.own_ask = action_ask_over.order
                 return [action_ask_over]
             else:
+                self.state.own_ask = None
+                self.state.bitclude_account_info.balances["BTC"].active += action_cancel_ask.order.amount
+                self.state.own_ask = action_ask_over.order
+                self.state.bitclude_account_info.balances["BTC"].active -= action_ask_over.order.amount
+                self.state.own_ask = action_ask_over.order
                 return [action_cancel_ask, action_ask_over]
         else:
             if own_ask is None:
                 return [action_noop]
             else:
+                self.state.own_ask = None
+                self.state.bitclude_account_info.balances["BTC"].active += action_cancel_ask.order.amount
                 return [action_cancel_ask]
+                # fmt: on
 
     def bidding_is_profitable(self) -> bool:
-        print("Executing strategy")
-        print(f"{self.state.usd_pln=}")
+        logger.info("Executing strategy")
+        logger.info(f"{self.state.usd_pln=}")
         MARK = self.state.btc_mark_usd * self.state.usd_pln
         TOP_BID = self.state.get_top_bid()
         logger.info(f"{(MARK - (TOP_BID + self.EPSILON)) / MARK=}")
         bidding_profitability = (MARK - (TOP_BID + self.EPSILON)) / MARK
-        print(f"BID PROFITABILITY: {bidding_profitability:.5f}")
+        logger.info(f"BID PROFITABILITY: {bidding_profitability:.5f}")
 
         return (MARK - (TOP_BID + self.EPSILON)) / MARK > self.BID_TRIGGER
 
@@ -98,9 +111,9 @@ class BitcludeEpsilonStrategy(Strategy):
         MARK = self.state.btc_mark_usd * self.state.usd_pln
         TOP_ASK = self.state.get_top_ask()
         ask_profitability = (TOP_ASK - MARK - self.EPSILON) / MARK
-        print(f"ASK PROFITABILITY:  {ask_profitability:.5f}")
+        logger.info(f"ASK PROFITABILITY:  {ask_profitability:.5f}")
         return ask_profitability > self.ASK_TRIGGER
 
     def print_state(self):
         pass
-        # print(self.state.bid_orderbook, self.state.ask_orderbook)
+        # logger.info(self.state.bid_orderbook, self.state.ask_orderbook)

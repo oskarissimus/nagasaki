@@ -5,6 +5,7 @@ import time
 import websocket
 from nagasaki.event_manager import EventManager
 from nagasaki.models.bitclude import BitcludeEventOrderbook
+from nagasaki.logger import logger
 
 
 class BitcludeWebsocketClient:
@@ -21,23 +22,21 @@ class BitcludeWebsocketClient:
     def on_message(self, ws, message):
         message_json = json.loads(message)
 
-        print(".", end="")
-
         if message_json["action"] == "orderbook":
-            # print(message_json)
+            # logger.info(message_json)
             orderbook_event = BitcludeEventOrderbook(**message_json)
             self.event_manager.post_event("orderbook_changed", orderbook_event)
 
     def on_error(self, ws, error):
-        print(error)
+        logger.info(error)
 
     def on_close(self, ws, close_status_code, close_msg):
-        print("### closed ###")
+        logger.info("### closed ###")
 
     def on_open(self, ws: websocket.WebSocketApp):
         def run(*args):
             time.sleep(360)
             self.ws.close()
-            print("thread terminating...")
+            logger.info("thread terminating...")
 
             _thread.start_new_thread(run, ())

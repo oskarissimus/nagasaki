@@ -33,7 +33,7 @@ class StrategyExecutor:
                     if orderbook_event.price in s.ask_orderbook:
                         s.ask_orderbook.remove(orderbook_event.price)
                     else:
-                        print(f"{orderbook_event.price} is not in orderbook")
+                        logger.info(f"{orderbook_event.price} is not in orderbook")
                 actions = self.strategy.get_actions_ask()
                 self.event_manager.post_event(
                     "actions_execution_on_bitclude_requested", actions
@@ -47,7 +47,7 @@ class StrategyExecutor:
                     if orderbook_event.price in s.bid_orderbook:
                         s.bid_orderbook.remove(orderbook_event.price)
                     else:
-                        print(f"{orderbook_event.price} is not in orderbook")
+                        logger.info(f"{orderbook_event.price} is not in orderbook")
                 actions = self.strategy.get_actions_bid()
                 self.event_manager.post_event(
                     "actions_execution_on_bitclude_requested", actions

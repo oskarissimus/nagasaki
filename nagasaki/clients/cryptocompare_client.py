@@ -32,13 +32,13 @@ class CryptocompareClient:
         try:
             response_json = response.json()
         except json.decoder.JSONDecodeError:
-            print(response.text)
+            logger.info(response.text)
             raise CannotParseResponse()
-        # print(response)
+        # logger.info(response)
         return response_json
 
     def calculate_mean_of_mids_from_last_20_minutes(self, data):
-        # print(data)
+        # logger.info(data)
         if "Data" not in data:
             raise CryptocompareClientException(f"No data in response")
 

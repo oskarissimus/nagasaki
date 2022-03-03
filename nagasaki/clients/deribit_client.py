@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
-
+from nagasaki.logger import logger
 import requests
 from pydantic import BaseModel
 
@@ -96,8 +96,10 @@ class DeribitClient:
         if order_type in ("buy", "sell"):
             rounded_amount_in_usd = round(amount_in_usd, -1)
             if dry_run:
-                print("DRY RUN: ", end="")
-            print(f"{order_type} at market BTC-PERPETUAL {rounded_amount_in_usd} USD")
+                logger.info("DRY RUN: ")
+            logger.info(
+                f"{order_type} at market BTC-PERPETUAL {rounded_amount_in_usd} USD"
+            )
             if dry_run:
                 return True
 

@@ -5,7 +5,13 @@ from pydantic import BaseModel
 
 from nagasaki.enums.common import SideTypeEnum
 from nagasaki.models.bitclude import BitcludeOrder
-from nagasaki.clients.bitclude.models import AccountInfo, AccountHistory, Offer
+from nagasaki.clients.bitclude.models import (
+    AccountInfo,
+    AccountHistory,
+    ActionResponseDTO,
+    ActionSellActionsResponseDTO,
+    Offer,
+)
 
 
 class State:
@@ -19,6 +25,12 @@ class State:
     btc_mark_usd: Decimal = None
     usd_pln: Decimal = None
     bitclude_active_offers: List[Offer] = None
+
+    def set_own_order(self, created_offer: Offer):
+        if created_offer.offertype == "bid":
+            self.own_bid = created_offer
+        if created_offer.offertype == "ask":
+            self.own_ask = created_offer
 
     def get_own_bid_max(self) -> BitcludeOrder:
         if len(self.bitclude_active_offers) >= 1:
