@@ -93,3 +93,15 @@ class ActionSellResponseDTO(BaseModel):
     code: str
     actions: ActionSellActionsResponseDTO
     message: str
+
+
+class ActionBuyActionsResponseDTO(BaseModel):
+    buy: List[str]
+    order: str
+
+
+class ActionBuyResponseDTO(BaseModel):
+    success: bool
+    code: str
+    actions: ActionBuyActionsResponseDTO
+    message: str
