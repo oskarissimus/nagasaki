@@ -43,10 +43,10 @@ class BitcludeEpsilonStrategy(Strategy):
         own_bid = self.state.get_own_bid_max()
         action_cancel = Action(action_type=ActionTypeEnum.CANCEL, order=own_bid)
         action_noop = Action(action_type=ActionTypeEnum.NOOP)
-        if amount < Decimal("10"):
-            return [action_noop]
         if self.bidding_is_profitable():
             if own_bid is None:
+                if amount < Decimal("10"):
+                    return [action_noop]
                 return [action_bid_over]
             else:
                 return [action_cancel, action_bid_over]
@@ -73,10 +73,10 @@ class BitcludeEpsilonStrategy(Strategy):
                 amount=Decimal(btc_balance),
             ),
         )
-        if btc_balance < 0.0001:
-            return [action_noop]
         if self.asking_is_profitable():
             if own_ask is None:
+                if btc_balance < 0.0001:
+                    return [action_noop]
                 return [action_ask_over]
             else:
                 return [action_cancel_ask, action_ask_over]

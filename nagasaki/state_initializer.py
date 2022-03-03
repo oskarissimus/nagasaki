@@ -31,4 +31,5 @@ class StateInitializer:
         self.state.bid_orderbook.append(ticker.bid)
         logger.info(self.state.ask_orderbook)
         logger.info(self.state.bid_orderbook)
+        logger.info(self.state.btc_mark_usd)
         logger.info("initialized")
