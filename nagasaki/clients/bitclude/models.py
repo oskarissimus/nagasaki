@@ -81,3 +81,15 @@ class Offer(BaseModel):
     # pylint: disable=no-self-argument,no-self-use
     def convert_to_uppercase(cls, v):
         return v.upper()
+
+
+class ActionSellActionsResponseDTO(BaseModel):
+    sell: List[str]
+    order: str
+
+
+class ActionSellResponseDTO(BaseModel):
+    success: bool
+    code: str
+    actions: ActionSellActionsResponseDTO
+    message: str
