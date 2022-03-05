@@ -1,8 +1,8 @@
 from decimal import Decimal
+import requests
 
 
 def get_price_usd_pln() -> Decimal:
-    import requests
 
     endpoint = "http://uat.api.manhattan.trejdoo.com/v1/lmax"
     r = requests.get(endpoint)
