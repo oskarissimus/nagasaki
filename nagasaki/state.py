@@ -5,11 +5,9 @@ from pydantic import BaseModel
 
 from nagasaki.enums.common import SideTypeEnum
 from nagasaki.models.bitclude import BitcludeOrder
-from nagasaki.clients.bitclude.models import (
+from nagasaki.clients.bitclude.dto import (
     AccountInfo,
     AccountHistory,
-    ActionResponseDTO,
-    ActionSellActionsResponseDTO,
     Offer,
 )
 

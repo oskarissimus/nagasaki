@@ -20,3 +20,13 @@ class SideTypeEnum(str, Enum):
 class OfferCurrencyEnum(str, Enum):
     btc = "btc"
     pln = "pln"
+
+
+class ActionEnum(str, Enum):
+    SELL = "SELL"
+    BUY = "BUY"
+
+
+class MarketEnum(str, Enum):
+    BTC = "BTC"
+    PLN = "PLN"

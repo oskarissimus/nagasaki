@@ -1,13 +1,16 @@
-import logging
+import sys
+from loguru import logger
 
-sh = logging.StreamHandler()
-sh.setLevel(logging.INFO)
-# format: %H:%M:%S file_name:line_number message
-sh.setFormatter(
-    logging.Formatter(
-        "%(asctime)s.%(msecs)03d %(filename)s:%(lineno)d %(message)s", "%H:%M:%S"
-    )
+logger.remove()
+logger.add(
+    sys.stdout,
+    colorize=True,
+    format="{time:HH:mm:ss.SSS} <green>{name}</green>:{line} <level>{message}</level>",
+    filter={"nagasaki.clients": "INFO"},
 )
-logger = logging.getLogger("nagasaki")
-logger.addHandler(sh)
-logger.setLevel(logging.INFO)
+logger.add(
+    sys.stdout,
+    colorize=True,
+    format="{time:HH:mm:ss.SSS} {name}:{line} <level>{message}</level>",
+    filter={"": "INFO", "nagasaki.clients": False},
+)

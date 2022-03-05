@@ -4,7 +4,7 @@ from warnings import filterwarnings
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz_deprecation_shim import PytzUsageWarning
 
-from nagasaki.clients.bitclude.client import BitcludeClient
+from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
 from nagasaki.clients.coinbase_client import CoinbaseClient
 from nagasaki.clients.cryptocompare_client import CryptocompareClient
