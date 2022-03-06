@@ -23,4 +23,7 @@ Flow rzeczy
 * Pobieranie kursu z bitclude na Websocketach Realtime -> Triggeruje ASK/BID 
 * Refleksja na temat uzywania LMAX vs cos innego 
 
+# yahoo finance api
+wget https://www.yahoofinanceapi.com/yahoo-finance-api-specification.json
 
+datamodel-codegen --input example/finance_quote.json --input-file-type json --output model.py

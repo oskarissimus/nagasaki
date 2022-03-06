@@ -4,11 +4,14 @@ from warnings import filterwarnings
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz_deprecation_shim import PytzUsageWarning
 
+# from nagasaki.clients.trejdoo_client import TrejdooClient
+
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
 from nagasaki.clients.coinbase_client import CoinbaseClient
 from nagasaki.clients.cryptocompare_client import CryptocompareClient
 from nagasaki.clients.deribit_client import DeribitClient
+from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.state import State
@@ -43,10 +46,15 @@ if __name__ == "__main__":
     coinbase_client = CoinbaseClient()
     state = State()
 
+    # usd_pln_quoting_client = TrejdooClient()
+    yahoo_finance_api_key: str = os.getenv("YAHOO_FINANCE_API_KEY")
+    usd_pln_quoting_client = YahooFinanceClient(yahoo_finance_api_key)
+
     state_initializer = StateInitializer(
         bitclude_client,
         deribit_client,
         coinbase_client,
+        usd_pln_quoting_client,
         state,
     )
 
@@ -61,13 +69,6 @@ if __name__ == "__main__":
 
     cryptocompare_client = CryptocompareClient()
 
-    state_initializer = StateInitializer(
-        bitclude_client,
-        deribit_client,
-        coinbase_client,
-        state,
-    )
-
     app = TraderApp(
         bitclude_client=bitclude_client,
         bitclude_websocket_client=bitclude_websocket_client,
@@ -80,6 +81,7 @@ if __name__ == "__main__":
         strategy_executor=strategy_executor,
         state_initializer=state_initializer,
         coinbase_client=coinbase_client,
+        usd_pln_quoting_client=usd_pln_quoting_client,
     )
 
     app.run()

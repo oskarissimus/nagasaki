@@ -1,20 +1,23 @@
 from decimal import Decimal
+
 from apscheduler.schedulers.background import BackgroundScheduler
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
 from nagasaki.clients.coinbase_client import CoinbaseClient
 from nagasaki.clients.cryptocompare_client import CryptocompareClient
 from nagasaki.clients.deribit_client import DeribitClient
+from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 from nagasaki.event_manager import EventManager
+from nagasaki.logger import logger
 from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.strategy import Strategy
 from nagasaki.strategy_executor import StrategyExecutor
-from nagasaki.logger import logger
-from nagasaki.clients.trejdoo_client import get_price_usd_pln  # function to get USD_PLN
 
 
+# pylint: disable=too-many-instance-attributes
 class TraderApp:
+    # pylint: disable=too-many-arguments
     def __init__(
         self,
         bitclude_client: BitcludeClient,
@@ -28,6 +31,7 @@ class TraderApp:
         strategy_executor: StrategyExecutor,
         state_initializer: StateInitializer,
         coinbase_client: CoinbaseClient,
+        usd_pln_quoting_client: UsdPlnQuotingBaseClient,
     ):
         self.bitclude_client = bitclude_client
         self.bitclude_websocket_client = bitclude_websocket_client
@@ -40,6 +44,7 @@ class TraderApp:
         self.strategy_executor = strategy_executor
         self.state_initializer = state_initializer
         self.coinbase_client = coinbase_client
+        self.usd_pln_quoting_client = usd_pln_quoting_client
 
     def attach_strategy_handlers_to_events(self):
         logger.info("attach_strategy_handlers_to_events")
@@ -79,7 +84,7 @@ class TraderApp:
         # logger.info(f"{self.state.btc_mark_usd=}")
 
     def get_usd_mark_pln_from_trejdoo_and_write_to_state(self):
-        usd_pln = get_price_usd_pln()
+        usd_pln = self.usd_pln_quoting_client.fetch_usd_pln_quote()
         self.state.usd_pln = usd_pln
         logger.info(f"USD_PLN{self.state.usd_pln:.2f}")
 

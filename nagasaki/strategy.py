@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from decimal import Decimal
 from typing import List
-from nagasaki.clients.trejdoo_client import get_price_usd_pln
 
 from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.logger import logger
@@ -32,7 +31,6 @@ class BitcludeEpsilonStrategy(Strategy):
         self.state = state
 
     def get_actions_bid(self) -> List[Action]:
-        self.state.usd_pln = get_price_usd_pln()
         price = self.state.get_top_bid() + self.EPSILON
         amount = self.state.bitclude_account_info.balances["PLN"].active / price
         action_bid_over = Action(
@@ -56,7 +54,6 @@ class BitcludeEpsilonStrategy(Strategy):
                 return [action_cancel]
 
     def get_actions_ask(self):
-        self.state.usd_pln = get_price_usd_pln()
         btc_balance = self.state.bitclude_account_info.balances["BTC"].active
         top_ask = self.state.get_top_ask()
         own_ask = self.state.get_own_ask_min()
