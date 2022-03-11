@@ -1,34 +1,226 @@
 <mxfile host="65bd71144e">
     <diagram id="_p4Ns6gV86TjCFkK0jQs" name="Page-1">
-        <mxGraphModel dx="1807" dy="798" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+        <mxGraphModel dx="3340" dy="1038" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
-                <mxCell id="7" style="edgeStyle=none;html=1;" parent="1" source="3" target="11" edge="1">
+                <mxCell id="15" value="startup path" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=32;" vertex="1" parent="1">
+                    <mxGeometry x="-725" y="40" width="230" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="23" style="edgeStyle=none;html=1;fontSize=32;" edge="1" parent="1" source="16" target="17">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="16" value="dotenv run python -u main.py" style="rounded=0;whiteSpace=wrap;html=1;fontSize=32;" vertex="1" parent="1">
+                    <mxGeometry x="-820" y="170" width="440" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" style="edgeStyle=none;html=1;fontSize=32;" edge="1" parent="1" source="17" target="18">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="17" value="main.py" style="rounded=0;whiteSpace=wrap;html=1;fontSize=32;" vertex="1" parent="1">
+                    <mxGeometry x="-750" y="290" width="290" height="130" as="geometry"/>
+                </mxCell>
+                <mxCell id="22" style="edgeStyle=none;html=1;fontSize=32;" edge="1" parent="1" source="18" target="19">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="18" value="get secrets from env vars" style="rounded=0;whiteSpace=wrap;html=1;fontSize=32;" vertex="1" parent="1">
+                    <mxGeometry x="-715" y="530" width="220" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="20" style="edgeStyle=none;html=1;fontSize=32;" edge="1" parent="1" source="19" target="24">
                     <mxGeometry relative="1" as="geometry">
-                        <mxPoint x="560" y="310" as="targetPoint"/>
+                        <mxPoint x="-40" y="770" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="3" value="BitcludeWebsocketClient" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="60" y="280" width="190" height="60" as="geometry"/>
+                <mxCell id="19" value="build objects" style="rounded=0;whiteSpace=wrap;html=1;fontSize=32;" vertex="1" parent="1">
+                    <mxGeometry x="-720" y="700" width="230" height="120" as="geometry"/>
                 </mxCell>
-                <mxCell id="6" value="event &quot;orderbook&quot;" style="edgeStyle=none;html=1;" parent="1" source="5" target="3" edge="1">
+                <mxCell id="26" style="edgeStyle=none;html=1;fontSize=32;" edge="1" parent="1" source="24" target="25">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="5" value="Bitclude" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="-250" y="280" width="120" height="60" as="geometry"/>
+                <mxCell id="24" value="TraderApp" style="rounded=0;whiteSpace=wrap;html=1;fontSize=32;" vertex="1" parent="1">
+                    <mxGeometry x="-730" y="910" width="250" height="120" as="geometry"/>
                 </mxCell>
-                <mxCell id="14" style="edgeStyle=none;html=1;" edge="1" parent="1" source="11" target="13">
+                <mxCell id="28" value="" style="edgeStyle=none;html=1;fontSize=32;" edge="1" parent="1" source="25" target="27">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="11" value="StrategyExecutor" style="rounded=0;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-                    <mxGeometry x="390" y="240" width="280" height="140" as="geometry"/>
+                <mxCell id="25" value="Attach handlers" style="rounded=0;whiteSpace=wrap;html=1;fontSize=32;" vertex="1" parent="1">
+                    <mxGeometry x="-770" y="1120" width="340" height="160" as="geometry"/>
                 </mxCell>
-                <mxCell id="12" value="Strategy" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="550" y="320" width="120" height="60" as="geometry"/>
+                <mxCell id="27" value="attach strategy handler (strategy_executor.on_orderbook_changed) to orderbook_changed" style="whiteSpace=wrap;html=1;fontSize=32;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="-915" y="1390" width="630" height="160" as="geometry"/>
                 </mxCell>
-                <mxCell id="13" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-                    <mxGeometry x="95" y="450" width="120" height="60" as="geometry"/>
+                <mxCell id="29" value="execution path" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=32;" vertex="1" parent="1">
+                    <mxGeometry x="200" y="380" width="230" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="31" style="edgeStyle=none;html=1;fontSize=32;" edge="1" parent="1" source="30" target="32">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="310" y="400" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="30" value="Websocket client" style="rounded=0;whiteSpace=wrap;html=1;fontSize=32;" vertex="1" parent="1">
+                    <mxGeometry x="160" y="530" width="300" height="90" as="geometry"/>
+                </mxCell>
+                <mxCell id="36" value="" style="edgeStyle=none;html=1;fontSize=32;" edge="1" parent="1" source="32" target="35">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="32" value="event &quot;orderbook_changed&quot; is posted to EventManager" style="rounded=0;whiteSpace=wrap;html=1;fontSize=32;" vertex="1" parent="1">
+                    <mxGeometry x="122.5" y="770" width="385" height="110" as="geometry"/>
+                </mxCell>
+                <mxCell id="34" value="mental path" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=32;" vertex="1" parent="1">
+                    <mxGeometry x="880" y="30" width="230" height="70" as="geometry"/>
+                </mxCell>
+                <mxCell id="37" style="edgeStyle=none;html=1;fontSize=32;" edge="1" parent="1" source="35" target="39">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="310" y="970" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="35" value="EventManager triggers attached handlers" style="whiteSpace=wrap;html=1;fontSize=32;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="175" y="1060" width="270" height="135" as="geometry"/>
+                </mxCell>
+                <mxCell id="40" value="it was attached here" style="edgeStyle=none;html=1;fontSize=19;dashed=1;" edge="1" parent="1" source="39" target="27">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="42" value="" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="39" target="41">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="39" value="strategy_executor.on_orderbook_changed is triggered" style="whiteSpace=wrap;html=1;fontSize=32;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry y="1390" width="630" height="160" as="geometry"/>
+                </mxCell>
+                <mxCell id="43" value="ASK" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="41" target="45">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="129.99999999999955" y="1940" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="44" value="BID" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="41" target="46">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="509.99999999999955" y="1930" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="41" value="side" style="rhombus;whiteSpace=wrap;html=1;fontSize=32;rounded=0;" vertex="1" parent="1">
+                    <mxGeometry x="237.5" y="1660" width="155" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="49" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="45" target="48">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="45" value="get actions ask" style="rounded=0;whiteSpace=wrap;html=1;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="57.5" y="1960" width="180" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="50" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="46" target="47">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="46" value="get actions bid" style="rounded=0;whiteSpace=wrap;html=1;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="380" y="1960" width="180" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="53" value="yes" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="47">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="370" y="2440" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="54" value="no" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="47">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="690" y="2420" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="47" value="is biding profitable" style="rhombus;whiteSpace=wrap;html=1;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="470" y="2140" width="140" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="51" value="yes" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="48" target="74">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="20" y="2350" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="52" value="no" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="48" target="97">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="180" y="2370" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="48" value="is asking profitable" style="rhombus;whiteSpace=wrap;html=1;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="-10" y="2140" width="140" height="150" as="geometry"/>
+                </mxCell>
+                <mxCell id="62" value="yes" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="92" target="64">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-230" y="2660" as="targetPoint"/>
+                        <mxPoint x="-333.90700902151275" y="2853.653712699514" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="63" value="no" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="92" target="96">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-100" y="2980" as="targetPoint"/>
+                        <mxPoint x="-248.79518072289193" y="2856.5060240963853" as="sourcePoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="65" value="yes" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="64" target="67">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-460" y="2920" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="66" value="no" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="64" target="88">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-360" y="3130" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="64" value="does offer in internal state has acceptable rate" style="rhombus;whiteSpace=wrap;html=1;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="-570" y="2910" width="190" height="200" as="geometry"/>
+                </mxCell>
+                <mxCell id="68" value="yes" style="edgeStyle=none;html=1;fontSize=19;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="67" target="70">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-700" y="3160" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="69" value="no" style="edgeStyle=none;html=1;fontSize=19;" edge="1" parent="1" source="67" target="72">
+                    <mxGeometry relative="1" as="geometry">
+                        <mxPoint x="-527.4220374220376" y="3295.0831600831602" as="targetPoint"/>
+                    </mxGeometry>
+                </mxCell>
+                <mxCell id="67" value="does offer in internal have acceptable amount" style="rhombus;whiteSpace=wrap;html=1;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="-730" y="3080" width="180" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="70" value="NOOP" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="-900" y="3310" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="72" value="cancel offer" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="-550" y="3300" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="95" style="edgeStyle=none;html=1;fontSize=28;" edge="1" parent="1" source="74" target="84">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="74" value="create desirable offer&lt;br&gt;- rate&lt;br&gt;- amount&lt;br&gt;- acceptable_rate_range&lt;br&gt;- acceptable_amount_range" style="rounded=0;whiteSpace=wrap;html=1;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="-310" y="2340" width="260" height="140" as="geometry"/>
+                </mxCell>
+                <mxCell id="76" value="offer you wish you have on market" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="-460" y="2290" width="300" height="30" as="geometry"/>
+                </mxCell>
+                <mxCell id="82" value="fetching" style="edgeStyle=none;html=1;fontSize=28;" edge="1" parent="1" source="80" target="81">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="80" value="external state&lt;br&gt;- bitclude" style="rounded=0;whiteSpace=wrap;html=1;fontSize=28;fillColor=#008a00;fontColor=#ffffff;strokeColor=#005700;verticalAlign=top;align=left;" vertex="1" parent="1">
+                    <mxGeometry x="-1000" y="1780" width="270" height="260" as="geometry"/>
+                </mxCell>
+                <mxCell id="81" value="internal state&lt;br&gt;- bitclude" style="rounded=0;whiteSpace=wrap;html=1;fontSize=28;fillColor=#0050ef;fontColor=#ffffff;strokeColor=#001DBC;verticalAlign=top;align=left;" vertex="1" parent="1">
+                    <mxGeometry x="-400" y="1780" width="270" height="260" as="geometry"/>
+                </mxCell>
+                <mxCell id="93" style="edgeStyle=none;html=1;fontSize=28;" edge="1" parent="1" source="84" target="87">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="94" style="edgeStyle=none;html=1;fontSize=28;" edge="1" parent="1" source="84" target="92">
+                    <mxGeometry relative="1" as="geometry"/>
+                </mxCell>
+                <mxCell id="84" value="len(offers) &amp;gt;= 2" style="rhombus;whiteSpace=wrap;html=1;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="-510" y="2510" width="180" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="87" value="cancel all ask offers" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=28;" vertex="1" parent="1">
+                    <mxGeometry x="-715" y="2730" width="180" height="100" as="geometry"/>
+                </mxCell>
+                <mxCell id="88" value="cancel offer" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="-390" y="3130" width="120" height="60" as="geometry"/>
+                </mxCell>
+                <mxCell id="92" value="len(offers) == 1" style="rhombus;whiteSpace=wrap;html=1;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="-340" y="2710" width="180" height="190" as="geometry"/>
+                </mxCell>
+                <mxCell id="96" value="create desirable offer" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=19;" vertex="1" parent="1">
+                    <mxGeometry x="-160" y="2950" width="170" height="80" as="geometry"/>
+                </mxCell>
+                <mxCell id="97" value="cancel all ask offers" style="shape=parallelogram;perimeter=parallelogramPerimeter;whiteSpace=wrap;html=1;fixedSize=1;fontSize=28;" vertex="1" parent="1">
+                    <mxGeometry x="90" y="2330" width="180" height="100" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>
