@@ -100,7 +100,7 @@ class BitcludeClient:
         raise BitcludeClientException(response_json["message"])
 
     def create_order(self, order: CreateRequestDTO) -> CreateResponseDTO:
-        logger.info(order)
+        logger.info(f"creating {order}")
         order_params = order.get_request_params()
         auth_params = self._get_auth_params()
         params = {**order_params, **auth_params}

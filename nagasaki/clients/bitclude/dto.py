@@ -128,7 +128,7 @@ class CreateRequestDTO(BaseModel):
     def __str__(self):
         return (
             f"{self.action.value} {self.market1.value}/{self.market2.value}, "
-            f"amount: {self.amount:.10f}, rate: {self.rate:.0f}, "
+            f"amount: {self.amount:.10f}, rate: {self.rate:.2f}, "
             f"post_only: {self.post_only}, hidden: {self.hidden}"
         )
 
