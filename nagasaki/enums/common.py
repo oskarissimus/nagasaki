@@ -10,6 +10,7 @@ class ActionTypeEnum(str, Enum):
     CREATE = "CREATE"
     CANCEL = "CANCEL"
     NOOP = "NOOP"
+    CANCEL_AND_WAIT = "CANCEL_AND_WAIT"
 
 
 class SideTypeEnum(str, Enum):

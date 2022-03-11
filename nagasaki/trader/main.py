@@ -16,6 +16,7 @@ from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
+from nagasaki.state_synchronizer import StateSynchronizer
 from nagasaki.strategy import BitcludeEpsilonStrategy
 from nagasaki.strategy_executor import StrategyExecutor
 from nagasaki.trader.trader_app import TraderApp
@@ -58,6 +59,8 @@ if __name__ == "__main__":
         state,
     )
 
+    state_synchronizer = StateSynchronizer(state, bitclude_client)
+
     strategy = BitcludeEpsilonStrategy(state=state)
     strategy_executor = StrategyExecutor(
         strategy=strategy,
@@ -82,6 +85,7 @@ if __name__ == "__main__":
         state_initializer=state_initializer,
         coinbase_client=coinbase_client,
         usd_pln_quoting_client=usd_pln_quoting_client,
+        state_synchronizer=state_synchronizer,
     )
 
     app.run()

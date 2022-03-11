@@ -29,6 +29,7 @@ class BitcludeWebsocketClient:
 
     def on_error(self, ws, error):
         logger.info(error)
+        logger.exception(error)
 
     def on_close(self, ws, close_status_code, close_msg):
         logger.info("### closed ###")

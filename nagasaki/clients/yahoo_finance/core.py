@@ -3,6 +3,11 @@ import requests
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 from nagasaki.clients.yahoo_finance.dto import Model
 
+
+class YahooFinanceClientException(Exception):
+    pass
+
+
 # pylint: disable=too-few-public-methods
 class YahooFinanceClient(UsdPlnQuotingBaseClient):
     def __init__(self, api_key: str):
@@ -19,7 +24,11 @@ class YahooFinanceClient(UsdPlnQuotingBaseClient):
             params=params,
         )
 
-        return Model(**response.json())
+        if response.status_code == 200:
+            return Model(**response.json())
+        raise YahooFinanceClientException(
+            f"Error fetching quote: {response.status_code}"
+        )
 
     def fetch_usd_pln_quote(self) -> Decimal:
         finance_quote = self._fetch_finance_quote()

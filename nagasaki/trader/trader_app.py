@@ -11,6 +11,7 @@ from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
+from nagasaki.state_synchronizer import StateSynchronizer
 from nagasaki.strategy import Strategy
 from nagasaki.strategy_executor import StrategyExecutor
 
@@ -32,6 +33,7 @@ class TraderApp:
         state_initializer: StateInitializer,
         coinbase_client: CoinbaseClient,
         usd_pln_quoting_client: UsdPlnQuotingBaseClient,
+        state_synchronizer: StateSynchronizer,
     ):
         self.bitclude_client = bitclude_client
         self.bitclude_websocket_client = bitclude_websocket_client
@@ -45,6 +47,12 @@ class TraderApp:
         self.state_initializer = state_initializer
         self.coinbase_client = coinbase_client
         self.usd_pln_quoting_client = usd_pln_quoting_client
+        self.state_synchronizer = state_synchronizer
+
+    def attach_state_synchronizer_handlers_to_events(self):
+        self.event_manager.subscribe(
+            "synchronize_bitclude_state", self.state_synchronizer.synchronize_state
+        )
 
     def attach_strategy_handlers_to_events(self):
         logger.info("attach_strategy_handlers_to_events")
@@ -73,9 +81,9 @@ class TraderApp:
             seconds=10,
         )
         self.scheduler.add_job(
-            self.get_usd_mark_pln_from_trejdoo_and_write_to_state,
+            self.fetch_usd_pln_and_write_to_state,
             "interval",
-            seconds=10,
+            minutes=20,
         )
         # TODO post event orderbook_changed
 
@@ -83,7 +91,7 @@ class TraderApp:
         self.state.btc_mark_usd = self.deribit_client.fetch_index_price_btc_usd()
         # logger.info(f"{self.state.btc_mark_usd=}")
 
-    def get_usd_mark_pln_from_trejdoo_and_write_to_state(self):
+    def fetch_usd_pln_and_write_to_state(self):
         usd_pln = self.usd_pln_quoting_client.fetch_usd_pln_quote()
         self.state.usd_pln = usd_pln
         logger.info(f"USD_PLN{self.state.usd_pln:.2f}")
@@ -98,6 +106,7 @@ class TraderApp:
         self.attach_strategy_handlers_to_events()
         self.attach_bitclude_handlers_to_events()
         self.attach_jobs_to_scheduler()
+        self.attach_state_synchronizer_handlers_to_events()
 
         try:
             self.scheduler.start()

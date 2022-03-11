@@ -85,6 +85,14 @@ class Offer(BaseModel):
     def convert_to_uppercase(cls, v):
         return v.upper()
 
+    def to_bitclude_order(self) -> BitcludeOrder:
+        return BitcludeOrder(
+            amount=self.amount,
+            price=self.price,
+            side=self.offertype,
+            order_id=self.nr,
+        )
+
 
 class CreateRequestDTO(BaseModel):
     action: ActionEnum
@@ -103,8 +111,8 @@ class CreateRequestDTO(BaseModel):
             "market2": self.market2.value.lower(),
             "amount": str(self.amount),
             "rate": str(self.rate),
-            "post_only": str(self.post_only),
-            "hidden": str(self.hidden),
+            "post_only": int(self.post_only),
+            "hidden": int(self.hidden),
         }
 
     @validator("amount")

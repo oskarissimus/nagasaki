@@ -12,10 +12,24 @@ from nagasaki.clients.bitclude.dto import (
 )
 
 
+class Orderbook(list):
+    def __str__(self) -> str:
+        ret = ""
+        for offer in self:
+            ret += f"{offer} "
+        return ret
+
+    def __repr__(self) -> str:
+        ret = ""
+        for offer in self:
+            ret += f"{offer} "
+        return ret
+
+
 class State:
 
-    ask_orderbook = []
-    bid_orderbook = []
+    ask_orderbook = Orderbook()
+    bid_orderbook = Orderbook()
 
     # TODO: Seed state with current ticker.
 
@@ -69,8 +83,8 @@ class State:
         return min(self.ask_orderbook)
 
     def clear(self):
-        self.ask_orderbook = []
-        self.bid_orderbook = []
+        self.ask_orderbook = Orderbook()
+        self.bid_orderbook = Orderbook()
         self.own_ask = None
         self.own_bid = None
         self.bitclude_account_info = None

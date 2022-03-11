@@ -1,4 +1,6 @@
 import json
+from multiprocessing.connection import wait
+from time import sleep
 from typing import List
 
 import requests
@@ -111,7 +113,7 @@ class BitcludeClient:
         raise BitcludeClientException(response.text)
 
     def cancel_order(self, order: CancelRequestDTO) -> CancelResponseDTO:
-        logger.info(order)
+        logger.info(f"cancelling {order}")
         order_params = order.get_request_params()
         auth_params = self._get_auth_params()
         params = {**order_params, **auth_params}
@@ -134,6 +136,21 @@ class BitcludeClient:
                 CancelRequestDTO.from_bitclude_order(action.order)
             )
 
+        if action.action_type == ActionTypeEnum.CANCEL_AND_WAIT:
+            response = self.cancel_order(
+                CancelRequestDTO.from_bitclude_order(action.order)
+            )
+            self.wait_for_offer_cancellation(action.order.order_id)
+
     def execute_actions_list(self, actions: List[Action]):
         for action in actions:
             self.execute_action(action)
+
+    def wait_for_offer_cancellation(self, offer_id: int):
+        while True:
+            logger.info("waiting for offer cancellation")
+            offers = self.fetch_active_offers()
+            offer_numbers = [o.nr for o in offers]
+            if offer_id not in offer_numbers:
+                return True
+            sleep(1)
