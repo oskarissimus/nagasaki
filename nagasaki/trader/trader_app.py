@@ -59,7 +59,10 @@ class TraderApp:
         self.event_manager.subscribe(
             "orderbook_changed", self.strategy_executor.on_orderbook_changed
         )
-        logger.info("attached")
+        self.event_manager.subscribe(
+            "strategy_execution_requested",
+            self.strategy_executor.on_strategy_execution_requested,
+        )
 
     def attach_bitclude_handlers_to_events(self):
         self.event_manager.subscribe(

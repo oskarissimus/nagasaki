@@ -37,13 +37,8 @@ class StrategyExecutor:
                             logger.info(f"{orderbook_event.price} is not in orderbook")
                     current_top_ask = min(s.ask_orderbook)
                     if current_top_ask < last_top_ask:
-                        # fetch wallet and active offers from api and write to state
                         self.event_manager.post_event("synchronize_bitclude_state")
-                        # execute strategy
-                        actions = self.strategy.get_actions_ask()
-                        self.event_manager.post_event(
-                            "actions_execution_on_bitclude_requested", actions
-                        )
+                        self.event_manager.post_event("strategy_execution_requested")
                 else:
                     logger.info("empty ask orderbook")
                     if orderbook_event.order_action == OrderActionEnum.CREATED:
@@ -53,24 +48,12 @@ class StrategyExecutor:
                             s.ask_orderbook.remove(orderbook_event.price)
                         else:
                             logger.info(f"{orderbook_event.price} is not in orderbook")
-                    # fetch wallet and active offers from api and write to state
                     self.event_manager.post_event("synchronize_bitclude_state")
-                    # execute strategy
-                    actions = self.strategy.get_actions_ask()
-                    self.event_manager.post_event(
-                        "actions_execution_on_bitclude_requested", actions
-                    )
+                    self.event_manager.post_event("strategy_execution_requested")
 
-            # if orderbook_event.side == "bid":
-            #     logger.debug("bid orderbook changed")
-            #     if orderbook_event.order_action == OrderActionEnum.CREATED:
-            #         s.bid_orderbook.append(orderbook_event.price)
-            #     else:
-            #         if orderbook_event.price in s.bid_orderbook:
-            #             s.bid_orderbook.remove(orderbook_event.price)
-            #         else:
-            #             logger.info(f"{orderbook_event.price} is not in orderbook")
-            #     actions = self.strategy.get_actions_bid()
-            #     self.event_manager.post_event(
-            #         "actions_execution_on_bitclude_requested", actions
-            #     )
+    def on_strategy_execution_requested(self):
+        logger.debug("strategy execution requested")
+        actions = self.strategy.get_actions_ask()
+        self.event_manager.post_event(
+            "actions_execution_on_bitclude_requested", actions
+        )

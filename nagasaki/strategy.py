@@ -54,6 +54,7 @@ class BitcludeEpsilonStrategy(Strategy):
         )
         result_actions = []
         if self.asking_is_profitable():
+            logger.info("asking is profitable")
             for offer in active_offers:
                 result_actions.append(
                     Action(
@@ -62,11 +63,13 @@ class BitcludeEpsilonStrategy(Strategy):
                     )
                 )
             result_actions.append(action_ask_over)
-
+        else:
+            logger.info("asking is not profitable")
         return result_actions
 
     def asking_is_profitable(self) -> bool:
         MARK = self.state.btc_mark_usd * self.state.usd_pln
         TOP_ASK = self.state.get_top_ask()
         ask_profitability = (TOP_ASK - MARK - self.EPSILON) / MARK
+        logger.info(f"{ask_profitability=:.4f}")
         return ask_profitability > self.ASK_TRIGGER
