@@ -28,6 +28,7 @@ wget https://www.yahoofinanceapi.com/yahoo-finance-api-specification.json
 
 datamodel-codegen --input example/finance_quote.json --input-file-type json --output model.py
 
+# strategy execution flow
 ```mermaid
 flowchart
 classDef green fill:darkgreen;
@@ -42,11 +43,30 @@ G:::blue --> H[fetch AccountInfo and ActiveOffers]
 H --> I{side}
 I -- ASK --> K[get_actions_ask]
 I -- BID --> L[get_actions_bid]
-K --> M{is asking profitable?}
-M -- YES --> N[create desirable ofer: rate, amount]
-M -- NO --> O[/cancel all ask offers/]
-N --> P{"len(offers) > 0?"}
-P -- YES --> R[cancel all ask offers]
-P -- NO --> S[/push desirable offer to bitclude/]
-R --> S
+```
+# strategy
+## get_actions_ask
+```mermaid
+flowchart
+    K[get_actions_ask] --> M{is asking profitable?}
+    M -- YES --> N[create desirable ofer: rate, amount]
+    M -- NO --> O[/cancel all ask offers/]
+    N --> P{"len(ask_offers) > 0?"}
+    P -- YES --> R[cancel all ask offers]
+    P -- NO --> S[/push desirable offer to bitclude/]
+    R --> S
+
+```
+
+## get_actions_bid
+```mermaid
+flowchart
+    K[get_actions_bid] --> M{is biding profitable?}
+    M -- YES --> N[create desirable ofer: rate, amount]
+    M -- NO --> O[/cancel all bid offers/]
+    N --> P{"len(bid_offers) > 0?"}
+    P -- YES --> R[cancel all bid offers]
+    P -- NO --> S[/push desirable offer to bitclude/]
+    R --> S
+
 ```
