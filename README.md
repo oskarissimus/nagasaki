@@ -45,28 +45,55 @@ I -- ASK --> K[get_actions_ask]
 I -- BID --> L[get_actions_bid]
 ```
 # strategy
+![img](docs/img/strategy.jpg)
+
 ## get_actions_ask
+- **REF** - cena referencyjna `USD_MARK_BTC * USD_PLN`
+- **&Delta;** - arbitralny profit margin = `0.5%`
+- **&epsilon;** - arbitralna wartość do przebijania TOP ASK = `0.01`
+- **TOP_ASK** = `min(ask_orderbook)`
+- **TOTAL_BTC** = BTC active + BTC inactive in Bitclude wallet
+
+---
+
+- **delta_price** = REF * (1+&Delta;)
+- **epsilon_price** = TOP_ASK - &epsilon;
+- **desirable_price** = `max(delta_price,epsilon_price)`
+- **desirable_amount** = TOTAL_BTC
+
+---
+
+### v1
+
 ```mermaid
 flowchart
-    K[get_actions_ask] --> M{is asking profitable?}
-    M -- YES --> N[create desirable ofer: rate, amount]
-    M -- NO --> O[/cancel all ask offers/]
+    N["desirable_order
+    - desirable_price
+    - desirable_amount"]
     N --> P{"len(ask_offers) > 0?"}
     P -- YES --> R[cancel all ask offers]
     P -- NO --> S[/push desirable offer to bitclude/]
     R --> S
-
 ```
 
-## get_actions_bid
+---
+
+### v2
+
 ```mermaid
 flowchart
-    K[get_actions_bid] --> M{is biding profitable?}
-    M -- YES --> N[create desirable ofer: rate, amount]
-    M -- NO --> O[/cancel all bid offers/]
-    N --> P{"len(bid_offers) > 0?"}
-    P -- YES --> R[cancel all bid offers]
-    P -- NO --> S[/push desirable offer to bitclude/]
-    R --> S
+    N["desirable_order
+    - desirable_price
+    - desirable_amount"]
+    N --> LEN{"len(ask_offers) == ?"}
+    LEN -- ==0 --> PUSH[/push desirable offer to bitclude/]
+    LEN -- ==1 --> TOLERANCE{"is
+                    offer within
+                    tolerance?"}
+    TOLERANCE -- YES --> NOOP[/NOOP/]
+    TOLERANCE -- NO --> CANCEL_ALL
+    LEN -- >1 --> CANCEL_ALL[cancel all ask offers]
 
+
+    CANCEL_ALL --> PUSH
 ```
