@@ -27,6 +27,7 @@ Flow rzeczy
 wget https://www.yahoofinanceapi.com/yahoo-finance-api-specification.json
 
 datamodel-codegen --input example/finance_quote.json --input-file-type json --output model.py
+datamodel-codegen --input orderbook_btcpln.json --input-file-type json --output model.py
 
 # strategy execution flow
 ```mermaid

@@ -7,6 +7,7 @@ import requests
 from nagasaki.clients.bitclude.dto import (
     AccountInfo,
     Offer,
+    OrderbookResponseDTO,
     Ticker,
     CancelRequestDTO,
     CancelResponseDTO,
@@ -60,8 +61,7 @@ class BitcludeClient:
             raise CannotParseResponse() from json_decode_error
         if response_json["success"] is True:
             return AccountInfo(**response_json)
-        else:
-            raise BitcludeClientException(response_json)
+        raise BitcludeClientException(response_json)
 
     def fetch_ticker_btc_pln(self) -> Ticker:
         response = requests.get(f"{self.bitclude_url_base}/stats/ticker.json")
@@ -98,6 +98,14 @@ class BitcludeClient:
         if "success" in response_json and response_json["success"] is True:
             return dto_class(**response_json)
         raise BitcludeClientException(response_json["message"])
+
+    @staticmethod
+    def _parse_orderbook_response(response: requests.Response) -> OrderbookResponseDTO:
+        try:
+            response_json = response.json()
+        except json.decoder.JSONDecodeError as json_decode_error:
+            raise CannotParseResponse(response.text) from json_decode_error
+        return OrderbookResponseDTO(**response_json)
 
     def create_order(self, order: CreateRequestDTO) -> CreateResponseDTO:
         logger.info(f"creating {order}")
@@ -154,3 +162,11 @@ class BitcludeClient:
             if offer_id not in offer_numbers:
                 return True
             sleep(1)
+
+    def fetch_orderbook(self) -> OrderbookResponseDTO:
+        logger.info("fetching orderbook")
+        response = requests.get(f"{self.bitclude_url_base}/stats/orderbook_btcpln.json")
+        if response.status_code == 200:
+            parsed_response = BitcludeClient._parse_orderbook_response(response)
+            return parsed_response
+        raise BitcludeClientException(response.text)

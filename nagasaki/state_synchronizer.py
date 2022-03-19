@@ -10,5 +10,8 @@ class StateSynchronizer:
 
     def synchronize_state(self):
         logger.info("Synchronizing state")
-        self.state.bitclude_account_info = self.bitclude_client.fetch_account_info()
-        self.state.bitclude_active_offers = self.bitclude_client.fetch_active_offers()
+        self.state.bitclude.account_info = self.bitclude_client.fetch_account_info()
+        self.state.bitclude.active_offers = self.bitclude_client.fetch_active_offers()
+        self.state.bitclude.orderbook_rest = (
+            self.bitclude_client.fetch_orderbook().to_orderbook_rest()
+        )

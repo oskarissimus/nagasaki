@@ -1,5 +1,5 @@
 from decimal import Decimal
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, root_validator, validator
 
 from nagasaki.enums.common import (
@@ -74,3 +74,46 @@ class BitcludeEventTicker(BitcludeEventBase):
 
     def __str__(self):
         return f"event_action={self.action} symbol={self.symbol} last={self.last:.10f} volume={self.volume:.10f} change={self.change:.10f}"
+
+
+class OrderbookWebsocketList(List[Decimal]):
+    def __str__(self) -> str:
+        return self.__repr__()
+
+    def __repr__(self) -> str:
+        ret = ""
+        for offer in self:
+            ret += f"{offer} "
+        return ret
+
+
+class OrderbookRestItem(BaseModel):
+    price: Decimal
+    amount: Decimal
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
+    def __repr__(self) -> str:
+        return f"[{self.price:.2f} {self.amount:.8f}]"
+
+
+class OrderbookRestList(List[OrderbookRestItem]):
+    def __str__(self) -> str:
+        return self.__repr__()
+
+    def __repr__(self) -> str:
+        ret = ""
+        for offer in self:
+            ret += f"{offer} "
+        return ret
+
+
+class OrderbookWebsocket(BaseModel):
+    asks: Optional[OrderbookWebsocketList]
+    bids: Optional[OrderbookWebsocketList]
+
+
+class OrderbookRest(BaseModel):
+    asks: Optional[OrderbookRestList]
+    bids: Optional[OrderbookRestList]

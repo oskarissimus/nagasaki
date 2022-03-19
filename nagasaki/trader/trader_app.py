@@ -12,7 +12,7 @@ from nagasaki.logger import logger
 from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import StateSynchronizer
-from nagasaki.strategy import Strategy
+from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.strategy_executor import StrategyExecutor
 
 
@@ -24,7 +24,7 @@ class TraderApp:
         bitclude_client: BitcludeClient,
         bitclude_websocket_client: BitcludeWebsocketClient,
         deribit_client: DeribitClient,
-        strategy: Strategy,
+        strategy: AbstractStrategy,
         state: State,
         event_manager: EventManager,
         scheduler: BackgroundScheduler,
@@ -91,18 +91,15 @@ class TraderApp:
         # TODO post event orderbook_changed
 
     def get_btc_mark_usd_from_deribit_and_write_to_state(self):
-        self.state.btc_mark_usd = self.deribit_client.fetch_index_price_btc_usd()
+        self.state.deribit.btc_mark_usd = (
+            self.deribit_client.fetch_index_price_btc_usd()
+        )
         # logger.info(f"{self.state.btc_mark_usd=}")
 
     def fetch_usd_pln_and_write_to_state(self):
         usd_pln = self.usd_pln_quoting_client.fetch_usd_pln_quote()
         self.state.usd_pln = usd_pln
         logger.info(f"USD_PLN{self.state.usd_pln:.2f}")
-
-    def get_usd_mark_pln_from_coinbase_and_write_to_state(self):
-        self.state.usd_pln = Decimal(1) / (
-            self.coinbase_client.fetch_pln_mark_price_usd()
-        )
 
     def run(self):
         self.state_initializer.initialize_state()

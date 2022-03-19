@@ -1,25 +1,14 @@
-from abc import ABC, abstractmethod
 from decimal import Decimal
 from typing import List
-from nagasaki.clients.bitclude.dto import Offer
 
 from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.logger import logger
 from nagasaki.models.bitclude import Action, BitcludeOrder
 from nagasaki.state import State
+from nagasaki.strategy.abstract_strategy import AbstractStrategy
 
 
-class Strategy(ABC):
-    @abstractmethod
-    def get_actions_bid(self):
-        pass
-
-    @abstractmethod
-    def get_actions_ask(self):
-        pass
-
-
-class BitcludeEpsilonStrategy(Strategy):
+class BitcludeEpsilonStrategy(AbstractStrategy):
     """
     Bid top BID + EPSILON
     Bid top ASK - EPSILON

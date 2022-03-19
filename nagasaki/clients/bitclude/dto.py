@@ -10,7 +10,7 @@ from nagasaki.enums.common import (
     ActionEnum,
 )
 from nagasaki.utils.common import round_decimals_down
-from nagasaki.models.bitclude import BitcludeOrder
+from nagasaki.models.bitclude import BitcludeOrder, OrderbookRest, OrderbookRestItem
 
 # https://github.com/samuelcolvin/pydantic/issues/1303
 class HashableBaseModel(BaseModel):
@@ -203,3 +203,24 @@ class CancelResponseDTO(BaseModel):
 
     def __str__(self):
         return f"success: {self.success}, code: {self.code}, message: {self.message}"
+
+
+class OrderbookResponseDTOData(BaseModel):
+    market1: str
+    market2: str
+    timestamp: int
+
+
+class OrderbookResponseDTO(BaseModel):
+    data: OrderbookResponseDTOData
+    bids: List[List[Decimal]]
+    asks: List[List[Decimal]]
+
+    def to_orderbook_rest(self) -> OrderbookRest:
+        asks = [
+            OrderbookRestItem(price=price, amount=amount) for amount, price in self.asks
+        ]
+        bids = [
+            OrderbookRestItem(price=price, amount=amount) for amount, price in self.bids
+        ]
+        return OrderbookRest(asks=asks, bids=bids)

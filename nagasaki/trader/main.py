@@ -17,7 +17,8 @@ from nagasaki.logger import logger
 from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import StateSynchronizer
-from nagasaki.strategy import BitcludeEpsilonStrategy
+from nagasaki.strategy.bitclude_epsilon_strategy import BitcludeEpsilonStrategy
+from nagasaki.strategy.delta_epsilon_strategy import DeltaEpsilonStrategy
 from nagasaki.strategy_executor import StrategyExecutor
 from nagasaki.trader.trader_app import TraderApp
 
@@ -61,7 +62,7 @@ if __name__ == "__main__":
 
     state_synchronizer = StateSynchronizer(state, bitclude_client)
 
-    strategy = BitcludeEpsilonStrategy(state=state)
+    strategy = DeltaEpsilonStrategy(state=state)
     strategy_executor = StrategyExecutor(
         strategy=strategy,
         event_manager=event_manager,
