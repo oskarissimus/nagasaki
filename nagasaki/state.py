@@ -28,3 +28,6 @@ class State(BaseModel):
     usd_pln: Optional[Decimal]
     bitclude: Optional[BitcludeState]
     deribit: Optional[DeribitState]
+
+    def get_top_ask(self) -> Decimal:
+        return min(self.bitclude.orderbook_rest.asks, key=lambda x: x.price).price

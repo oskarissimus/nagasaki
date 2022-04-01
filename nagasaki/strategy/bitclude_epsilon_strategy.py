@@ -26,11 +26,11 @@ class BitcludeEpsilonStrategy(AbstractStrategy):
 
     def get_actions_ask(self) -> List[Action]:
         btc_balance = (
-            self.state.bitclude_account_info.balances["BTC"].active
-            + self.state.bitclude_account_info.balances["BTC"].inactive
+            self.state.bitclude.account_info.balances["BTC"].active
+            + self.state.bitclude.account_info.balances["BTC"].inactive
         )
         top_ask = self.state.get_top_ask()
-        active_offers = self.state.bitclude_active_offers
+        active_offers = self.state.bitclude.active_offers
         price = top_ask - self.EPSILON
 
         action_ask_over = Action(
@@ -57,7 +57,7 @@ class BitcludeEpsilonStrategy(AbstractStrategy):
         return result_actions
 
     def asking_is_profitable(self) -> bool:
-        MARK = self.state.btc_mark_usd * self.state.usd_pln
+        MARK = self.state.deribit.btc_mark_usd * self.state.usd_pln
         TOP_ASK = self.state.get_top_ask()
         ask_profitability = (TOP_ASK - MARK - self.EPSILON) / MARK
         logger.info(f"{ask_profitability=:.4f}")
