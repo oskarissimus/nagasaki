@@ -27,6 +27,7 @@ class DeribitClient:
 
     def get_token(self) -> True:
         """
+        https://www.deribit.com/api/v2
         method gets deribit access token using
         - `self.deribit_url_base`
         - `self.deribit_client_id`
