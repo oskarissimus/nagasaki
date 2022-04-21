@@ -101,11 +101,11 @@ flowchart
 
 
 # TODO 21.04.2022
-1. databse module in nagasaki (sqlite)
-2. create models for
-    - bitlcude_ticker (timestamp, bid, ask)
-    - actions (mapping from Action class)
-    - inventory (timestamp, bitclude_balances pln_active, pln_inactive, btc_active, btc_inactive)
-3. create handlers for writing above data to db
-4. switch to postgres
+- [x] databse module in nagasaki (sqlite) [done]
+- [ ] create models for
+    - [ ] bitlcude_ticker (timestamp, bid, ask)
+    - [x] actions (mapping from Action class) [done]
+    - [ ] inventory (timestamp, bitclude_balances pln_active, pln_inactive, btc_active, btc_inactive)
+- [ ] create handlers for writing above data to db
+- [ ] switch to postgres
 dry run
