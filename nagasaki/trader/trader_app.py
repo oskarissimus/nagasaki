@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from apscheduler.schedulers.background import BackgroundScheduler
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
@@ -7,6 +5,7 @@ from nagasaki.clients.coinbase_client import CoinbaseClient
 from nagasaki.clients.cryptocompare_client import CryptocompareClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
+from nagasaki.database.utils import dump_actions_to_db
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.state import State
@@ -70,6 +69,11 @@ class TraderApp:
             self.bitclude_client.execute_actions_list,
         )
 
+    def attach_db_handlers_to_events(self):
+        self.event_manager.subscribe(
+            "actions_execution_on_bitclude_requested", dump_actions_to_db
+        )
+
     def attach_state_handlers_to_events(self):
         self.event_manager.subscribe(
             "created_order",
@@ -107,6 +111,7 @@ class TraderApp:
         self.attach_bitclude_handlers_to_events()
         self.attach_jobs_to_scheduler()
         self.attach_state_synchronizer_handlers_to_events()
+        self.attach_db_handlers_to_events()
 
         try:
             self.scheduler.start()

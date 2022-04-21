@@ -107,5 +107,6 @@ flowchart
     - [x] actions (mapping from Action class) [done]
     - [ ] inventory (timestamp, bitclude_balances pln_active, pln_inactive, btc_active, btc_inactive)
 - [ ] create handlers for writing above data to db
+    - [x] actions
 - [ ] switch to postgres
 - [ ] dry run

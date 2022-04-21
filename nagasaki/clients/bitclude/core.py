@@ -1,5 +1,5 @@
+from datetime import datetime
 import json
-from multiprocessing.connection import wait
 from time import sleep
 from typing import List
 
@@ -21,6 +21,57 @@ from nagasaki.logger import logger
 from nagasaki.models.bitclude import Action
 
 
+class RequestTimesRingBuffer:
+    def __init__(self, size):
+        self.size = size
+        self.buffer: List[datetime] = []
+
+    def append(self, value):
+        if len(self.buffer) == self.size:
+            self.buffer.pop(0)
+        self.buffer.append(value)
+
+    def get_request_rate_per_second_for_last_minute(self):
+        requests_newer_than_1_minute = [
+            request_time
+            for request_time in self.buffer
+            if (datetime.now() - request_time).seconds < 60
+        ]
+        return len(requests_newer_than_1_minute) / 60
+
+    def get_difference_between_last_two_requests(self):
+        if len(self.buffer) < 2:
+            return None
+        return self.buffer[-1] - self.buffer[-2]
+
+    def get_minimum_difference_between_any_two_requests(self):
+        if len(self.buffer) < 2:
+            return None
+        return min(
+            [self.buffer[i] - self.buffer[i - 1] for i in range(1, len(self.buffer))]
+        )
+
+    def get_requests_number_in_last_10_minutes(self):
+        requests_newer_than_10_minutes = [
+            request_time
+            for request_time in self.buffer
+            if (datetime.now() - request_time).seconds < 600
+        ]
+        return len(requests_newer_than_10_minutes)
+
+    def get_requests_rate_per_10_minutes_for_last_1_minute(self):
+        requests_newer_than_1_minute = [
+            request_time
+            for request_time in self.buffer
+            if (datetime.now() - request_time).seconds < 60
+        ]
+        return len(requests_newer_than_1_minute) * 10
+
+    def log_request_times(self):
+        logger.info(self.get_requests_number_in_last_10_minutes())
+        logger.info(self.get_requests_rate_per_10_minutes_for_last_1_minute())
+
+
 class BitcludeClient:
     """
     Client holds url, and credentials. It makes requests and parses them into models.
@@ -37,14 +88,16 @@ class BitcludeClient:
         self.bitclude_client_id = bitclude_client_id
         self.bitclude_client_key = bitclude_client_key
         self.event_manager = event_manager or EventManager()
-
-    def _get_auth_params(self):
-        return {
+        self.last_500_request_times = RequestTimesRingBuffer(500)
+        self._auth_params = {
             "id": self.bitclude_client_id,
             "key": self.bitclude_client_key,
         }
 
     def fetch_account_info(self) -> AccountInfo:
+        logger.info("fetching account info")
+        self.last_500_request_times.append(datetime.now())
+        self.last_500_request_times.log_request_times()
         response = requests.get(
             self.bitclude_url_base,
             params={
@@ -72,6 +125,9 @@ class BitcludeClient:
         return Ticker(**response_json["btc_pln"])
 
     def fetch_active_offers(self) -> List[Offer]:
+        logger.info("fetching active offers")
+        self.last_500_request_times.append(datetime.now())
+        self.last_500_request_times.log_request_times()
         response = requests.get(
             self.bitclude_url_base,
             params={
@@ -110,8 +166,10 @@ class BitcludeClient:
     def create_order(self, order: CreateRequestDTO) -> CreateResponseDTO:
         logger.info(f"creating {order}")
         order_params = order.get_request_params()
-        auth_params = self._get_auth_params()
+        auth_params = self._auth_params
         params = {**order_params, **auth_params}
+        self.last_500_request_times.append(datetime.now())
+        self.last_500_request_times.log_request_times()
         response = requests.get(self.bitclude_url_base, params=params)
         if response.status_code == 200:
             parsed_response = BitcludeClient._parse_response_as_dto(
@@ -123,8 +181,10 @@ class BitcludeClient:
     def cancel_order(self, order: CancelRequestDTO) -> CancelResponseDTO:
         logger.info(f"cancelling {order}")
         order_params = order.get_request_params()
-        auth_params = self._get_auth_params()
+        auth_params = self._auth_params
         params = {**order_params, **auth_params}
+        self.last_500_request_times.append(datetime.now())
+        self.last_500_request_times.log_request_times()
         response = requests.get(self.bitclude_url_base, params=params)
         if response.status_code == 200:
             parsed_response = BitcludeClient._parse_response_as_dto(
@@ -135,19 +195,13 @@ class BitcludeClient:
 
     def execute_action(self, action: Action):
         if action.action_type == ActionTypeEnum.CREATE:
-            response = self.create_order(
-                CreateRequestDTO.from_bitclude_order(action.order)
-            )
+            self.create_order(CreateRequestDTO.from_bitclude_order(action.order))
 
         if action.action_type == ActionTypeEnum.CANCEL:
-            response = self.cancel_order(
-                CancelRequestDTO.from_bitclude_order(action.order)
-            )
+            self.cancel_order(CancelRequestDTO.from_bitclude_order(action.order))
 
         if action.action_type == ActionTypeEnum.CANCEL_AND_WAIT:
-            response = self.cancel_order(
-                CancelRequestDTO.from_bitclude_order(action.order)
-            )
+            self.cancel_order(CancelRequestDTO.from_bitclude_order(action.order))
             self.wait_for_offer_cancellation(action.order.order_id)
 
     def execute_actions_list(self, actions: List[Action]):
@@ -165,6 +219,8 @@ class BitcludeClient:
 
     def fetch_orderbook(self) -> OrderbookResponseDTO:
         logger.info("fetching orderbook")
+        # self.last_500_request_times.append(datetime.now())
+        # self.last_500_request_times.log_request_times()
         response = requests.get(f"{self.bitclude_url_base}/stats/orderbook_btcpln.json")
         if response.status_code == 200:
             parsed_response = BitcludeClient._parse_orderbook_response(response)
