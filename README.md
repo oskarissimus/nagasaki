@@ -108,4 +108,4 @@ flowchart
     - [ ] inventory (timestamp, bitclude_balances pln_active, pln_inactive, btc_active, btc_inactive)
 - [ ] create handlers for writing above data to db
 - [ ] switch to postgres
-dry run
+- [ ] dry run
