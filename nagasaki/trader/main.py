@@ -21,11 +21,14 @@ from nagasaki.strategy.bitclude_epsilon_strategy import BitcludeEpsilonStrategy
 from nagasaki.strategy.delta_epsilon_strategy import DeltaEpsilonStrategy
 from nagasaki.strategy_executor import StrategyExecutor
 from nagasaki.trader.trader_app import TraderApp
-
+from nagasaki.database.database import Base, engine
 
 if __name__ == "__main__":
     filterwarnings("ignore", category=PytzUsageWarning)
     logger.info("start")
+
+    Base.metadata.create_all(bind=engine)
+
     bitclude_client_url_base: str = os.getenv("BITCLUDE_URL_BASE")
     bitclude_client_id: str = os.getenv("BITCLUDE_ID")
     bitclude_client_key: str = os.getenv("BITCLUDE_KEY")
