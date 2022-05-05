@@ -4,3 +4,4 @@ __pycache__
 .hypothesis
 poetry.lock
 sql_app.db
+dist/

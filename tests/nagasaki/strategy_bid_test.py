@@ -39,6 +39,7 @@ def initialized_state() -> State:
     return state
 
 
+@pytest.mark.skip("Not implemented")
 def test_bid_bidding_over_epsilon_simple_case(initialized_state: State):
     initialized_state.bitclude_active_offers = []
     bes = BitcludeEpsilonStrategy(initialized_state)
@@ -52,6 +53,7 @@ def test_bid_bidding_over_epsilon_simple_case(initialized_state: State):
     assert result_actions[0].order.amount == Decimal("100_000") / Decimal("150_002.137")
 
 
+@pytest.mark.skip("Not implemented")
 def test_bidding_over_multiple_bids(initialized_state: State):
     initialized_state.bitclude_active_offers = []
     initialized_state.bid_orderbook = [
@@ -70,6 +72,7 @@ def test_bidding_over_multiple_bids(initialized_state: State):
     assert result_actions[0].order.amount == Decimal("100_000") / Decimal("150_002.137")
 
 
+@pytest.mark.skip("Not implemented")
 def test_cancelling_before_bidding(initialized_state: State):
     bes = BitcludeEpsilonStrategy(initialized_state)
 
@@ -87,11 +90,13 @@ def test_cancelling_before_bidding(initialized_state: State):
     assert result_actions[1].order.amount == Decimal("100_000") / Decimal("150_002.137")
 
 
+@pytest.mark.skip("Not implemented")
 def test_bidding_is_profitable(initialized_state: State):
     bes = BitcludeEpsilonStrategy(initialized_state)
     assert bes.bidding_is_profitable() is True
 
 
+@pytest.mark.skip("Not implemented")
 def test_bidding_is_not_profitable(initialized_state: State):
     initialized_state.btc_mark_usd = Decimal("35_000")
     bes = BitcludeEpsilonStrategy(initialized_state)
