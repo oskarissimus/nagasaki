@@ -24,6 +24,8 @@ class BitcludeEpsilonStrategy(AbstractStrategy):
         pln_balance = self.state.bitclude.account_info.balances["PLN"].active
         top_bid = self.state.get_top_bid()
         price = top_bid + self.EPSILON
+        active_offers = self.state.bitclude.active_offers
+        active_bid_offers = [x for x in self.state.bitclude.active_offers if x.offertype == SideTypeEnum.BID]
         action_bid = Action(
             action_type=ActionTypeEnum.CREATE,
             order=BitcludeOrder(
@@ -32,7 +34,23 @@ class BitcludeEpsilonStrategy(AbstractStrategy):
                 amount=pln_balance / price,
             ),
         )
-        return [action_bid]
+
+        result_actions = []
+        if self.bidding_is_profitable():
+            logger.info("bidding is profitable")
+            print(active_offers)
+            for offer in active_bid_offers:
+                result_actions.append(
+                    Action(
+                        action_type=ActionTypeEnum.CANCEL,
+                        order=offer.to_bitclude_order(),
+                    )
+                )
+            result_actions.append(action_bid)
+        else:
+            logger.info("asking is not profitable")
+
+        return result_actions
 
     def get_actions_ask(self) -> List[Action]:
         btc_balance = (

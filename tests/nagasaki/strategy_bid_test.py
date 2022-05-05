@@ -11,7 +11,7 @@ from nagasaki.state import State, DeribitState, BitcludeState
 from nagasaki.strategy import BitcludeEpsilonStrategy
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def initialized_state():
     btc_price_deribit = 40_000
     usd_pln = 4
@@ -76,7 +76,6 @@ def initialized_state():
             "BTC": Balance(active=Decimal(active_btcs), inactive=Decimal("0")),
         }
     )
-    state.bitclude.active_offers = []
     return state
 
 
@@ -87,6 +86,9 @@ def test_bid_bidding_over_epsilon_simple_case(initialized_state: State):
     initialized_state.bitclude.orderbook_rest.bids = OrderbookRestList(
         [OrderbookRestItem(price=Decimal(150_000), amount=Decimal(1))]
     )
+
+    initialized_state.bitclude.active_offers = []
+
     bes = BitcludeEpsilonStrategy(initialized_state)
 
     result_actions = bes.get_actions_bid()
@@ -105,8 +107,8 @@ def test_bidding_over_multiple_bids(initialized_state: State):
          OrderbookRestItem(price=Decimal(149_998), amount=Decimal(1))
          ]
     )
-
     bes = BitcludeEpsilonStrategy(initialized_state)
+    initialized_state.bitclude.active_offers = []
 
     result_actions = bes.get_actions_bid()
     assert len(result_actions) == 1
@@ -116,10 +118,8 @@ def test_bidding_over_multiple_bids(initialized_state: State):
     assert result_actions[0].order.amount == Decimal("100_000") / Decimal("150_002.137")
 
 
-@pytest.mark.skip("Not implemented")
 def test_cancelling_before_bidding(initialized_state: State):
     bes = BitcludeEpsilonStrategy(initialized_state)
-
     result_actions = bes.get_actions_bid()
     assert len(result_actions) == 2
 
