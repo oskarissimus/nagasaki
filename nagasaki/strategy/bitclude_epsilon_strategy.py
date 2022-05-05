@@ -72,3 +72,10 @@ class BitcludeEpsilonStrategy(AbstractStrategy):
         ask_profitability = (TOP_ASK - MARK - self.EPSILON) / MARK
         logger.info(f"{ask_profitability=:.4f}")
         return ask_profitability > self.ASK_TRIGGER
+
+    def bidding_is_profitable(self):
+        MARK = self.state.deribit.btc_mark_usd * self.state.usd_pln
+        TOP_BID = self.state.get_top_bid()
+        bid_profitability = (MARK - TOP_BID + self.EPSILON ) / MARK
+        logger.info(f"{bid_profitability=:.4f}")
+        return bid_profitability > self.BID_TRIGGER

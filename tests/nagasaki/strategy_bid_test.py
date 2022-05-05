@@ -134,14 +134,12 @@ def test_cancelling_before_bidding(initialized_state: State):
     assert result_actions[1].order.amount == Decimal("100_000") / Decimal("150_002.137")
 
 
-@pytest.mark.skip("Not implemented")
 def test_bidding_is_profitable(initialized_state: State):
     bes = BitcludeEpsilonStrategy(initialized_state)
     assert bes.bidding_is_profitable() is True
 
 
-@pytest.mark.skip("Not implemented")
 def test_bidding_is_not_profitable(initialized_state: State):
-    initialized_state.btc_mark_usd = Decimal("35_000")
+    initialized_state.deribit.btc_mark_usd = Decimal("35_000")
     bes = BitcludeEpsilonStrategy(initialized_state)
     assert bes.bidding_is_profitable() is False
