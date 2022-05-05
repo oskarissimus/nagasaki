@@ -9,4 +9,5 @@ class Settings(BaseSettings):
     yahoo_finance_api_key: str
 
     class Config:
+        # .env file has to be in same directory as simple_trader
         env_file = ".env"
