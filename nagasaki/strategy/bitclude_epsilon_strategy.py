@@ -21,8 +21,18 @@ class BitcludeEpsilonStrategy(AbstractStrategy):
         self.state = state
 
     def get_actions_bid(self) -> List[Action]:
-        logger.info("I'm not even trying to bid.")
-        return []
+        pln_balance = self.state.bitclude.account_info.balances["PLN"].active
+        top_bid = self.state.get_top_bid()
+        price = top_bid + self.EPSILON
+        action_bid = Action(
+            action_type=ActionTypeEnum.CREATE,
+            order=BitcludeOrder(
+                side=SideTypeEnum.BID,
+                price=price,
+                amount=pln_balance / price,
+            ),
+        )
+        return [action_bid]
 
     def get_actions_ask(self) -> List[Action]:
         btc_balance = (

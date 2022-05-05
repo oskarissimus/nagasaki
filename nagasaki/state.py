@@ -31,3 +31,6 @@ class State(BaseModel):
 
     def get_top_ask(self) -> Decimal:
         return min(self.bitclude.orderbook_rest.asks, key=lambda x: x.price).price
+
+    def get_top_bid(self) -> Decimal:
+        return max(self.bitclude.orderbook_rest.bids, key=lambda x: x.price).price

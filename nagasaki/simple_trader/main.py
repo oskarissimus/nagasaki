@@ -1,10 +1,11 @@
 from time import sleep
 from nagasaki.clients.bitclude.core import BitcludeClient
-from nagasaki.clients.bitclude.dto import CreateRequestDTO
+from nagasaki.clients.bitclude.dto import CreateRequestDTO, CancelRequestDTO
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
 from nagasaki.enums.common import ActionEnum, MarketEnum
 from nagasaki.simple_trader.settings import Settings
+from nagasaki.utils.common import round_decimals_down
 
 settings = Settings()
 b = BitcludeClient(
@@ -61,27 +62,47 @@ def get_quoting(balances):
 
 
 while True:
-    sleep(1)
+    sleep(10)
 
+    # Cancel all open orders
+    # If delta is unhedged then hedge
+    # Create orders
+
+
+    open_offers = b.fetch_active_offers()
+    for offer in open_offers:
+        b.cancel_order(CancelRequestDTO.from_bitclude_order(offer.to_bitclude_order()))
+    sleep(3)
     balances = b.fetch_account_info().balances
     BID, ASK = get_quoting(balances)
 
     amount_ask = balances["BTC"].active
-    MINIMAL_ASK_AMOUNT = 0.00001
-    if amount_ask > MINIMAL_ASK_AMOUNT:
+    rounded_v = round_decimals_down(amount_ask, 4)
+    if rounded_v > 0.001:
         ask_order_to_create = CreateRequestDTO(
-            action=ActionEnum.SELL, amount=amount_ask, price=ASK
+            action=ActionEnum.SELL,
+            amount=amount_ask,
+            rate=ASK,
+            market1=MarketEnum.BTC,
+            market2=MarketEnum.PLN,
+            hidden=False
         )
-        ask_order_id = b.create_order(ask_order_to_create)
+        b.create_order(ask_order_to_create)
+    else:
+        print("No bitcoins to sell")
 
     amount_bid = float(balances["PLN"].active) / BID
-    MINIMAL_BID_AMOUNT = 50
-    if amount_bid > MINIMAL_BID_AMOUNT:
+    rounded_v = round_decimals_down(amount_bid, 4)
+    if rounded_v > 0:
         bid_order_to_create = CreateRequestDTO(
             action=ActionEnum.BUY,
             amount=amount_bid,
             rate=BID,
             market1=MarketEnum.BTC,
             market2=MarketEnum.PLN,
+            hidden=False
         )
-        bid_order_id = b.create_order(bid_order_to_create)
+        b.create_order(bid_order_to_create)
+    else:
+        print("No PLNS")
+    sleep(50)
