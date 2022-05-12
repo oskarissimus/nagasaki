@@ -27,7 +27,7 @@ class StrategyExecutor:
 
     def on_strategy_execution_requested(self):
         logger.debug("strategy execution requested")
-        actions = self.strategy.get_actions_ask()
+        actions = self.strategy.get_actions()
         self.event_manager.post_event(
             "actions_execution_on_bitclude_requested", actions
         )

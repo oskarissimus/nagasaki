@@ -6,8 +6,8 @@ from nagasaki.clients.bitclude.dto import AccountInfo, Offer, Balance
 from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.models.bitclude import OrderbookRest, OrderbookRestItem, OrderbookRestList
 from nagasaki.state import State, DeribitState, BitcludeState
-from nagasaki.strategy.delta_epsilon_strategy import (
-    DeltaEpsilonStrategy,
+from nagasaki.strategy.delta_epsilon_strategy_ask import (
+    DeltaEpsilonStrategyAsk,
     calculate_inventory_parameter,
 )
 
@@ -87,13 +87,13 @@ def fixture_initialized_state():
 def test_ask_bidding_over_epsilon_without_own_orders(initialized_state: State):
     state = initialized_state
     state.bitclude.active_offers = []
-    strategy = DeltaEpsilonStrategy(state)
+    strategy = DeltaEpsilonStrategyAsk(state)
 
     top_ask_offer = min(state.bitclude.orderbook_rest.asks, key=lambda x: x.price)
     top_ask = top_ask_offer.price
     epsilon = strategy.epsilon
 
-    result_actions = strategy.get_actions_ask()
+    result_actions = strategy.get_actions()
     price_to_ask = top_ask - epsilon
     assert len(result_actions) == 1
     assert result_actions[0].action_type == ActionTypeEnum.CREATE
@@ -107,13 +107,13 @@ def test_ask_bidding_over_delta_without_own_orders(initialized_state: State):
     state = initialized_state
     state.bitclude.active_offers = []
     state.deribit.btc_mark_usd = Decimal("50_000")
-    strategy = DeltaEpsilonStrategy(state)
+    strategy = DeltaEpsilonStrategyAsk(state)
 
     top_ask_offer = min(state.bitclude.orderbook_rest.asks, key=lambda x: x.price)
     top_ask = top_ask_offer.price
     epsilon = strategy.epsilon
 
-    result_actions = strategy.get_actions_ask()
+    result_actions = strategy.get_actions()
     price_to_ask = top_ask - epsilon
     assert len(result_actions) == 1
     assert result_actions[0].action_type == ActionTypeEnum.CREATE

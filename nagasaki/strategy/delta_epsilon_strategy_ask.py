@@ -3,7 +3,6 @@ from typing import List
 from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.models.bitclude import Action, BitcludeOrder
 from nagasaki.strategy.abstract_strategy import AbstractStrategy, StrategyException
-from nagasaki.logger import logger
 from nagasaki.state import State
 
 
@@ -28,18 +27,30 @@ def calculate_delta_adjusted_for_inventory(inventory_parameter):
     return res
 
 
-class DeltaEpsilonStrategy(AbstractStrategy):
+def calculate_delta_price(deribit_mark_price: Decimal, delta: Decimal) -> Decimal:
+    """
+    delta price is distanced from deribit mark price depending on inventory parameter
+    """
+    return deribit_mark_price * (1 + delta)
+
+
+def calculate_epsilon_price(top_ask: Decimal, epsilon: Decimal) -> Decimal:
+    """
+    epsilon price is distanced from bitclude top ask by epsilon in PLN
+    """
+    return top_ask - epsilon
+
+
+class DeltaEpsilonStrategyAsk(AbstractStrategy):
     def __init__(self, state: State):
         self.state = state
         self.epsilon = Decimal("0.01")
-        # self.delta = Decimal("0.003")
         self.price_tolerance = Decimal("100")
         self.amount_tolerance = Decimal("0.000_3")
 
-    def get_actions_ask(self) -> List[Action]:
-        delta = self.delta_adjusted_for_inventory
-        delta_price = self.ref * (1 + delta)
-        epsilon_price = self.top_ask - self.epsilon
+    def get_actions(self) -> List[Action]:
+        delta_price = calculate_delta_price(self.ref, self.delta_adjusted_for_inventory)
+        epsilon_price = calculate_epsilon_price(self.top_ask, self.epsilon)
 
         desirable_price = max(delta_price, epsilon_price)
         desirable_amount = self.total_btc
@@ -60,10 +71,6 @@ class DeltaEpsilonStrategy(AbstractStrategy):
         actions = self.cancel_all_asks()
         actions.append(desirable_action)
         return actions
-
-    def get_actions_bid(self):
-        logger.info("I'm not even trying to bid.")
-        return []
 
     @property
     def top_ask(self):
@@ -126,3 +133,7 @@ class DeltaEpsilonStrategy(AbstractStrategy):
 
         total_btc_value_in_pln = calculate_btc_value_in_pln(total_btc, self.ref)
         return calculate_inventory_parameter(total_pln, total_btc_value_in_pln)
+
+    @property
+    def delta_adjusted_for_inventory(self):
+        return calculate_delta_adjusted_for_inventory(self.inventory_parameter)

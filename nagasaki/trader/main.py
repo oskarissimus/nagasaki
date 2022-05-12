@@ -18,7 +18,7 @@ from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import StateSynchronizer
 from nagasaki.strategy.bitclude_epsilon_strategy import BitcludeEpsilonStrategy
-from nagasaki.strategy.delta_epsilon_strategy import DeltaEpsilonStrategy
+from nagasaki.strategy.delta_epsilon_strategy_ask import DeltaEpsilonStrategy
 from nagasaki.strategy_executor import StrategyExecutor
 from nagasaki.trader.trader_app import TraderApp
 from nagasaki.database.database import Base, engine

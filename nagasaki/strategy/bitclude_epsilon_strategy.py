@@ -20,12 +20,19 @@ class BitcludeEpsilonStrategy(AbstractStrategy):
         self.BID_TRIGGER = Decimal("0.002")
         self.state = state
 
+    def get_actions(self) -> List[Action]:
+        return self.get_actions_bid() + self.get_actions_ask()
+
     def get_actions_bid(self) -> List[Action]:
         pln_balance = self.state.bitclude.account_info.balances["PLN"].active
         top_bid = self.state.get_top_bid()
         price = top_bid + self.EPSILON
         active_offers = self.state.bitclude.active_offers
-        active_bid_offers = [x for x in self.state.bitclude.active_offers if x.offertype == SideTypeEnum.BID]
+        active_bid_offers = [
+            x
+            for x in self.state.bitclude.active_offers
+            if x.offertype == SideTypeEnum.BID
+        ]
         action_bid = Action(
             action_type=ActionTypeEnum.CREATE,
             order=BitcludeOrder(
@@ -94,6 +101,6 @@ class BitcludeEpsilonStrategy(AbstractStrategy):
     def bidding_is_profitable(self):
         MARK = self.state.deribit.btc_mark_usd * self.state.usd_pln
         TOP_BID = self.state.get_top_bid()
-        bid_profitability = (MARK - TOP_BID + self.EPSILON ) / MARK
+        bid_profitability = (MARK - TOP_BID + self.EPSILON) / MARK
         logger.info(f"{bid_profitability=:.4f}")
         return bid_profitability > self.BID_TRIGGER
