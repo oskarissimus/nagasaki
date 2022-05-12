@@ -7,6 +7,27 @@ from nagasaki.logger import logger
 from nagasaki.state import State
 
 
+def calculate_btc_value_in_pln(btc: Decimal, price: Decimal) -> Decimal:
+    return btc * price
+
+
+def calculate_inventory_parameter(
+    total_pln: Decimal, total_btc_value_in_pln: Decimal
+) -> Decimal:
+    wallet_sum_in_pln = total_pln + total_btc_value_in_pln
+    pln_to_sum_ratio = total_btc_value_in_pln / wallet_sum_in_pln  # values from 0 to 1
+    return pln_to_sum_ratio * 2 - 1
+
+
+def calculate_delta_adjusted_for_inventory(inventory_parameter):
+    A = Decimal("-0.0035")
+    B = Decimal("0.0055")
+    res = A * inventory_parameter + B
+    if res <= 0:
+        raise StrategyException(f"Delta is too small for inventory parameter: {res}")
+    return res
+
+
 class DeltaEpsilonStrategy(AbstractStrategy):
     def __init__(self, state: State):
         self.state = state
@@ -98,27 +119,10 @@ class DeltaEpsilonStrategy(AbstractStrategy):
         )
 
     @property
-    def delta_adjusted_for_inventory(self):
-        A = Decimal("-0.0035")
-        B = Decimal("0.0055")
-        res = A * self.inventory_parameter + B
-        if res <= 0:
-            raise StrategyException(
-                f"Delta is too small for inventory parameter: {res}"
-            )
-        return res
-
-    @property
     def inventory_parameter(self):
         balances = self.state.bitclude.account_info.balances
         total_pln = balances["PLN"].active + balances["PLN"].inactive
         total_btc = balances["BTC"].active + balances["BTC"].inactive
 
-        btc_mark_price_pln = self.ref
-
-        total_btc_value_in_pln = total_btc * btc_mark_price_pln
-        wallet_sum_in_pln = total_pln + total_btc_value_in_pln
-        pln_to_sum_ratio = (
-            total_btc_value_in_pln / wallet_sum_in_pln
-        )  # values from 0 to 1
-        return pln_to_sum_ratio * 2 - 1
+        total_btc_value_in_pln = calculate_btc_value_in_pln(total_btc, self.ref)
+        return calculate_inventory_parameter(total_pln, total_btc_value_in_pln)

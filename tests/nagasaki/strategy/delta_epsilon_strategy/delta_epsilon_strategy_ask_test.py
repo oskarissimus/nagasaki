@@ -6,7 +6,10 @@ from nagasaki.clients.bitclude.dto import AccountInfo, Offer, Balance
 from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.models.bitclude import OrderbookRest, OrderbookRestItem, OrderbookRestList
 from nagasaki.state import State, DeribitState, BitcludeState
-from nagasaki.strategy.delta_epsilon_strategy import DeltaEpsilonStrategy
+from nagasaki.strategy.delta_epsilon_strategy import (
+    DeltaEpsilonStrategy,
+    calculate_inventory_parameter,
+)
 
 
 @pytest.fixture(name="initialized_state")
@@ -88,7 +91,7 @@ def test_ask_bidding_over_epsilon_without_own_orders(initialized_state: State):
 
     top_ask_offer = min(state.bitclude.orderbook_rest.asks, key=lambda x: x.price)
     top_ask = top_ask_offer.price
-    epsilon = Decimal("0.01")
+    epsilon = strategy.epsilon
 
     result_actions = strategy.get_actions_ask()
     price_to_ask = top_ask - epsilon
@@ -97,3 +100,36 @@ def test_ask_bidding_over_epsilon_without_own_orders(initialized_state: State):
     assert result_actions[0].order.side == SideTypeEnum.ASK
     assert result_actions[0].order.price == price_to_ask
     assert result_actions[0].order.amount == Decimal("1")
+
+
+@pytest.mark.skip
+def test_ask_bidding_over_delta_without_own_orders(initialized_state: State):
+    state = initialized_state
+    state.bitclude.active_offers = []
+    state.deribit.btc_mark_usd = Decimal("50_000")
+    strategy = DeltaEpsilonStrategy(state)
+
+    top_ask_offer = min(state.bitclude.orderbook_rest.asks, key=lambda x: x.price)
+    top_ask = top_ask_offer.price
+    epsilon = strategy.epsilon
+
+    result_actions = strategy.get_actions_ask()
+    price_to_ask = top_ask - epsilon
+    assert len(result_actions) == 1
+    assert result_actions[0].action_type == ActionTypeEnum.CREATE
+    assert result_actions[0].order.side == SideTypeEnum.ASK
+    assert result_actions[0].order.price == price_to_ask
+    assert result_actions[0].order.amount == Decimal("1")
+
+
+@pytest.mark.parametrize(
+    "total_pln, total_btc, inventory_parameter",
+    [
+        (100, 0, -1),
+        (0, 100, 1),
+        (30, 90, 0.5),
+        (90, 90, 0),
+    ],
+)
+def test_inventory_parameter(total_pln, total_btc, inventory_parameter):
+    assert calculate_inventory_parameter(total_pln, total_btc) == inventory_parameter
