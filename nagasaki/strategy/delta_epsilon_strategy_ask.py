@@ -1,5 +1,8 @@
 from decimal import Decimal
 from typing import List
+
+from pydantic import BaseModel
+from nagasaki.clients.bitclude.dto import Offer
 from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.models.bitclude import Action, BitcludeOrder
 from nagasaki.strategy.abstract_strategy import AbstractStrategy, StrategyException
@@ -41,12 +44,79 @@ def calculate_epsilon_price(top_ask: Decimal, epsilon: Decimal) -> Decimal:
     return top_ask - epsilon
 
 
+class Tolerance(BaseModel):
+    price: Decimal
+    amount: Decimal
+
+
+def offer_is_within_tolerance(
+    offer: BitcludeOrder,
+    desirable_order: BitcludeOrder,
+    tolerance: Tolerance,
+):
+    return (
+        abs(offer.price - desirable_order.price) < tolerance.price
+        and abs(offer.amount - desirable_order.amount) < tolerance.amount
+    )
+
+
+def actions_for_0_own_offers(desirable_action: Action):
+    return [desirable_action]
+
+
+def actions_for_1_own_offer(
+    desirable_action: Action, own_offer: Offer, tolerance: Tolerance
+):
+    if offer_is_within_tolerance(own_offer, desirable_action.order, tolerance):
+        return []
+    return [cancel_action(own_offer), desirable_action]
+
+
+def actions_for_more_than_1_own_offer(
+    desirable_action: Action,
+    own_offers: List[Offer],
+):
+    """
+    if there are more than 1 own offers, cancel all and create desirable action
+    """
+    return cancel_all_asks(own_offers) + [desirable_action]
+
+
+def cancel_all_asks(active_offers: List[Offer]):
+    actions = []
+    asks = [offer for offer in active_offers if offer.offertype == SideTypeEnum.ASK]
+    for offer in asks:
+        actions.append(cancel_action(offer))
+    return actions
+
+
+def ask_action(price: Decimal, amount: Decimal):
+    return Action(
+        action_type=ActionTypeEnum.CREATE,
+        order=BitcludeOrder(
+            side=SideTypeEnum.ASK,
+            price=price,
+            amount=amount,
+        ),
+    )
+
+
+def cancel_action(offer: Offer):
+    Action(
+        action_type=ActionTypeEnum.CANCEL_AND_WAIT,
+        order=offer.to_bitclude_order(),
+    )
+
+
 class DeltaEpsilonStrategyAsk(AbstractStrategy):
     def __init__(self, state: State):
         self.state = state
         self.epsilon = Decimal("0.01")
         self.price_tolerance = Decimal("100")
         self.amount_tolerance = Decimal("0.000_3")
+        self.tolerance = Tolerance(
+            price=self.price_tolerance, amount=self.amount_tolerance
+        )
 
     def get_actions(self) -> List[Action]:
         delta_price = calculate_delta_price(self.ref, self.delta_adjusted_for_inventory)
@@ -54,23 +124,19 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
 
         desirable_price = max(delta_price, epsilon_price)
         desirable_amount = self.total_btc
-        desirable_action = self.ask_action(desirable_price, desirable_amount)
+        desirable_action = ask_action(desirable_price, desirable_amount)
 
-        active_offers = self.state.bitclude.active_offers
+        own_offers = self.state.bitclude.active_offers
 
-        if len(active_offers) == 0:
-            return [desirable_action]
+        if len(own_offers) == 0:
+            return actions_for_0_own_offers(desirable_action)
 
-        if len(active_offers) == 1:
-            active_offer = active_offers[0]
-            if self.active_offer_is_within_tolerance(
-                active_offer, desirable_price, desirable_amount
-            ):
-                return []
+        if len(own_offers) == 1:
+            return actions_for_1_own_offer(
+                desirable_action, own_offers[0], self.tolerance
+            )
 
-        actions = self.cancel_all_asks()
-        actions.append(desirable_action)
-        return actions
+        return actions_for_more_than_1_own_offer(desirable_action, own_offers)
 
     @property
     def top_ask(self):
@@ -86,44 +152,6 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
     @property
     def ref(self):
         return self.state.deribit.btc_mark_usd * self.state.usd_pln
-
-    def cancel_all_asks(self):
-        actions = []
-        asks = [
-            offer
-            for offer in self.state.bitclude.active_offers
-            if offer.offertype == SideTypeEnum.ASK
-        ]
-        for offer in asks:
-            actions.append(
-                Action(
-                    action_type=ActionTypeEnum.CANCEL_AND_WAIT,
-                    order=offer.to_bitclude_order(),
-                )
-            )
-        return actions
-
-    @staticmethod
-    def ask_action(price: Decimal, amount: Decimal):
-        return Action(
-            action_type=ActionTypeEnum.CREATE,
-            order=BitcludeOrder(
-                side=SideTypeEnum.ASK,
-                price=price,
-                amount=amount,
-            ),
-        )
-
-    def active_offer_is_within_tolerance(
-        self,
-        active_offer: BitcludeOrder,
-        desireable_price: Decimal,
-        desireable_amount: Decimal,
-    ):
-        return (
-            abs(active_offer.price - desireable_price) < self.price_tolerance
-            and abs(active_offer.amount - desireable_amount) < self.amount_tolerance
-        )
 
     @property
     def inventory_parameter(self):
