@@ -1,3 +1,6 @@
+import itertools
+from typing import List
+
 from nagasaki.logger import logger
 from nagasaki.enums.common import OrderActionEnum
 from nagasaki.event_manager import EventManager
@@ -13,9 +16,12 @@ class StrategyExecutor:
     """
 
     def __init__(
-        self, strategy: AbstractStrategy, event_manager: EventManager, state: State
+        self,
+        strategies: List[AbstractStrategy],
+        event_manager: EventManager,
+        state: State,
     ):
-        self.strategy = strategy
+        self.strategies = strategies
         self.event_manager = event_manager
         self.state = state
 
@@ -27,7 +33,9 @@ class StrategyExecutor:
 
     def on_strategy_execution_requested(self):
         logger.debug("strategy execution requested")
-        actions = self.strategy.get_actions()
-        self.event_manager.post_event(
-            "actions_execution_on_bitclude_requested", actions
+        actions = list(
+            itertools.chain.from_iterable(
+                strategy.get_actions() for strategy in self.strategies
+            )
         )
+        self.event_manager.post_event("actions_execution_requested", actions)
