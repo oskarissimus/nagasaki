@@ -1,0 +1,2 @@
+class HedgingStrategy(AbstractStrategy):
+    pass
