@@ -97,6 +97,8 @@ def test_ask_bidding_over_epsilon_without_own_orders(initialized_state: State):
     top_ask = top_ask_offer.price
     epsilon = strategy.epsilon
 
+    strategy.get_actions()
+
     bitclude_client.create_order.assert_called_once()
     result_order = bitclude_client.create_order.call_args[0][0]
 

@@ -13,7 +13,7 @@ class ActionTypeEnum(str, Enum):
     CANCEL_AND_WAIT = "CANCEL_AND_WAIT"
 
 
-class InstrumentTypeEnum(Enum):
+class InstrumentTypeEnum(int, Enum):
     BTC_PLN = auto()
     BTC_PERPETUAL = auto()
 

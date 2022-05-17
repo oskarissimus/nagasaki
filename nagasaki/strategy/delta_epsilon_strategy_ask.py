@@ -3,8 +3,9 @@ from typing import List
 
 from pydantic import BaseModel
 from nagasaki.clients import BaseClient
+from nagasaki.clients.base_client import OrderMaker
 from nagasaki.clients.bitclude.dto import Offer
-from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
+from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum, InstrumentTypeEnum
 from nagasaki.models.bitclude import Action, BitcludeOrder
 from nagasaki.strategy.abstract_strategy import AbstractStrategy, StrategyException
 from nagasaki.state import State
@@ -102,6 +103,15 @@ def ask_action(price: Decimal, amount: Decimal):
     )
 
 
+def ask_order(price: Decimal, amount: Decimal) -> OrderMaker:
+    return OrderMaker(
+        side=SideTypeEnum.ASK,
+        price=price,
+        amount=amount,
+        instrument=InstrumentTypeEnum.BTC_PLN,
+    )
+
+
 def cancel_action(offer: Offer):
     Action(
         action_type=ActionTypeEnum.CANCEL_AND_WAIT,
@@ -127,11 +137,12 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
         desirable_price = max(delta_price, epsilon_price)
         desirable_amount = self.total_btc
         desirable_action = ask_action(desirable_price, desirable_amount)
+        desirable_order = ask_order(desirable_price, desirable_amount)
 
         own_offers = self.state.bitclude.active_offers
 
         if len(own_offers) == 0:
-            return actions_for_0_own_offers(desirable_action)
+            self.client.create_order(desirable_order)
 
         if len(own_offers) == 1:
             return actions_for_1_own_offer(
