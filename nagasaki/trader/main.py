@@ -67,7 +67,7 @@ if __name__ == "__main__":
 
     strategy = DeltaEpsilonStrategy(state=state)
     strategy_executor = StrategyExecutor(
-        strategy=strategy,
+        strategies=[strategy],
         event_manager=event_manager,
         state=state,
     )
