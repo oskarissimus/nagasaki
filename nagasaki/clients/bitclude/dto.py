@@ -3,11 +3,13 @@ from decimal import Decimal
 from typing import Dict, List
 from pydantic import BaseModel, validator
 
+from clients.base_client import OrderMaker
 from nagasaki.enums.common import (
     OfferCurrencyEnum,
     SideTypeEnum,
     MarketEnum,
     ActionEnum,
+    InstrumentTypeEnum,
 )
 from nagasaki.utils.common import round_decimals_down
 from nagasaki.models.bitclude import BitcludeOrder, OrderbookRest, OrderbookRestItem
@@ -91,6 +93,25 @@ class Offer(BaseModel):
             price=self.price,
             side=self.offertype,
             order_id=self.nr,
+        )
+
+    def to_order_maker(self) -> OrderMaker:
+        if (
+            self.currency1 == OfferCurrencyEnum.btc
+            and self.currency2 == OfferCurrencyEnum.pln
+        ):
+            instrument = InstrumentTypeEnum.BTC_PLN
+        else:
+            raise ValueError(
+                f"Undefined casting from {self.currency1} and "
+                f"{self.currency2} to InstrumentTypeEnum"
+            )
+        return OrderMaker(
+            amount=self.amount,
+            price=self.price,
+            side=self.offertype,
+            order_id=self.nr,
+            instrument=instrument,
         )
 
 

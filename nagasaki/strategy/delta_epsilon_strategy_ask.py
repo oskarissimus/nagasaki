@@ -52,8 +52,8 @@ class Tolerance(BaseModel):
 
 
 def offer_is_within_tolerance(
-    offer: BitcludeOrder,
-    desirable_order: BitcludeOrder,
+    offer: Offer,
+    desirable_order: OrderMaker,
     tolerance: Tolerance,
 ):
     return (
@@ -119,6 +119,10 @@ def cancel_action(offer: Offer):
     )
 
 
+def cancel_order(offer: Offer):
+    return offer.to_bitclude_order()
+
+
 class DeltaEpsilonStrategyAsk(AbstractStrategy):
     def __init__(self, state: State, client: BaseClient):
         self.state = state
@@ -138,20 +142,26 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
 
         desirable_price = max(delta_price, epsilon_price)
         desirable_amount = self.total_btc
-        desirable_action = ask_action(desirable_price, desirable_amount)
         desirable_order = ask_order(desirable_price, desirable_amount)
 
         own_offers = self.state.bitclude.active_offers
 
         if len(own_offers) == 0:
             self.client.create_order(desirable_order)
+            return
 
         if len(own_offers) == 1:
-            return actions_for_1_own_offer(
-                desirable_action, own_offers[0], self.tolerance
-            )
+            if offer_is_within_tolerance(
+                own_offers[0], desirable_order, self.tolerance
+            ):
+                return
+            self.client.cancel_and_wait(own_offers[0].to_order_maker())
+            self.client.create_order(desirable_order)
+            return
 
-        return actions_for_more_than_1_own_offer(desirable_action, own_offers)
+        if len(own_offers) > 1:
+            desirable_action = ask_action(desirable_price, desirable_amount)
+            return actions_for_more_than_1_own_offer(desirable_action, own_offers)
 
     @property
     def top_ask(self):

@@ -19,15 +19,11 @@ def fixture_initialized_state():
     btc_price_deribit = 40_000
     usd_pln = 4
 
-    top_bid_price = 150_000
     top_ask_price = 170_000
-    top_bid_amount = 1
     top_ask_amount = 1
 
-    own_bid_price = 160_000
     own_ask_price = 200_000
     own_ask_amount = 1
-    own_bid_amount = 1
 
     active_plns = 100_000
     active_btcs = 1
@@ -45,26 +41,9 @@ def fixture_initialized_state():
                     )
                 ]
             ),
-            bids=OrderbookRestList(
-                [
-                    OrderbookRestItem(
-                        price=Decimal(top_bid_price), amount=Decimal(top_bid_amount)
-                    )
-                ]
-            ),
         )
     )
     state.bitclude.active_offers = [
-        Offer(
-            price=Decimal(own_bid_price),
-            amount=Decimal(own_bid_amount),
-            offertype="bid",
-            currency1="btc",
-            currency2="pln",
-            id_user_open="1337",
-            nr="420",
-            time_open="2020-01-01T00:00:00Z",
-        ),
         Offer(
             price=Decimal(own_ask_price),
             amount=Decimal(own_ask_amount),
@@ -82,7 +61,6 @@ def fixture_initialized_state():
             "BTC": Balance(active=Decimal(active_btcs), inactive=Decimal("0")),
         }
     )
-    state.bitclude.active_offers = []
     return state
 
 
@@ -141,6 +119,33 @@ def test_ask_bidding_over_delta_without_own_orders(initialized_state: State):
     assert result_order.side == SideTypeEnum.ASK
     assert result_order.price == price_to_ask
     assert result_order.amount == Decimal("1")
+
+
+def test_ask_bidding_over_epsilon_with_own_orders(initialized_state: State):
+    state = initialized_state
+
+    bitclude_client = mock.Mock()
+
+    strategy = DeltaEpsilonStrategyAsk(state, bitclude_client)
+
+    top_ask_offer = min(state.bitclude.orderbook_rest.asks, key=lambda x: x.price)
+    top_ask = top_ask_offer.price
+    epsilon = strategy.epsilon
+
+    strategy.get_actions()
+
+    bitclude_client.cancel_and_wait.assert_called_once()
+    result_cancel_order = bitclude_client.cancel_and_wait.call_args[0][0]
+    assert result_cancel_order.side == SideTypeEnum.ASK
+    assert result_cancel_order.price == state.bitclude.active_offers[0].price
+    assert result_cancel_order.amount == Decimal("1")
+
+    bitclude_client.create_order.assert_called_once()
+    result_create_order = bitclude_client.create_order.call_args[0][0]
+    price_to_ask = top_ask - epsilon
+    assert result_create_order.side == SideTypeEnum.ASK
+    assert result_create_order.price == price_to_ask
+    assert result_create_order.amount == Decimal("1")
 
 
 @pytest.mark.parametrize(
