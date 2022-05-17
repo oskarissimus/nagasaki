@@ -108,7 +108,6 @@ def test_ask_bidding_over_epsilon_without_own_orders(initialized_state: State):
     assert result_order.amount == Decimal("1")
 
 
-@pytest.mark.skip
 def test_ask_bidding_over_delta_without_own_orders(initialized_state: State):
     state = initialized_state
     state.bitclude.active_offers = []
