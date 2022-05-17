@@ -2,8 +2,10 @@ from decimal import Decimal
 from typing import List
 
 from pydantic import BaseModel
+from nagasaki.clients import BaseClient
+from nagasaki.clients.base_client import OrderMaker
 from nagasaki.clients.bitclude.dto import Offer
-from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
+from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum, InstrumentTypeEnum
 from nagasaki.models.bitclude import Action, BitcludeOrder
 from nagasaki.strategy.abstract_strategy import AbstractStrategy, StrategyException
 from nagasaki.state import State
@@ -50,8 +52,8 @@ class Tolerance(BaseModel):
 
 
 def offer_is_within_tolerance(
-    offer: BitcludeOrder,
-    desirable_order: BitcludeOrder,
+    offer: Offer,
+    desirable_order: OrderMaker,
     tolerance: Tolerance,
 ):
     return (
@@ -101,6 +103,15 @@ def ask_action(price: Decimal, amount: Decimal):
     )
 
 
+def ask_order(price: Decimal, amount: Decimal) -> OrderMaker:
+    return OrderMaker(
+        side=SideTypeEnum.ASK,
+        price=price,
+        amount=amount,
+        instrument=InstrumentTypeEnum.BTC_PLN,
+    )
+
+
 def cancel_action(offer: Offer):
     Action(
         action_type=ActionTypeEnum.CANCEL_AND_WAIT,
@@ -108,9 +119,14 @@ def cancel_action(offer: Offer):
     )
 
 
+def cancel_order(offer: Offer):
+    return offer.to_bitclude_order()
+
+
 class DeltaEpsilonStrategyAsk(AbstractStrategy):
-    def __init__(self, state: State):
+    def __init__(self, state: State, client: BaseClient):
         self.state = state
+        self.client = client
         self.epsilon = Decimal("0.01")
         self.price_tolerance = Decimal("100")
         self.amount_tolerance = Decimal("0.000_3")
@@ -119,24 +135,33 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
         )
 
     def get_actions(self) -> List[Action]:
-        delta_price = calculate_delta_price(self.ref, self.delta_adjusted_for_inventory)
+        delta_price = calculate_delta_price(
+            self.btc_mark_pln, self.delta_adjusted_for_inventory
+        )
         epsilon_price = calculate_epsilon_price(self.top_ask, self.epsilon)
 
         desirable_price = max(delta_price, epsilon_price)
         desirable_amount = self.total_btc
-        desirable_action = ask_action(desirable_price, desirable_amount)
+        desirable_order = ask_order(desirable_price, desirable_amount)
 
         own_offers = self.state.bitclude.active_offers
 
         if len(own_offers) == 0:
-            return actions_for_0_own_offers(desirable_action)
+            self.client.create_order(desirable_order)
+            return
 
         if len(own_offers) == 1:
-            return actions_for_1_own_offer(
-                desirable_action, own_offers[0], self.tolerance
-            )
+            if offer_is_within_tolerance(
+                own_offers[0], desirable_order, self.tolerance
+            ):
+                return
+            self.client.cancel_and_wait(own_offers[0].to_order_maker())
+            self.client.create_order(desirable_order)
+            return
 
-        return actions_for_more_than_1_own_offer(desirable_action, own_offers)
+        if len(own_offers) > 1:
+            desirable_action = ask_action(desirable_price, desirable_amount)
+            return actions_for_more_than_1_own_offer(desirable_action, own_offers)
 
     @property
     def top_ask(self):
@@ -150,7 +175,7 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
         )
 
     @property
-    def ref(self):
+    def btc_mark_pln(self):
         return self.state.deribit.btc_mark_usd * self.state.usd_pln
 
     @property
@@ -159,7 +184,9 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
         total_pln = balances["PLN"].active + balances["PLN"].inactive
         total_btc = balances["BTC"].active + balances["BTC"].inactive
 
-        total_btc_value_in_pln = calculate_btc_value_in_pln(total_btc, self.ref)
+        total_btc_value_in_pln = calculate_btc_value_in_pln(
+            total_btc, self.btc_mark_pln
+        )
         return calculate_inventory_parameter(total_pln, total_btc_value_in_pln)
 
     @property

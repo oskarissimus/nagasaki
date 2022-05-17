@@ -8,7 +8,6 @@ from nagasaki.clients.deribit_client import AccountSummary
 from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.models.bitclude import OrderbookRest, OrderbookRestItem, OrderbookRestList
 from nagasaki.state import BitcludeState, DeribitState, State
-from nagasaki.strategy import HedgingStrategy
 from nagasaki.strategy_executor import StrategyExecutor
 
 
@@ -49,6 +48,7 @@ def fixture_state():
     return state
 
 
+@pytest.mark.skip
 def test_should_short_2_btcs(event_manager, state: State):
     strategy = HedgingStrategy(state)
 

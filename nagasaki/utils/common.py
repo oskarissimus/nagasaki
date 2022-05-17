@@ -37,5 +37,5 @@ def round_decimals_down(number: float, decimals: int = 2):
     elif decimals == 0:
         return math.floor(number)
 
-    factor = 10 ** decimals
+    factor = 10**decimals
     return math.floor(number * factor) / factor

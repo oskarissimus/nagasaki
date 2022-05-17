@@ -68,7 +68,6 @@ while True:
     # If delta is unhedged then hedge
     # Create orders
 
-
     open_offers = b.fetch_active_offers()
     for offer in open_offers:
         b.cancel_order(CancelRequestDTO.from_bitclude_order(offer.to_bitclude_order()))
@@ -85,7 +84,7 @@ while True:
             rate=ASK,
             market1=MarketEnum.BTC,
             market2=MarketEnum.PLN,
-            hidden=False
+            hidden=False,
         )
         b.create_order(ask_order_to_create)
     else:
@@ -100,7 +99,7 @@ while True:
             rate=BID,
             market1=MarketEnum.BTC,
             market2=MarketEnum.PLN,
-            hidden=False
+            hidden=False,
         )
         b.create_order(bid_order_to_create)
     else:

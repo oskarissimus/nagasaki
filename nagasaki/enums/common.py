@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 
 
 class OrderActionEnum(str, Enum):
@@ -11,6 +11,11 @@ class ActionTypeEnum(str, Enum):
     CANCEL = "CANCEL"
     NOOP = "NOOP"
     CANCEL_AND_WAIT = "CANCEL_AND_WAIT"
+
+
+class InstrumentTypeEnum(int, Enum):
+    BTC_PLN = auto()
+    BTC_PERPETUAL = auto()
 
 
 class SideTypeEnum(str, Enum):
