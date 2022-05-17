@@ -88,19 +88,22 @@ def fixture_initialized_state():
 def test_ask_bidding_over_epsilon_without_own_orders(initialized_state: State):
     state = initialized_state
     state.bitclude.active_offers = []
-    strategy = DeltaEpsilonStrategyAsk(state, mock.Mock())
+
+    bitclude_client = mock.Mock()
+
+    strategy = DeltaEpsilonStrategyAsk(state, bitclude_client)
 
     top_ask_offer = min(state.bitclude.orderbook_rest.asks, key=lambda x: x.price)
     top_ask = top_ask_offer.price
     epsilon = strategy.epsilon
 
-    result_actions = strategy.get_actions()
+    bitclude_client.create_order.assert_called_once()
+    result_order = bitclude_client.create_order.call_args[0][0]
+
     price_to_ask = top_ask - epsilon
-    assert len(result_actions) == 1
-    assert result_actions[0].action_type == ActionTypeEnum.CREATE
-    assert result_actions[0].order.side == SideTypeEnum.ASK
-    assert result_actions[0].order.price == price_to_ask
-    assert result_actions[0].order.amount == Decimal("1")
+    assert result_order.side == SideTypeEnum.ASK
+    assert result_order.price == price_to_ask
+    assert result_order.amount == Decimal("1")
 
 
 @pytest.mark.skip
