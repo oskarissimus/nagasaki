@@ -1,4 +1,5 @@
 from decimal import Decimal
+from unittest import mock
 
 import pytest
 
@@ -87,7 +88,7 @@ def fixture_initialized_state():
 def test_ask_bidding_over_epsilon_without_own_orders(initialized_state: State):
     state = initialized_state
     state.bitclude.active_offers = []
-    strategy = DeltaEpsilonStrategyAsk(state)
+    strategy = DeltaEpsilonStrategyAsk(state, mock.Mock())
 
     top_ask_offer = min(state.bitclude.orderbook_rest.asks, key=lambda x: x.price)
     top_ask = top_ask_offer.price
@@ -107,7 +108,7 @@ def test_ask_bidding_over_delta_without_own_orders(initialized_state: State):
     state = initialized_state
     state.bitclude.active_offers = []
     state.deribit.btc_mark_usd = Decimal("50_000")
-    strategy = DeltaEpsilonStrategyAsk(state)
+    strategy = DeltaEpsilonStrategyAsk(state, mock.Mock())
 
     top_ask_offer = min(state.bitclude.orderbook_rest.asks, key=lambda x: x.price)
     top_ask = top_ask_offer.price

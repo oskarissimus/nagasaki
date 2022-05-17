@@ -2,6 +2,7 @@ from decimal import Decimal
 from typing import List
 
 from pydantic import BaseModel
+from nagasaki.clients import BaseClient
 from nagasaki.clients.bitclude.dto import Offer
 from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
 from nagasaki.models.bitclude import Action, BitcludeOrder
@@ -109,8 +110,9 @@ def cancel_action(offer: Offer):
 
 
 class DeltaEpsilonStrategyAsk(AbstractStrategy):
-    def __init__(self, state: State):
+    def __init__(self, state: State, client: BaseClient):
         self.state = state
+        self.client = client
         self.epsilon = Decimal("0.01")
         self.price_tolerance = Decimal("100")
         self.amount_tolerance = Decimal("0.000_3")

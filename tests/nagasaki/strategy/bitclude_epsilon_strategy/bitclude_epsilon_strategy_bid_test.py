@@ -102,10 +102,11 @@ def test_bid_bidding_over_epsilon_simple_case(initialized_state: State):
 
 def test_bidding_over_multiple_bids(initialized_state: State):
     initialized_state.bitclude.orderbook_rest.bids = OrderbookRestList(
-        [OrderbookRestItem(price=Decimal(150_000), amount=Decimal(1)),
-         OrderbookRestItem(price=Decimal(149_999), amount=Decimal(1)),
-         OrderbookRestItem(price=Decimal(149_998), amount=Decimal(1))
-         ]
+        [
+            OrderbookRestItem(price=Decimal(150_000), amount=Decimal(1)),
+            OrderbookRestItem(price=Decimal(149_999), amount=Decimal(1)),
+            OrderbookRestItem(price=Decimal(149_998), amount=Decimal(1)),
+        ]
     )
     bes = BitcludeEpsilonStrategy(initialized_state)
     initialized_state.bitclude.active_offers = []
