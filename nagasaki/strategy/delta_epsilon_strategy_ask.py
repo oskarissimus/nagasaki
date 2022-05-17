@@ -131,7 +131,9 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
         )
 
     def get_actions(self) -> List[Action]:
-        delta_price = calculate_delta_price(self.ref, self.delta_adjusted_for_inventory)
+        delta_price = calculate_delta_price(
+            self.btc_mark_pln, self.delta_adjusted_for_inventory
+        )
         epsilon_price = calculate_epsilon_price(self.top_ask, self.epsilon)
 
         desirable_price = max(delta_price, epsilon_price)
@@ -163,7 +165,7 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
         )
 
     @property
-    def ref(self):
+    def btc_mark_pln(self):
         return self.state.deribit.btc_mark_usd * self.state.usd_pln
 
     @property
@@ -172,7 +174,9 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
         total_pln = balances["PLN"].active + balances["PLN"].inactive
         total_btc = balances["BTC"].active + balances["BTC"].inactive
 
-        total_btc_value_in_pln = calculate_btc_value_in_pln(total_btc, self.ref)
+        total_btc_value_in_pln = calculate_btc_value_in_pln(
+            total_btc, self.btc_mark_pln
+        )
         return calculate_inventory_parameter(total_pln, total_btc_value_in_pln)
 
     @property
