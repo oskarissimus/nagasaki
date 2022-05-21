@@ -1,7 +1,5 @@
 from unittest import mock
 
-import pytest
-
 from nagasaki.strategy_executor import StrategyExecutor
 
 

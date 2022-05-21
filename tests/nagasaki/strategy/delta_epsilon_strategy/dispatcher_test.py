@@ -2,10 +2,16 @@ from unittest import mock
 from unittest.mock import call
 
 import pytest
-from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
-from nagasaki.strategy.delta_epsilon_strategy.ask import Tolerance
+from nagasaki.strategy.delta_epsilon_strategy.dispatcher import (
+    StrategyOrderDispatcher,
+    Tolerance,
+)
 from nagasaki.state import State, BitcludeState
-from .utils import make_order_maker, make_offer
+
+from tests.nagasaki.strategy.delta_epsilon_strategy.utils import (
+    make_order_maker,
+    make_offer,
+)
 
 
 @pytest.fixture(name="dispatcher")

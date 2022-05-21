@@ -5,7 +5,7 @@ from nagasaki.strategy.delta_epsilon_strategy.ask import (
     DeltaEpsilonStrategyAsk,
 )
 
-from .utils import (
+from tests.nagasaki.strategy.delta_epsilon_strategy.utils import (
     make_account_info,
     make_order_maker,
 )
