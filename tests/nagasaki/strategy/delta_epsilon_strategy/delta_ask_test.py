@@ -3,7 +3,7 @@ from unittest import mock
 from unittest.mock import call
 
 from nagasaki.state import State
-from nagasaki.strategy.delta_epsilon_strategy_ask import (
+from nagasaki.strategy.delta_epsilon_strategy.ask import (
     DeltaEpsilonStrategyAsk,
     Tolerance,
 )
