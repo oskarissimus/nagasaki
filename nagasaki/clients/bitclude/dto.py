@@ -11,13 +11,8 @@ from nagasaki.enums.common import (
     ActionEnum,
     InstrumentTypeEnum,
 )
-from nagasaki.utils.common import round_decimals_down
+from nagasaki.utils.common import HashableBaseModel, round_decimals_down
 from nagasaki.models.bitclude import BitcludeOrder, OrderbookRest, OrderbookRestItem
-
-# https://github.com/samuelcolvin/pydantic/issues/1303
-class HashableBaseModel(BaseModel):
-    def __hash__(self):
-        return hash((type(self),) + tuple(self.__dict__.values()))
 
 
 class Ticker(BaseModel):

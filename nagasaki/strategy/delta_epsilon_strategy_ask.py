@@ -164,8 +164,9 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
             return
 
         if len(own_offers) > 1:
-            desirable_action = ask_action(desirable_price, desirable_amount)
-            return actions_for_more_than_1_own_offer(desirable_action, own_offers)
+            for offer in own_offers:
+                self.client.cancel_and_wait(offer.to_order_maker())
+            self.client.create_order(desirable_order)
 
     @property
     def top_ask(self):

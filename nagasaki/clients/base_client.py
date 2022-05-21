@@ -2,12 +2,12 @@ import abc
 from decimal import Decimal
 from typing import Optional
 
-from pydantic import BaseModel
 
 from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
+from nagasaki.utils.common import HashableBaseModel
 
 
-class Order(BaseModel):
+class Order(HashableBaseModel):
     order_id: Optional[int]
     side: SideTypeEnum
     amount: Decimal

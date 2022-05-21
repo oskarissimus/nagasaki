@@ -1,5 +1,7 @@
 import math
 
+from pydantic import BaseModel
+
 
 def get_discount_price_ratio(
     btc_mark_price_usd, usd_mark_price_pln, btc_discount_price_pln
@@ -39,3 +41,9 @@ def round_decimals_down(number: float, decimals: int = 2):
 
     factor = 10**decimals
     return math.floor(number * factor) / factor
+
+
+# https://github.com/samuelcolvin/pydantic/issues/1303
+class HashableBaseModel(BaseModel):
+    def __hash__(self):
+        return hash((type(self),) + tuple(self.__dict__.values()))
