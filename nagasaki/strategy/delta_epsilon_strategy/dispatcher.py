@@ -1,10 +1,17 @@
+from decimal import Decimal
 from typing import List
+
+from pydantic import BaseModel
 
 from nagasaki.clients import BaseClient
 from nagasaki.clients.base_client import OrderMaker
 from nagasaki.clients.bitclude.dto import Offer
 from nagasaki.state import State
-from nagasaki.strategy.delta_epsilon_strategy.ask import Tolerance
+
+
+class Tolerance(BaseModel):
+    price: Decimal
+    amount: Decimal
 
 
 def offer_is_within_tolerance(
@@ -21,7 +28,9 @@ def offer_is_within_tolerance(
 class StrategyOrderDispatcher:
     def __init__(self, client: BaseClient, tolerance: Tolerance, state: State):
         self.client = client
-        self.tolerance = tolerance
+        self.tolerance = tolerance or Tolerance(
+            price=Decimal("100"), amount=Decimal("0.000_3")
+        )
         self.state = state
 
     def dispatch(self, desirable_order):

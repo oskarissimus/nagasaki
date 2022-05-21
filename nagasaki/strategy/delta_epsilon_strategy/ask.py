@@ -8,6 +8,7 @@ from nagasaki.clients.bitclude.dto import Offer
 from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum, InstrumentTypeEnum
 from nagasaki.models.bitclude import Action, BitcludeOrder
 from nagasaki.strategy.abstract_strategy import AbstractStrategy, StrategyException
+from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
 from nagasaki.state import State
 
 
@@ -127,18 +128,14 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
     def __init__(
         self,
         state: State,
-        client: BaseClient,
+        dispatcher: StrategyOrderDispatcher,
         epsilon: Decimal = None,
-        tolerance: Tolerance = None,
     ):
         self.state = state
-        self.client = client
+        self.dispatcher = dispatcher
         self.epsilon = epsilon or Decimal("0.01")
-        self.tolerance = tolerance or Tolerance(
-            price=Decimal("100"), amount=Decimal("0.000_3")
-        )
 
-    def get_actions(self) -> List[Action]:
+    def get_actions(self):
         delta_price = calculate_delta_price(
             self.btc_mark_pln, self.delta_adjusted_for_inventory
         )
@@ -148,25 +145,7 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
         desirable_amount = self.total_btc
         desirable_order = ask_order(desirable_price, desirable_amount)
 
-        own_offers = self.state.bitclude.active_offers
-
-        if len(own_offers) == 0:
-            self.client.create_order(desirable_order)
-            return
-
-        if len(own_offers) == 1:
-            if offer_is_within_tolerance(
-                own_offers[0], desirable_order, self.tolerance
-            ):
-                return
-            self.client.cancel_and_wait(own_offers[0].to_order_maker())
-            self.client.create_order(desirable_order)
-            return
-
-        if len(own_offers) > 1:
-            for offer in own_offers:
-                self.client.cancel_and_wait(offer.to_order_maker())
-            self.client.create_order(desirable_order)
+        self.dispatcher.dispatch(desirable_order)
 
     @property
     def top_ask(self):
