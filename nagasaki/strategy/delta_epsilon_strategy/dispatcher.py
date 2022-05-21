@@ -26,7 +26,7 @@ def offer_is_within_tolerance(
 
 
 class StrategyOrderDispatcher:
-    def __init__(self, client: BaseClient, tolerance: Tolerance, state: State):
+    def __init__(self, client: BaseClient, state: State, tolerance: Tolerance = None):
         self.client = client
         self.tolerance = tolerance or Tolerance(
             price=Decimal("100"), amount=Decimal("0.000_3")

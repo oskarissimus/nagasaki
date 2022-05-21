@@ -17,7 +17,7 @@ from tests.nagasaki.strategy.delta_epsilon_strategy.utils import (
 @pytest.fixture(name="dispatcher")
 def fixture_dispatcher(client, state):
     tolerance = Tolerance(amount=1, price=1)
-    return StrategyOrderDispatcher(client, tolerance, state)
+    return StrategyOrderDispatcher(client, state, tolerance)
 
 
 @pytest.fixture(name="client")
