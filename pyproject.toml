@@ -2,7 +2,8 @@
 name = "nagasaki"
 version = "0.1.0"
 description = ""
-authors = ["Oskar Korczak <oskar.korczak@protonmail.com>", "Kacper Wikieł <k.wikiel@gmail.com>"]
+authors = ["Oskar Korczak <oskar.korczak@protonmail.com>", "Kacper Wikieł <k.wikiel@gmail.com>", "Szczepan Adriański <kontakt@aszczepanski.pl>"]
+ 
 
 [tool.poetry.dependencies]
 python = "^3.8"

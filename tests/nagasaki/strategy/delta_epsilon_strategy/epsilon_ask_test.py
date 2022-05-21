@@ -1,14 +1,16 @@
 from decimal import Decimal
 from unittest import mock
 
-from nagasaki.clients.bitclude.dto import Offer
 
 from nagasaki.enums.common import SideTypeEnum
-from nagasaki.models.bitclude import OrderbookRest, OrderbookRestItem, OrderbookRestList
 from nagasaki.state import State
 from nagasaki.strategy.delta_epsilon_strategy_ask import (
     DeltaEpsilonStrategyAsk,
     Tolerance,
+)
+from .utils import (
+    make_offer,
+    make_orderbook,
 )
 
 
@@ -91,24 +93,3 @@ def test_own_order_inside_tolerance_should_not_cancel_and_create(
 
     bitclude_client.cancel_and_wait.assert_not_called()
     bitclude_client.create_order.assert_not_called()
-
-
-def make_offer(price, amount):
-    return Offer(
-        price=Decimal(price),
-        amount=Decimal(amount),
-        offertype="ask",
-        currency1="btc",
-        currency2="pln",
-        id_user_open="1337",
-        nr="421",
-        time_open="2020-01-01T00:00:00Z",
-    )
-
-
-def make_orderbook(price, amount):
-    return OrderbookRest(
-        asks=OrderbookRestList(
-            [OrderbookRestItem(price=Decimal(price), amount=Decimal(amount))]
-        )
-    )
