@@ -4,7 +4,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 
-from enums.common import SideTypeEnum, InstrumentTypeEnum
+from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
 
 
 class Order(BaseModel):

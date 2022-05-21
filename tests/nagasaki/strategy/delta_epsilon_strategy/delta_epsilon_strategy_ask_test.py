@@ -121,7 +121,7 @@ def test_ask_bidding_over_delta_without_own_orders(initialized_state: State):
     assert result_order.amount == Decimal("1")
 
 
-def test_ask_bidding_over_epsilon_with_own_orders(initialized_state: State):
+def test_ask_bidding_over_epsilon_with_one_own_order(initialized_state: State):
     state = initialized_state
 
     bitclude_client = mock.Mock()

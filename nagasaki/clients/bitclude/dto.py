@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Dict, List
 from pydantic import BaseModel, validator
 
-from clients.base_client import OrderMaker
+from nagasaki.clients.base_client import OrderMaker
 from nagasaki.enums.common import (
     OfferCurrencyEnum,
     SideTypeEnum,
