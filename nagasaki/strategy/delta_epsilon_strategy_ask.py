@@ -124,14 +124,18 @@ def cancel_order(offer: Offer):
 
 
 class DeltaEpsilonStrategyAsk(AbstractStrategy):
-    def __init__(self, state: State, client: BaseClient):
+    def __init__(
+        self,
+        state: State,
+        client: BaseClient,
+        epsilon: Decimal = None,
+        tolerance: Tolerance = None,
+    ):
         self.state = state
         self.client = client
-        self.epsilon = Decimal("0.01")
-        self.price_tolerance = Decimal("100")
-        self.amount_tolerance = Decimal("0.000_3")
-        self.tolerance = Tolerance(
-            price=self.price_tolerance, amount=self.amount_tolerance
+        self.epsilon = epsilon or Decimal("0.01")
+        self.tolerance = tolerance or Tolerance(
+            price=Decimal("100"), amount=Decimal("0.000_3")
         )
 
     def get_actions(self) -> List[Action]:
