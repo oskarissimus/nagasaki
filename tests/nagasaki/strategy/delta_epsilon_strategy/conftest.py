@@ -1,8 +1,9 @@
 from decimal import Decimal
+from unittest import mock
 
 import pytest
 
-from nagasaki.clients.bitclude.dto import AccountInfo, Offer, Balance
+from nagasaki.clients.bitclude.dto import AccountInfo, Balance
 from nagasaki.models.bitclude import OrderbookRest, OrderbookRestItem, OrderbookRestList
 from nagasaki.state import State, DeribitState, BitcludeState
 
@@ -40,3 +41,8 @@ def fixture_initialized_state():
         }
     )
     return state
+
+
+@pytest.fixture(name="dispatcher")
+def fixture_dispatcher():
+    return mock.Mock()

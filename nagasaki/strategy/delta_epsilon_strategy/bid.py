@@ -41,7 +41,7 @@ def calculate_epsilon_price(top_bid: Decimal, epsilon: Decimal) -> Decimal:
     return top_bid + epsilon
 
 
-class DeltaEpsilonStrategy(AbstractStrategy):
+class DeltaEpsilonStrategyBid(AbstractStrategy):
     def __init__(self, state: State):
         self.state = state
         self.epsilon = Decimal("0.01")

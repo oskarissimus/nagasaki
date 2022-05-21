@@ -1,13 +1,9 @@
 from decimal import Decimal
-from typing import List
 
-from pydantic import BaseModel
-from nagasaki.clients import BaseClient
 from nagasaki.clients.base_client import OrderMaker
-from nagasaki.clients.bitclude.dto import Offer
-from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum, InstrumentTypeEnum
-from nagasaki.models.bitclude import Action, BitcludeOrder
+from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
 from nagasaki.strategy.abstract_strategy import AbstractStrategy, StrategyException
+from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
 from nagasaki.state import State
 
 
@@ -46,63 +42,6 @@ def calculate_epsilon_price(top_ask: Decimal, epsilon: Decimal) -> Decimal:
     return top_ask - epsilon
 
 
-class Tolerance(BaseModel):
-    price: Decimal
-    amount: Decimal
-
-
-def offer_is_within_tolerance(
-    offer: Offer,
-    desirable_order: OrderMaker,
-    tolerance: Tolerance,
-):
-    return (
-        abs(offer.price - desirable_order.price) < tolerance.price
-        and abs(offer.amount - desirable_order.amount) < tolerance.amount
-    )
-
-
-def actions_for_0_own_offers(desirable_action: Action):
-    return [desirable_action]
-
-
-def actions_for_1_own_offer(
-    desirable_action: Action, own_offer: Offer, tolerance: Tolerance
-):
-    if offer_is_within_tolerance(own_offer, desirable_action.order, tolerance):
-        return []
-    return [cancel_action(own_offer), desirable_action]
-
-
-def actions_for_more_than_1_own_offer(
-    desirable_action: Action,
-    own_offers: List[Offer],
-):
-    """
-    if there are more than 1 own offers, cancel all and create desirable action
-    """
-    return cancel_all_asks(own_offers) + [desirable_action]
-
-
-def cancel_all_asks(active_offers: List[Offer]):
-    actions = []
-    asks = [offer for offer in active_offers if offer.offertype == SideTypeEnum.ASK]
-    for offer in asks:
-        actions.append(cancel_action(offer))
-    return actions
-
-
-def ask_action(price: Decimal, amount: Decimal):
-    return Action(
-        action_type=ActionTypeEnum.CREATE,
-        order=BitcludeOrder(
-            side=SideTypeEnum.ASK,
-            price=price,
-            amount=amount,
-        ),
-    )
-
-
 def ask_order(price: Decimal, amount: Decimal) -> OrderMaker:
     return OrderMaker(
         side=SideTypeEnum.ASK,
@@ -112,33 +51,18 @@ def ask_order(price: Decimal, amount: Decimal) -> OrderMaker:
     )
 
 
-def cancel_action(offer: Offer):
-    Action(
-        action_type=ActionTypeEnum.CANCEL_AND_WAIT,
-        order=offer.to_bitclude_order(),
-    )
-
-
-def cancel_order(offer: Offer):
-    return offer.to_bitclude_order()
-
-
 class DeltaEpsilonStrategyAsk(AbstractStrategy):
     def __init__(
         self,
         state: State,
-        client: BaseClient,
+        dispatcher: StrategyOrderDispatcher,
         epsilon: Decimal = None,
-        tolerance: Tolerance = None,
     ):
         self.state = state
-        self.client = client
+        self.dispatcher = dispatcher
         self.epsilon = epsilon or Decimal("0.01")
-        self.tolerance = tolerance or Tolerance(
-            price=Decimal("100"), amount=Decimal("0.000_3")
-        )
 
-    def get_actions(self) -> List[Action]:
+    def get_actions(self):
         delta_price = calculate_delta_price(
             self.btc_mark_pln, self.delta_adjusted_for_inventory
         )
@@ -148,25 +72,7 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
         desirable_amount = self.total_btc
         desirable_order = ask_order(desirable_price, desirable_amount)
 
-        own_offers = self.state.bitclude.active_offers
-
-        if len(own_offers) == 0:
-            self.client.create_order(desirable_order)
-            return
-
-        if len(own_offers) == 1:
-            if offer_is_within_tolerance(
-                own_offers[0], desirable_order, self.tolerance
-            ):
-                return
-            self.client.cancel_and_wait(own_offers[0].to_order_maker())
-            self.client.create_order(desirable_order)
-            return
-
-        if len(own_offers) > 1:
-            for offer in own_offers:
-                self.client.cancel_and_wait(offer.to_order_maker())
-            self.client.create_order(desirable_order)
+        self.dispatcher.dispatch(desirable_order)
 
     @property
     def top_ask(self):
