@@ -9,7 +9,7 @@ from nagasaki.strategy.delta_epsilon_strategy.dispatcher import (
 from nagasaki.state import State, BitcludeState
 
 from tests.nagasaki.strategy.delta_epsilon_strategy.utils import (
-    make_order_maker,
+    make_order_maker_ask,
     make_offer,
 )
 
@@ -33,7 +33,7 @@ def fixture_state():
 
 
 def test_should_create_for_0_own_offers(dispatcher, client):
-    desirable_order = make_order_maker(100, 1)
+    desirable_order = make_order_maker_ask(100, 1)
 
     dispatcher.dispatch(desirable_order)
 
@@ -47,7 +47,7 @@ def test_should_cancel_and_create_for_1_own_offer_outside_tolerance(
     state.bitclude.active_offers = [own_offer]
     dispatcher.tolerance = Tolerance(price=1, amount=1)
 
-    desirable_order = make_order_maker(100, 1)
+    desirable_order = make_order_maker_ask(100, 1)
 
     dispatcher.dispatch(desirable_order)
 
@@ -64,7 +64,7 @@ def test_should_not_cancel_nor_create_for_1_own_offer_inside_tolerance(
     state.bitclude.active_offers = [own_offer]
     dispatcher.tolerance = Tolerance(price=2, amount=1)
 
-    desirable_order = make_order_maker(100, 1)
+    desirable_order = make_order_maker_ask(100, 1)
 
     dispatcher.dispatch(desirable_order)
 
@@ -78,7 +78,7 @@ def should_cancel_all_and_create_for_multiple_offers(dispatcher, client, state):
     own_offer_2 = make_offer(price=101, amount=1)
     state.bitclude.active_offers = [own_offer_1, own_offer_2]
 
-    desirable_order = make_order_maker(100, 1)
+    desirable_order = make_order_maker_ask(100, 1)
 
     dispatcher.dispatch(desirable_order)
 

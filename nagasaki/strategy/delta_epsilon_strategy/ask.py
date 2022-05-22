@@ -53,10 +53,7 @@ def ask_order(price: Decimal, amount: Decimal) -> OrderMaker:
 
 class DeltaEpsilonStrategyAsk(AbstractStrategy):
     def __init__(
-        self,
-        state: State,
-        dispatcher: StrategyOrderDispatcher,
-        epsilon: Decimal = None,
+        self, state: State, dispatcher: StrategyOrderDispatcher, epsilon: Decimal = None
     ):
         self.state = state
         self.dispatcher = dispatcher
