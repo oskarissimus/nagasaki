@@ -1,9 +1,10 @@
 from decimal import Decimal
-from typing import List
-from nagasaki.enums.common import ActionTypeEnum, SideTypeEnum
-from nagasaki.models.bitclude import Action, BitcludeOrder
+
+from nagasaki.clients.base_client import OrderMaker
+from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
 from nagasaki.strategy.abstract_strategy import AbstractStrategy, StrategyException
 from nagasaki.state import State
+from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
 
 
 def calculate_btc_value_in_pln(btc: Decimal, price: Decimal) -> Decimal:
@@ -41,36 +42,34 @@ def calculate_epsilon_price(top_bid: Decimal, epsilon: Decimal) -> Decimal:
     return top_bid + epsilon
 
 
-class DeltaEpsilonStrategyBid(AbstractStrategy):
-    def __init__(self, state: State):
-        self.state = state
-        self.epsilon = Decimal("0.01")
-        self.price_tolerance = Decimal("100")
-        self.amount_tolerance = Decimal("0.000_3")
+def bid_order(price: Decimal, amount: Decimal) -> OrderMaker:
+    return OrderMaker(
+        side=SideTypeEnum.BID,
+        price=price,
+        amount=amount,
+        instrument=InstrumentTypeEnum.BTC_PLN,
+    )
 
-    def get_actions(self) -> List[Action]:
-        delta_price = calculate_delta_price(self.ref, self.delta_adjusted_for_inventory)
+
+class DeltaEpsilonStrategyBid(AbstractStrategy):
+    def __init__(
+        self, state: State, dispatcher: StrategyOrderDispatcher, epsilon: Decimal = None
+    ):
+        self.state = state
+        self.dispatcher = dispatcher
+        self.epsilon = epsilon or Decimal("0.01")
+
+    def get_actions(self):
+        delta_price = calculate_delta_price(
+            self.btc_mark_pln, self.delta_adjusted_for_inventory
+        )
         epsilon_price = calculate_epsilon_price(self.top_bid, self.epsilon)
 
         desirable_price = max(delta_price, epsilon_price)
         desirable_amount = self.total_btc
-        desirable_action = self.bid_action(desirable_price, desirable_amount)
+        desirable_order = bid_order(desirable_price, desirable_amount)
 
-        active_offers = self.state.bitclude.active_offers
-
-        if len(active_offers) == 0:
-            return [desirable_action]
-
-        if len(active_offers) == 1:
-            active_offer = active_offers[0]
-            if self.active_offer_is_within_tolerance(
-                active_offer, desirable_price, desirable_amount
-            ):
-                return []
-
-        actions = self.cancel_all_bids()
-        actions.append(desirable_action)
-        return actions
+        self.dispatcher.dispatch(desirable_order)
 
     @property
     def top_bid(self):
@@ -84,46 +83,8 @@ class DeltaEpsilonStrategyBid(AbstractStrategy):
         )
 
     @property
-    def ref(self):
+    def btc_mark_pln(self):
         return self.state.deribit.btc_mark_usd * self.state.usd_pln
-
-    def cancel_all_bids(self):
-        actions = []
-        bids = [
-            offer
-            for offer in self.state.bitclude.active_offers
-            if offer.offertype == SideTypeEnum.BID
-        ]
-        for offer in bids:
-            actions.append(
-                Action(
-                    action_type=ActionTypeEnum.CANCEL_AND_WAIT,
-                    order=offer.to_bitclude_order(),
-                )
-            )
-        return actions
-
-    @staticmethod
-    def bid_action(price: Decimal, amount: Decimal):
-        return Action(
-            action_type=ActionTypeEnum.CREATE,
-            order=BitcludeOrder(
-                side=SideTypeEnum.BID,
-                price=price,
-                amount=amount,
-            ),
-        )
-
-    def active_offer_is_within_tolerance(
-        self,
-        active_offer: BitcludeOrder,
-        desireable_price: Decimal,
-        desireable_amount: Decimal,
-    ):
-        return (
-            abs(active_offer.price - desireable_price) < self.price_tolerance
-            and abs(active_offer.amount - desireable_amount) < self.amount_tolerance
-        )
 
     @property
     def inventory_parameter(self):
@@ -131,7 +92,9 @@ class DeltaEpsilonStrategyBid(AbstractStrategy):
         total_pln = balances["PLN"].active + balances["PLN"].inactive
         total_btc = balances["BTC"].active + balances["BTC"].inactive
 
-        total_btc_value_in_pln = calculate_btc_value_in_pln(total_btc, self.ref)
+        total_btc_value_in_pln = calculate_btc_value_in_pln(
+            total_btc, self.btc_mark_pln
+        )
         return calculate_inventory_parameter(total_pln, total_btc_value_in_pln)
 
     @property
