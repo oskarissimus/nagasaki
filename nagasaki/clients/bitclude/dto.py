@@ -159,6 +159,17 @@ class CreateRequestDTO(BaseModel):
             rate=order.price,
         )
 
+    @classmethod
+    def from_order_maker(cls, order: OrderMaker):
+        action = ActionEnum.BUY if order.side == SideTypeEnum.BID else ActionEnum.SELL
+        return cls(
+            action=action,
+            market1=order.instrument.market_1,
+            market2=order.instrument.market_2,
+            amount=order.amount,
+            rate=order.price,
+        )
+
 
 class ActionDTO(BaseModel):
     action: ActionEnum
@@ -209,6 +220,10 @@ class CancelRequestDTO(BaseModel):
 
     @classmethod
     def from_bitclude_order(cls, order: BitcludeOrder):
+        return cls(order_id=order.order_id, type=order.side)
+
+    @classmethod
+    def from_order_maker(cls, order: OrderMaker):
         return cls(order_id=order.order_id, type=order.side)
 
 

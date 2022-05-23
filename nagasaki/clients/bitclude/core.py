@@ -4,6 +4,8 @@ from time import sleep
 from typing import List
 
 import requests
+
+from nagasaki.clients.base_client import OrderMaker, BaseClient
 from nagasaki.clients.bitclude.dto import (
     AccountInfo,
     Offer,
@@ -72,7 +74,7 @@ class RequestTimesRingBuffer:
         logger.info(self.get_requests_rate_per_10_minutes_for_last_1_minute())
 
 
-class BitcludeClient:
+class BitcludeClient(BaseClient):
     """
     Client holds url, and credentials. It makes requests and parses them into models.
     """
@@ -163,7 +165,10 @@ class BitcludeClient:
             raise CannotParseResponse(response.text) from json_decode_error
         return OrderbookResponseDTO(**response_json)
 
-    def create_order(self, order: CreateRequestDTO) -> CreateResponseDTO:
+    def create_order(self, order: OrderMaker):
+        self._create_order(CreateRequestDTO.from_order_maker(order))
+
+    def _create_order(self, order: CreateRequestDTO) -> CreateResponseDTO:
         logger.info(f"creating {order}")
         order_params = order.get_request_params()
         auth_params = self._auth_params
@@ -178,7 +183,10 @@ class BitcludeClient:
             return parsed_response
         raise BitcludeClientException(response.text)
 
-    def cancel_order(self, order: CancelRequestDTO) -> CancelResponseDTO:
+    def cancel_order(self, order: OrderMaker):
+        self._cancel_order(CancelRequestDTO.from_order_maker(order))
+
+    def _cancel_order(self, order: CancelRequestDTO) -> CancelResponseDTO:
         logger.info(f"cancelling {order}")
         order_params = order.get_request_params()
         auth_params = self._auth_params
@@ -192,6 +200,10 @@ class BitcludeClient:
             )
             return parsed_response
         raise BitcludeClientException(response.text)
+
+    def cancel_and_wait(self, order: OrderMaker):
+        self.cancel_order(order)
+        self.wait_for_offer_cancellation(order.order_id)
 
     def execute_action(self, action: Action):
         if action.action_type == ActionTypeEnum.CREATE:
