@@ -13,9 +13,13 @@ class ActionTypeEnum(str, Enum):
     CANCEL_AND_WAIT = "CANCEL_AND_WAIT"
 
 
-class InstrumentTypeEnum(int, Enum):
-    BTC_PLN = auto()
+class InstrumentTypeEnum(Enum):
+    BTC_PLN = ("BTC", "PLN")
     BTC_PERPETUAL = auto()
+
+    def __init__(self, market_1=None, market_2=None):
+        self.market_1 = market_1
+        self.market_2 = market_2
 
 
 class SideTypeEnum(str, Enum):
