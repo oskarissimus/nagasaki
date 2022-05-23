@@ -1,8 +1,12 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
-from nagasaki.logger import logger
-import requests
+
 from pydantic import BaseModel
+import requests
+
+from nagasaki.clients.base_client import BaseClient, OrderTaker
+from nagasaki.enums.common import SideTypeEnum
+from nagasaki.logger import logger
 
 
 class DeribitClientException(Exception):
@@ -15,7 +19,7 @@ class AccountSummary(BaseModel):
     margin_balance: float
 
 
-class DeribitClient:
+class DeribitClient(BaseClient):
     def __init__(
         self, deribit_url_base: str, deribit_client_id: str, deribit_client_secret: str
     ):
@@ -93,6 +97,10 @@ class DeribitClient:
             raise DeribitClientException(response_json["error"])
         return AccountSummary(**response_json["result"])
 
+    def create_order(self, order: OrderTaker):
+        order_type = "buy" if order.side == SideTypeEnum.BID else "sell"
+        self.create_order_perpetual(order.price_limit, order_type)
+
     def create_order_perpetual(self, amount_in_usd, order_type, dry_run=False):
         if order_type in ("buy", "sell"):
             rounded_amount_in_usd = round(amount_in_usd, -1)
@@ -132,3 +140,9 @@ class DeribitClient:
             f"{self.deribit_url_base}/public/get_index_price?index_name=btc_usd"
         )
         return Decimal(response.json()["result"]["index_price"])
+
+    def cancel_order(self, order: OrderTaker):
+        pass
+
+    def cancel_and_wait(self, order: OrderTaker):
+        pass
