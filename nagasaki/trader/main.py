@@ -63,7 +63,7 @@ if __name__ == "__main__":
         state,
     )
 
-    state_synchronizer = StateSynchronizer(state, bitclude_client)
+    state_synchronizer = StateSynchronizer(state, bitclude_client, deribit_client)
 
     des_ask_dispatcher = StrategyOrderDispatcher(client=bitclude_client, state=state)
     strategy = DeltaEpsilonStrategyAsk(state=state, dispatcher=des_ask_dispatcher)

@@ -37,6 +37,7 @@ class StateInitializer:
 
         self.state.bitclude.account_info = self.bitclude_client.fetch_account_info()
         self.state.bitclude.active_offers = self.bitclude_client.fetch_active_offers()
+        self.state.deribit.account_summary = self.deribit_client.fetch_account_summary()
         self.state.deribit.btc_mark_usd = (
             self.deribit_client.fetch_index_price_btc_usd()
         )

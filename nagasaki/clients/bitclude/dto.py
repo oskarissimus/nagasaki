@@ -28,16 +28,19 @@ class Balance(BaseModel):
 class AccountInfo(BaseModel):
     balances: Dict[str, Balance]
 
-    def get_btcs_inactive(self) -> Decimal:
+    @property
+    def btcs(self) -> Decimal:
+        return self.btcs_active + self.btcs_inactive
+
+    @property
+    def btcs_inactive(self) -> Decimal:
         """w zleceniach"""
         return self.balances["BTC"].inactive
 
-    def get_btcs_active(self) -> Decimal:
+    @property
+    def btcs_active(self) -> Decimal:
         """nie są w zleceniach"""
         return self.balances["BTC"].active
-
-    def get_btcs(self) -> Decimal:
-        return self.get_btcs_active() + self.get_btcs_inactive()
 
     def get_plns_inactive(self) -> Decimal:
         """w zleceniach"""

@@ -1,12 +1,19 @@
 from nagasaki.clients.bitclude.core import BitcludeClient
+from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.state import State
 from nagasaki.logger import logger
 
 
 class StateSynchronizer:
-    def __init__(self, state: State, bitclude_client: BitcludeClient):
+    def __init__(
+        self,
+        state: State,
+        bitclude_client: BitcludeClient,
+        deribit_client: DeribitClient,
+    ):
         self.state = state
         self.bitclude_client = bitclude_client
+        self.deribit_client = deribit_client
 
     def synchronize_state(self):
         logger.info("Synchronizing state")
@@ -15,3 +22,4 @@ class StateSynchronizer:
         self.state.bitclude.orderbook_rest = (
             self.bitclude_client.fetch_orderbook().to_orderbook_rest()
         )
+        self.state.deribit.account_summary = self.deribit_client.fetch_account_summary()
