@@ -11,7 +11,6 @@ from nagasaki.logger import logger
 from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import StateSynchronizer
-from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.strategy_executor import StrategyExecutor
 
 
@@ -23,7 +22,6 @@ class TraderApp:
         bitclude_client: BitcludeClient,
         bitclude_websocket_client: BitcludeWebsocketClient,
         deribit_client: DeribitClient,
-        strategy: AbstractStrategy,
         state: State,
         event_manager: EventManager,
         scheduler: BackgroundScheduler,
@@ -37,7 +35,6 @@ class TraderApp:
         self.bitclude_client = bitclude_client
         self.bitclude_websocket_client = bitclude_websocket_client
         self.deribit_client = deribit_client
-        self.strategy = strategy
         self.state = state
         self.event_manager = event_manager
         self.scheduler = scheduler
