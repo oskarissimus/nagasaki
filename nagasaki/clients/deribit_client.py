@@ -14,9 +14,9 @@ class DeribitClientException(Exception):
 
 
 class AccountSummary(BaseModel):
-    equity: float
-    delta_total: float
-    margin_balance: float
+    equity: Decimal
+    delta_total: Decimal
+    margin_balance: Decimal
 
 
 class DeribitClient(BaseClient):
@@ -80,7 +80,7 @@ class DeribitClient(BaseClient):
             "Content-Type": "application/json",
         }
 
-    def fetch_account_summary(self) -> dict:
+    def fetch_account_summary(self) -> AccountSummary:
 
         params = (
             ("currency", "BTC"),

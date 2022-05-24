@@ -7,6 +7,7 @@ from nagasaki.clients.bitclude.dto import (
     AccountInfo,
     Offer,
 )
+from nagasaki.clients.deribit_client import AccountSummary
 from nagasaki.models.bitclude import (
     OrderbookRest,
     OrderbookWebsocket,
@@ -22,6 +23,7 @@ class BitcludeState(BaseModel):
 
 class DeribitState(BaseModel):
     btc_mark_usd: Optional[Decimal]
+    account_summary: Optional[AccountSummary]
 
 
 class State(BaseModel):
@@ -34,3 +36,12 @@ class State(BaseModel):
 
     def get_top_bid(self) -> Decimal:
         return max(self.bitclude.orderbook_rest.bids, key=lambda x: x.price).price
+
+    @property
+    def grand_total_delta(self) -> Decimal:
+        bitclude_btcs = self.bitclude.account_info.btcs
+        deribit_total_delta = (
+            self.deribit.account_summary.margin_balance
+            + self.deribit.account_summary.delta_total
+        )
+        return bitclude_btcs + deribit_total_delta
