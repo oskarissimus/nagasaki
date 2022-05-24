@@ -1,10 +1,12 @@
 from decimal import Decimal
 
 from nagasaki.clients.base_client import OrderMaker
+from nagasaki.database.utils import write_order_maker_to_db
 from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
 from nagasaki.strategy.abstract_strategy import AbstractStrategy, StrategyException
 from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
 from nagasaki.state import State
+from nagasaki.logger import logger
 
 
 def calculate_btc_value_in_pln(btc: Decimal, price: Decimal) -> Decimal:
@@ -64,12 +66,15 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
             self.btc_mark_pln, self.delta_adjusted_for_inventory
         )
         epsilon_price = calculate_epsilon_price(self.top_ask, self.epsilon)
-
         desirable_price = max(delta_price, epsilon_price)
+        logger.info(f"{epsilon_price=:.0f}")
+        logger.info(f"{delta_price=:.0f}")
+        logger.info(f"{desirable_price=:.0f}")
         desirable_amount = self.total_btc
         desirable_order = ask_order(desirable_price, desirable_amount)
 
         self.dispatcher.dispatch(desirable_order)
+        write_order_maker_to_db(desirable_order)
 
     @property
     def top_ask(self):

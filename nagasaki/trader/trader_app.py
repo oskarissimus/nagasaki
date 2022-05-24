@@ -53,9 +53,6 @@ class TraderApp:
     def attach_strategy_handlers_to_events(self):
         logger.info("attach_strategy_handlers_to_events")
         self.event_manager.subscribe(
-            "orderbook_changed", self.strategy_executor.on_orderbook_changed
-        )
-        self.event_manager.subscribe(
             "strategy_execution_requested",
             self.strategy_executor.on_strategy_execution_requested,
         )
@@ -77,6 +74,10 @@ class TraderApp:
             self.state.set_own_order,
         )
 
+    def synchronize_state_and_execute_strategy(self):
+        self.event_manager.post_event("synchronize_bitclude_state")
+        self.event_manager.post_event("strategy_execution_requested")
+
     def attach_jobs_to_scheduler(self):
         # self.scheduler.add_job(tick, "interval", seconds=3)
         self.scheduler.add_job(
@@ -90,6 +91,11 @@ class TraderApp:
             minutes=20,
         )
         # TODO post event orderbook_changed
+        self.scheduler.add_job(
+            self.synchronize_state_and_execute_strategy,
+            "interval",
+            seconds=10,
+        )
 
     def get_btc_mark_usd_from_deribit_and_write_to_state(self):
         self.state.deribit.btc_mark_usd = (

@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from nagasaki.clients.base_client import OrderMaker
+from nagasaki.database.utils import write_order_maker_to_db
 from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
 from nagasaki.strategy.abstract_strategy import AbstractStrategy, StrategyException
 from nagasaki.state import State
@@ -66,21 +67,19 @@ class DeltaEpsilonStrategyBid(AbstractStrategy):
         epsilon_price = calculate_epsilon_price(self.top_bid, self.epsilon)
 
         desirable_price = max(delta_price, epsilon_price)
-        desirable_amount = self.total_btc
+        desirable_amount = self.total_pln / desirable_price
         desirable_order = bid_order(desirable_price, desirable_amount)
 
         self.dispatcher.dispatch(desirable_order)
+        write_order_maker_to_db(desirable_order)
 
     @property
     def top_bid(self):
         return max(self.state.bitclude.orderbook_rest.bids, key=lambda x: x.price).price
 
     @property
-    def total_btc(self):
-        return (
-            self.state.bitclude.account_info.balances["BTC"].active
-            + self.state.bitclude.account_info.balances["BTC"].inactive
-        )
+    def total_pln(self):
+        return self.state.bitclude.account_info.plns
 
     @property
     def btc_mark_pln(self):

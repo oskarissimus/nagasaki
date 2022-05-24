@@ -42,16 +42,19 @@ class AccountInfo(BaseModel):
         """nie są w zleceniach"""
         return self.balances["BTC"].active
 
-    def get_plns_inactive(self) -> Decimal:
+    @property
+    def plns_inactive(self) -> Decimal:
         """w zleceniach"""
         return self.balances["PLN"].inactive
 
-    def get_plns_active(self) -> Decimal:
+    @property
+    def plns_active(self) -> Decimal:
         """nie są w zleceniach"""
         return self.balances["PLN"].active
 
-    def get_plns(self) -> Decimal:
-        return self.get_plns_active() + self.get_plns_inactive()
+    @property
+    def plns(self) -> Decimal:
+        return self.plns_active + self.plns_inactive
 
 
 class AccountHistoryItem(HashableBaseModel):

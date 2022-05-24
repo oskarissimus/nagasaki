@@ -70,11 +70,12 @@ class DeribitClient(BaseClient):
             )
         return (self.token_expiration - datetime.now()).total_seconds()
 
-    def get_headers_with_token(self):
+    @property
+    def headers_with_token(self):
         if self.token is None:
-            raise DeribitClientException(
-                "token attribute of this object is None, please run get_token() method to initialize it!"
-            )
+            self.get_token()
+        if self.token_expiration_seconds_left() < 60:
+            self.get_token()
         return {
             "Authorization": f"Bearer {self.token}",
             "Content-Type": "application/json",
@@ -89,7 +90,7 @@ class DeribitClient(BaseClient):
 
         response = requests.get(
             f"{self.deribit_url_base}/private/get_account_summary",
-            headers=self.get_headers_with_token(),
+            headers=self.headers_with_token,
             params=params,
         )
         response_json = response.json()
@@ -99,7 +100,7 @@ class DeribitClient(BaseClient):
 
     def create_order(self, order: OrderTaker):
         order_type = "buy" if order.side == SideTypeEnum.BID else "sell"
-        self.create_order_perpetual(order.price_limit, order_type)
+        self.create_order_perpetual(order.amount, order_type)
 
     def create_order_perpetual(self, amount_in_usd, order_type, dry_run=False):
         if order_type in ("buy", "sell"):
@@ -107,7 +108,7 @@ class DeribitClient(BaseClient):
             if dry_run:
                 logger.info("DRY RUN: ")
             logger.info(
-                f"{order_type} at market BTC-PERPETUAL {rounded_amount_in_usd} USD"
+                f"{order_type} at market BTC-PERPETUAL {rounded_amount_in_usd:.2f} USD"
             )
             if dry_run:
                 return True
@@ -121,7 +122,7 @@ class DeribitClient(BaseClient):
 
         response = requests.get(
             f"{self.deribit_url_base}/private/{order_type}",
-            headers=self.get_headers_with_token(),
+            headers=self.headers_with_token,
             params=params,
         )
 

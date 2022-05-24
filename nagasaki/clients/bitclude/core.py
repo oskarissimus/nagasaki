@@ -166,7 +166,10 @@ class BitcludeClient(BaseClient):
         return OrderbookResponseDTO(**response_json)
 
     def create_order(self, order: OrderMaker):
-        self._create_order(CreateRequestDTO.from_order_maker(order))
+        try:
+            self._create_order(CreateRequestDTO.from_order_maker(order))
+        except ValueError as value_error:
+            logger.warning(f"create_order interrupted, reason: {value_error}")
 
     def _create_order(self, order: CreateRequestDTO) -> CreateResponseDTO:
         logger.info(f"creating {order}")

@@ -27,15 +27,11 @@ class StrategyExecutor:
 
     def on_orderbook_changed(self, orderbook_event: BitcludeEventOrderbook):
         if orderbook_event.symbol == "BTC_PLN":
-            if orderbook_event.side == "ask":
+            if orderbook_event.side in ("ask", "bid"):
                 self.event_manager.post_event("synchronize_bitclude_state")
                 self.event_manager.post_event("strategy_execution_requested")
 
     def on_strategy_execution_requested(self):
         logger.debug("strategy execution requested")
-        actions = list(
-            itertools.chain.from_iterable(
-                strategy.get_actions() for strategy in self.strategies
-            )
-        )
-        self.event_manager.post_event("actions_execution_requested", actions)
+        for strategy in self.strategies:
+            strategy.get_actions()

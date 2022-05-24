@@ -4,9 +4,11 @@ from typing import List
 from pydantic import BaseModel
 
 from nagasaki.clients import BaseClient
-from nagasaki.clients.base_client import OrderMaker
+from nagasaki.clients.base_client import Order, OrderMaker
 from nagasaki.clients.bitclude.dto import Offer
+from nagasaki.enums.common import SideTypeEnum
 from nagasaki.state import State
+from nagasaki.logger import logger
 
 
 class Tolerance(BaseModel):
@@ -33,15 +35,19 @@ class StrategyOrderDispatcher:
         )
         self.state = state
 
-    def dispatch(self, desirable_order):
-        if self.has_exactly_one_own_offer:
+    def dispatch(self, desirable_order: Order):
+        if self.has_exactly_one_own_offer(desirable_order.side):
+            logger.info("Has exactly one own offer")
             if offer_is_within_tolerance(
                 self.active_offers[0], desirable_order, self.tolerance
             ):
+                logger.info("Offer is within tolerance")
                 return
 
+        logger.debug(self.active_offers)
         for offer in self.active_offers:
-            self.client.cancel_and_wait(offer.to_order_maker())
+            if offer.offertype == desirable_order.side:
+                self.client.cancel_and_wait(offer.to_order_maker())
 
         self.client.create_order(desirable_order)
 
@@ -49,6 +55,6 @@ class StrategyOrderDispatcher:
     def active_offers(self) -> List[Offer]:
         return self.state.bitclude.active_offers or []
 
-    @property
-    def has_exactly_one_own_offer(self):
-        return len(self.active_offers) == 1
+    def has_exactly_one_own_offer(self, side: SideTypeEnum) -> bool:
+        offers = [offer for offer in self.active_offers if offer.offertype == side]
+        return len(offers) == 1
