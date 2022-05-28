@@ -1,4 +1,5 @@
 from decimal import Decimal
+from unittest import mock
 
 from nagasaki.state import State
 from nagasaki.strategy.delta_epsilon_strategy.ask import (
@@ -33,7 +34,10 @@ def test_ask_bidding_over_delta(initialized_state: State, dispatcher):
 
     strategy = DeltaEpsilonStrategyAsk(state, dispatcher)
 
-    strategy.get_actions()
+    with mock.patch(
+        "nagasaki.strategy.delta_epsilon_strategy.ask" ".write_order_maker_to_db"
+    ):
+        strategy.execute()
 
     expected_create_order = make_order_maker_ask(expected_price, expected_amount)
     dispatcher.dispatch.assert_called_once_with(expected_create_order)

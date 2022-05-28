@@ -66,3 +66,9 @@ def make_account_info_with_delta_0_002():
     active_pln, inactive_pln = (0, 0)
     active_btc, inactive_btc = (1, 0)
     return make_account_info(active_pln, inactive_pln, active_btc, inactive_btc)
+
+
+def make_account_info_with_delta_0_009():
+    active_pln, inactive_pln = (198_200, 0)
+    active_btc, inactive_btc = (0, 0)
+    return make_account_info(active_pln, inactive_pln, active_btc, inactive_btc)

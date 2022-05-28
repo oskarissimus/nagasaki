@@ -1,8 +1,6 @@
-import itertools
 from typing import List
 
 from nagasaki.logger import logger
-from nagasaki.enums.common import OrderActionEnum
 from nagasaki.event_manager import EventManager
 from nagasaki.models.bitclude import BitcludeEventOrderbook
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
@@ -34,4 +32,4 @@ class StrategyExecutor:
     def on_strategy_execution_requested(self):
         logger.debug("strategy execution requested")
         for strategy in self.strategies:
-            strategy.get_actions()
+            strategy.execute()

@@ -52,7 +52,8 @@ def test_should_short_2_btcs(state: State, client: mock.Mock):
 
     strategy = HedgingStrategy(state, client)
 
-    strategy.get_actions()
+    with mock.patch("nagasaki.strategy.hedging_strategy" ".write_order_taker_to_db"):
+        strategy.execute()
 
     expected_create_order = make_order_taker_sell(
         amount=Decimal(btcs_to_short_in_dollars)

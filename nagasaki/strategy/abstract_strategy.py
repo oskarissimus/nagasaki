@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 
 class AbstractStrategy(ABC):
     @abstractmethod
-    def get_actions(self):
+    def execute(self):
         pass
 
 

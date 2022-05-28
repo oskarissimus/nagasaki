@@ -61,7 +61,7 @@ class DeltaEpsilonStrategyAsk(AbstractStrategy):
         self.dispatcher = dispatcher
         self.epsilon = epsilon or Decimal("0.01")
 
-    def get_actions(self):
+    def execute(self):
         delta_price = calculate_delta_price(
             self.btc_mark_pln, self.delta_adjusted_for_inventory
         )

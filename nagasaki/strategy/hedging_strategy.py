@@ -27,7 +27,7 @@ class HedgingStrategy(AbstractStrategy):
         self.state = state
         self.client = client
 
-    def get_actions(self):
+    def execute(self):
         delta = self.state.grand_total_delta
 
         btc_mark_usd = self.state.deribit.btc_mark_usd
