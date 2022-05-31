@@ -5,8 +5,6 @@ services:
     image: postgres:14.3-bullseye
     volumes:
       - ./postgres/data:/var/lib/postgresql/data
-    env_file:
-      - .env
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
@@ -15,10 +13,6 @@ services:
   nagasaki:
     build: .
     restart: always
-    env_file:
-      - .env
-    environment:
-      dupa: cipa
     depends_on:
       - db
     command:
