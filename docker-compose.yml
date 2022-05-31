@@ -8,7 +8,8 @@ services:
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "5432:${DB_PORT}"
+      # host:container
+      - "5433:${DB_PORT}"
 
   nagasaki:
     build: .
@@ -18,7 +19,7 @@ services:
     command:
       [
         "./wait-for-it.sh",
-        "db:5432",
+        "db:${DB_PORT}",
         "--",
         "python",
         "nagasaki/trader/main.py"
