@@ -15,17 +15,4 @@ jobs:
         run: |
           docker image prune -af
           docker-compose down
-          docker-compose up \
-          -e DERIBIT_URL_BASE \
-          -e DERIBIT_CLIENT_ID \
-          -e DERIBIT_CLIENT_SECRET \
-          -e BITCLUDE_URL_BASE \
-          -e BITCLUDE_ID \
-          -e BITCLUDE_KEY \
-          -e YAHOO_FINANCE_API_KEY \
-          -e DB_HOST \
-          -e DB_PORT \
-          -e DB_USER \
-          -e DB_PASSWORD \
-          -e DB_NAME \
-          --build -d
+          docker-compose up --build -d --env-file=/home/ubuntu/nagasaki/.env
