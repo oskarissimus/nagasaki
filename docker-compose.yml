@@ -1,0 +1,31 @@
+version: '3.1'
+
+services:
+  db:
+    image: postgres:14.3-bullseye
+    volumes:
+      - ./postgres/data:/var/lib/postgresql/data
+    env_file:
+      - .env
+    environment:
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "5432:${DB_PORT}"
+
+  nagasaki:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    environment:
+      dupa: cipa
+    depends_on:
+      - db
+    command:
+      [
+        "./wait-for-it.sh",
+        "db:5432",
+        "--",
+        "python",
+        "nagasaki/trader/main.py"
+      ]

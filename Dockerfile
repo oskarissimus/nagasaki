@@ -1,8 +1,11 @@
-FROM python:3.8-slim-buster
+FROM python:3.8-slim-bullseye
+
+ENV POETRY_VIRTUALENVS_CREATE=false
+ADD ./pyproject.toml ./poetry.lock /app/
+WORKDIR /app
+RUN pip install poetry==1.1.13
+RUN poetry install
 
 ADD . /app
-WORKDIR /app
-RUN pip install poetry==1.1.8
-ENV POETRY_VIRTUALENVS_CREATE=false
 RUN poetry install
 CMD ["python", "-u", "nagasaki/trader/main.py"]

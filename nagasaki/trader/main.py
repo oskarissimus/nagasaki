@@ -21,6 +21,7 @@ from nagasaki.strategy.hedging_strategy import HedgingStrategy
 from nagasaki.strategy_executor import StrategyExecutor
 from nagasaki.trader.trader_app import TraderApp
 from nagasaki.database.database import Base, engine
+from nagasaki.settings import Settings
 
 if __name__ == "__main__":
     filterwarnings("ignore", category=PytzUsageWarning)
@@ -28,30 +29,26 @@ if __name__ == "__main__":
 
     Base.metadata.create_all(bind=engine)
 
-    bitclude_client_url_base: str = os.getenv("BITCLUDE_URL_BASE")
-    bitclude_client_id: str = os.getenv("BITCLUDE_ID")
-    bitclude_client_key: str = os.getenv("BITCLUDE_KEY")
+    settings = Settings()
 
     event_manager = EventManager()
     bitclude_websocket_client = BitcludeWebsocketClient(event_manager)
     bitclude_client = BitcludeClient(
-        bitclude_client_url_base,
-        bitclude_client_id,
-        bitclude_client_key,
+        settings.bitclude_url_base,
+        settings.bitclude_id,
+        settings.bitclude_key,
         event_manager=event_manager,
     )
-    deribit_client_url_base: str = os.getenv("DERIBIT_URL_BASE")
-    deribit_client_id: str = os.getenv("DERIBIT_CLIENT_ID")
-    deribit_client_secret: str = os.getenv("DERIBIT_CLIENT_SECRET")
     deribit_client = DeribitClient(
-        deribit_client_url_base, deribit_client_id, deribit_client_secret
+        settings.deribit_url_base,
+        settings.deribit_client_id,
+        settings.deribit_client_secret,
     )
 
     coinbase_client = CoinbaseClient()
     state = State()
 
-    yahoo_finance_api_key: str = os.getenv("YAHOO_FINANCE_API_KEY")
-    usd_pln_quoting_client = YahooFinanceClient(yahoo_finance_api_key)
+    usd_pln_quoting_client = YahooFinanceClient(settings.yahoo_finance_api_key)
 
     state_initializer = StateInitializer(
         bitclude_client,
