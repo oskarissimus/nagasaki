@@ -13,6 +13,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Deploy to kimsufi
         run: |
+          echo $PAPAJ
           docker image prune -af
           docker-compose down
           docker-compose up --build -d
