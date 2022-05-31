@@ -24,3 +24,5 @@ services:
         "python",
         "nagasaki/trader/main.py"
       ]
+    env_file:
+      - /home/ubuntu/nagasaki/.env
