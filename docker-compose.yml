@@ -4,7 +4,7 @@ services:
   db:
     image: postgres:14.3-bullseye
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data
+      - /home/ubuntu/nagasaki/postgres/data:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:

@@ -14,4 +14,5 @@ jobs:
       - name: Deploy to kimsufi
         run: |
           docker image prune -af
-          docker-compose up --force-recreate --build -d
+          docker-compose down
+          docker-compose up --build -d
