@@ -10,8 +10,8 @@ jobs:
   build-and-deploy:
     runs-on: self-hosted
     steps:
-
+      - uses: actions/checkout@v3
       - name: Deploy to kimsufi
         run: |
-          echo papiez
-          echo male dzieci
+          docker image prune -af
+          docker-compose up --force-recreate --build -d
