@@ -123,7 +123,7 @@ class CreateRequestDTO(BaseModel):
     amount: Decimal
     rate: Decimal
     post_only: bool = True
-    hidden: bool = True
+    hidden: bool = False
 
     def get_request_params(self) -> Dict[str, str]:
         return {
