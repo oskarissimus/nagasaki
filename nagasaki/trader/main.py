@@ -1,4 +1,3 @@
-import os
 from warnings import filterwarnings
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -15,8 +14,12 @@ from nagasaki.logger import logger
 from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import StateSynchronizer
+
 from nagasaki.strategy import DeltaEpsilonStrategyAsk, DeltaEpsilonStrategyBid
 from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
+from nagasaki.strategy import DeltaStrategyAsk, DeltaStrategyBid
+from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
+
 from nagasaki.strategy.hedging_strategy import HedgingStrategy
 from nagasaki.strategy_executor import StrategyExecutor
 from nagasaki.trader.trader_app import TraderApp
@@ -61,8 +64,8 @@ if __name__ == "__main__":
     state_synchronizer = StateSynchronizer(state, bitclude_client, deribit_client)
 
     dispatcher = StrategyOrderDispatcher(client=bitclude_client, state=state)
-    des_ask = DeltaEpsilonStrategyAsk(state=state, dispatcher=dispatcher)
-    des_bid = DeltaEpsilonStrategyBid(state=state, dispatcher=dispatcher)
+    des_ask = DeltaStrategyAsk(state=state, dispatcher=dispatcher)
+    des_bid = DeltaStrategyBid(state=state, dispatcher=dispatcher)
     hedging_strategy = HedgingStrategy(state=state, client=deribit_client)
     strategies = [des_ask, des_bid, hedging_strategy]
 

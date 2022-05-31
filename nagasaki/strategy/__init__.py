@@ -1,2 +1,4 @@
 from nagasaki.strategy.delta_epsilon_strategy.ask import DeltaEpsilonStrategyAsk
 from nagasaki.strategy.delta_epsilon_strategy.bid import DeltaEpsilonStrategyBid
+from nagasaki.strategy.delta_strategy.ask import DeltaStrategyAsk
+from nagasaki.strategy.delta_strategy.bid import DeltaStrategyBid
