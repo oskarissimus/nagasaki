@@ -8,7 +8,7 @@ from nagasaki.strategy.delta_epsilon_strategy.dispatcher import (
 )
 from nagasaki.state import State, BitcludeState
 
-from tests.nagasaki.strategy.delta_epsilon_strategy.utils import (
+from .utils import (
     make_order_maker_ask,
     make_offer,
 )

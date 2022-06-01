@@ -6,7 +6,7 @@ from nagasaki.strategy.delta_epsilon_strategy.ask import (
     DeltaEpsilonStrategyAsk,
 )
 
-from tests.nagasaki.strategy.delta_epsilon_strategy.utils import (
+from .utils import (
     make_order_maker_ask,
     make_account_info_with_delta_0_002,
     make_orderbook_with_ask,
