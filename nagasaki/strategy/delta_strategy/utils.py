@@ -42,7 +42,7 @@ def calculate_inventory_parameter(
 def calculate_delta_adjusted_for_inventory(
     inventory_parameter, line: Line = None
 ):  # pylint: disable=invalid-name
-    line = line or Line(Decimal("-0.0035"), Decimal("0.0055"))
+    line = line or Line(Decimal("0.001"), Decimal("0.003"))
     res = line.calculate_y(inventory_parameter)
     if res <= 0:
         raise StrategyException(f"Delta is too small for inventory parameter: {res}")
