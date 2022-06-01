@@ -6,11 +6,13 @@ from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.state import State
 from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
+
 from nagasaki.strategy.delta_strategy.utils import (
     calculate_btc_value_in_pln,
     calculate_inventory_parameter,
     calculate_delta_adjusted_for_inventory,
 )
+
 
 
 def calculate_delta_price(deribit_mark_price: Decimal, delta: Decimal) -> Decimal:

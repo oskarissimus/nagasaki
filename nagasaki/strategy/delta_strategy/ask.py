@@ -7,6 +7,7 @@ from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
 from nagasaki.state import State
 from nagasaki.logger import logger
+
 from nagasaki.strategy.delta_strategy.utils import (
     calculate_btc_value_in_pln,
     calculate_inventory_parameter,
