@@ -227,6 +227,20 @@ typed-ast = [
 http = ["httpx"]
 
 [[package]]
+name = "deprecated"
+version = "1.2.13"
+description = "Python @deprecated decorator to deprecate old python classes, functions or methods."
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+
+[package.dependencies]
+wrapt = ">=1.10,<2"
+
+[package.extras]
+dev = ["tox", "bump2version (<1)", "sphinx (<2)", "importlib-metadata (<3)", "importlib-resources (<4)", "configparser (<5)", "sphinxcontrib-websupport (<2)", "zipp (<2)", "PyTest (<5)", "PyTest-Cov (<2.6)", "pytest", "pytest-cov"]
+
+[[package]]
 name = "dill"
 version = "0.3.5.1"
 description = "serialize all of python"
@@ -695,6 +709,26 @@ dotenv = ["python-dotenv (>=0.10.4)"]
 email = ["email-validator (>=1.0.3)"]
 
 [[package]]
+name = "pydantic-yaml"
+version = "0.6.3"
+description = "\"Adds some YAML functionality to the excellent `pydantic` library.\""
+category = "main"
+optional = false
+python-versions = ">=3.7"
+
+[package.dependencies]
+deprecated = ">=1.2.5,<1.3.0"
+pydantic = ">=1.7.4,<2.0"
+semver = ">=2.13.0,<4"
+types-Deprecated = "*"
+
+[package.extras]
+dev = ["black", "flake8", "bump2version", "pytest", "mypy"]
+docs = ["mkdocs", "mkdocs-material", "mkdocstrings", "pymdown-extensions", "pygments"]
+pyyaml = ["pyyaml", "types-pyyaml"]
+ruamel = ["ruamel.yaml (>=0.15,<0.18)"]
+
+[[package]]
 name = "pylint"
 version = "2.13.9"
 description = "python code static checker"
@@ -1047,6 +1081,14 @@ optional = false
 python-versions = ">=3.6"
 
 [[package]]
+name = "types-deprecated"
+version = "1.2.8"
+description = "Typing stubs for Deprecated"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "typing-extensions"
 version = "4.2.0"
 description = "Backported and Experimental Type Hints for Python 3.7+"
@@ -1157,7 +1199,7 @@ h11 = ">=0.9.0,<1"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "2af73bda3bcf2bc67b4f8c0483516c83f38778fd91cefec09af13154757bfc1f"
+content-hash = "c3f0f9e082eecd9a7829a4e8396e76b0fd55bcb77a8af3a6ac8c92cce349c43d"
 
 [metadata.files]
 apscheduler = [
@@ -1330,6 +1372,10 @@ cycler = [
 datamodel-code-generator = [
     {file = "datamodel-code-generator-0.11.20.tar.gz", hash = "sha256:aac5a5afa9a3170dbdca0fbdd3cdb5bf372d60f506c624af0699fb8d8c06c8cc"},
     {file = "datamodel_code_generator-0.11.20-py3-none-any.whl", hash = "sha256:ee2e29cd8be3e15deb6d588f6d1b5bff785a765c72b9d2755bd8ea7affb862b7"},
+]
+deprecated = [
+    {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
+    {file = "Deprecated-1.2.13.tar.gz", hash = "sha256:43ac5335da90c31c24ba028af536a91d41d53f9e6901ddb021bcc572ce44e38d"},
 ]
 dill = [
     {file = "dill-0.3.5.1-py2.py3-none-any.whl", hash = "sha256:33501d03270bbe410c72639b350e941882a8b0fd55357580fbc873fba0c59302"},
@@ -1841,6 +1887,10 @@ pydantic = [
     {file = "pydantic-1.9.1-py3-none-any.whl", hash = "sha256:4988c0f13c42bfa9ddd2fe2f569c9d54646ce84adc5de84228cfe83396f3bd58"},
     {file = "pydantic-1.9.1.tar.gz", hash = "sha256:1ed987c3ff29fff7fd8c3ea3a3ea877ad310aae2ef9889a119e22d3f2db0691a"},
 ]
+pydantic-yaml = [
+    {file = "pydantic_yaml-0.6.3-py3-none-any.whl", hash = "sha256:aaa3e9c55eeebc203dacd461ff635932d10a440bfda7f77f596351094c85322b"},
+    {file = "pydantic_yaml-0.6.3.tar.gz", hash = "sha256:8bec8b6eee9889073b5461075d8b85efb00ba43bd34d5fb331fa394ec5a3b46f"},
+]
 pylint = [
     {file = "pylint-2.13.9-py3-none-any.whl", hash = "sha256:705c620d388035bdd9ff8b44c5bcdd235bfb49d276d488dd2c8ff1736aa42526"},
     {file = "pylint-2.13.9.tar.gz", hash = "sha256:095567c96e19e6f57b5b907e67d265ff535e588fe26b12b5ebe1fc5645b2c731"},
@@ -2060,6 +2110,10 @@ typed-ast = [
     {file = "typed_ast-1.5.4-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_12_x86_64.manylinux2010_x86_64.whl", hash = "sha256:98f80dee3c03455e92796b58b98ff6ca0b2a6f652120c263efdba4d6c5e58f72"},
     {file = "typed_ast-1.5.4-cp39-cp39-win_amd64.whl", hash = "sha256:0fdbcf2fef0ca421a3f5912555804296f0b0960f0418c440f5d6d3abb549f3e1"},
     {file = "typed_ast-1.5.4.tar.gz", hash = "sha256:39e21ceb7388e4bb37f4c679d72707ed46c2fbf2a5609b8b8ebc4b067d977df2"},
+]
+types-deprecated = [
+    {file = "types-Deprecated-1.2.8.tar.gz", hash = "sha256:62e1b773cafaec26e5e7c85f6f476f65aba1b5cb0857b0cc71d1eeb8c576e6a2"},
+    {file = "types_Deprecated-1.2.8-py3-none-any.whl", hash = "sha256:5adf04a18d1d0ae7d82b56cd07c2386c6639026ac5f7a9eb47f904d934697430"},
 ]
 typing-extensions = [
     {file = "typing_extensions-4.2.0-py3-none-any.whl", hash = "sha256:6657594ee297170d19f67d55c05852a874e7eb634f4f753dbd667855e07c1708"},

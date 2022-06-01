@@ -7,7 +7,7 @@ from nagasaki.clients.bitclude.dto import AccountInfo, Balance
 from nagasaki.clients.deribit_client import AccountSummary
 from nagasaki.state import BitcludeState, DeribitState, State
 from nagasaki.strategy.hedging_strategy import HedgingStrategy
-from tests.nagasaki.strategy.hedging_strategy.utils import make_order_taker_sell
+from .utils import make_order_taker_sell
 
 
 @pytest.fixture(name="state")

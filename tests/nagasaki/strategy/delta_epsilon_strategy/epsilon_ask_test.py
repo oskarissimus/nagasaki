@@ -4,7 +4,7 @@ from unittest import mock
 from nagasaki.state import State
 from nagasaki.strategy import DeltaEpsilonStrategyAsk
 
-from tests.nagasaki.strategy.delta_epsilon_strategy.utils import (
+from .utils import (
     make_orderbook_with_ask,
     make_order_maker_ask,
 )
