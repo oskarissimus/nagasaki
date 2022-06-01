@@ -22,8 +22,8 @@ def calculate_inventory_parameter(
 
 
 def calculate_delta_adjusted_for_inventory(inventory_parameter):
-    A = Decimal("-0.0035")
-    B = Decimal("0.0055")
+    A = Decimal("-0.0015")
+    B = Decimal("0.0035")
     res = A * inventory_parameter + B
     if res <= 0:
         raise StrategyException(f"Delta is too small for inventory parameter: {res}")
