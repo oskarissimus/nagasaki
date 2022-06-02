@@ -109,4 +109,4 @@ class TraderApp:
             logger.info("scheduler started")
         except (KeyboardInterrupt, SystemExit):
             pass
-        uvicorn.run("nagasaki.api.main:app")
+        uvicorn.run("nagasaki.api.main:app", host="0.0.0.0")
