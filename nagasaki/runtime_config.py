@@ -18,8 +18,8 @@ class RuntimeConfig:
 
     @property
     def delta_when_btc_only(self):
-        return self.data.delta_when_btc_only
+        return Decimal(self.data.delta_when_btc_only)
 
     @property
     def delta_when_pln_only(self):
-        return self.data.delta_when_pln_only
+        return Decimal(self.data.delta_when_pln_only)
