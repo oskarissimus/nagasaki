@@ -1,47 +1,10 @@
-from pathlib import Path
-import secrets
-from fastapi import Depends, FastAPI, HTTPException, status
-from fastapi.security import HTTPBasic, HTTPBasicCredentials
-from pydantic_yaml import YamlModel
+from fastapi import Depends, FastAPI
 
+from nagasaki.api.auth import validate_basic_auth
+from nagasaki.runtime_config import RuntimeConfig
 
-class RuntimeConfig:
-    class Data(YamlModel):
-        papiez: str
-        papiez_url: str
-
-    def __init__(self, path: Path):
-        self.path = path
-
-    @property
-    def data(self):
-        return self.Data.parse_raw(self.path.read_text(encoding="utf-8"))
-
-    @property
-    def papiez(self):
-        return self.data.papiez
-
-    @property
-    def papiez_url(self):
-        return self.data.papiez_url
-
-
-runtime_config = RuntimeConfig(
-    Path("/home/oskar/git/nagasaki/playground/runtime_config.yml")
-)
+runtime_config = RuntimeConfig()
 app = FastAPI()
-security = HTTPBasic()
-
-
-def validate_basic_auth(credentials: HTTPBasicCredentials = Depends(security)):
-    correct_username = secrets.compare_digest(credentials.username, "papa")
-    correct_password = secrets.compare_digest(credentials.password, "mobile")
-    if not (correct_username and correct_password):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Incorrect email or password",
-            headers={"WWW-Authenticate": "Basic"},
-        )
 
 
 @app.get(

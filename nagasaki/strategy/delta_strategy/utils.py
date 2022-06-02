@@ -1,6 +1,9 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
+import pydantic
+
+from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.strategy.abstract_strategy import StrategyException
 
 
@@ -39,10 +42,15 @@ def calculate_inventory_parameter(
     return pln_to_sum_ratio * 2 - 1
 
 
-def calculate_delta_adjusted_for_inventory(
-    inventory_parameter, line: Line = None
-):  # pylint: disable=invalid-name
-    line = line or Line(Decimal("0.00075"), Decimal("0.00125"))
+def calculate_delta_adjusted_for_inventory(inventory_parameter):
+    runtime_config = RuntimeConfig()
+    try:
+        p_1 = Point(-1, runtime_config.delta_when_pln_only)
+        p_2 = Point(1, runtime_config.delta_when_btc_only)
+        line = Line.from_points(p_1, p_2)
+    except (pydantic.ValidationError, FileNotFoundError):
+        line = Line(Decimal("0.00075"), Decimal("0.00125"))
+
     res = line.calculate_y(inventory_parameter)
     if res <= 0:
         raise StrategyException(f"Delta is too small for inventory parameter: {res}")

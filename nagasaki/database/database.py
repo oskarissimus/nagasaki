@@ -12,7 +12,10 @@ def init_db():
     settings = Settings()
 
     global engine  # pylint: disable=(global-statement, invalid-name)
-    engine = create_engine(settings.connection_string)
+    if settings.memory_db:
+        engine = create_engine("sqlite://")
+    else:
+        engine = create_engine(settings.connection_string)
 
     global SessionLocal  # pylint: disable=(global-statement, invalid-name)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

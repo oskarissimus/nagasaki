@@ -1,3 +1,4 @@
+import uvicorn
 from apscheduler.schedulers.background import BackgroundScheduler
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
@@ -108,4 +109,4 @@ class TraderApp:
             logger.info("scheduler started")
         except (KeyboardInterrupt, SystemExit):
             pass
-        self.bitclude_websocket_client.ws.run_forever()
+        uvicorn.run("nagasaki.api.main:app")
