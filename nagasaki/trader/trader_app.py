@@ -1,11 +1,8 @@
 from apscheduler.schedulers.background import BackgroundScheduler
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
-from nagasaki.clients.coinbase_client import CoinbaseClient
-from nagasaki.clients.cryptocompare_client import CryptocompareClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
-from nagasaki.database.utils import dump_actions_to_db
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.state import State
@@ -25,10 +22,8 @@ class TraderApp:
         state: State,
         event_manager: EventManager,
         scheduler: BackgroundScheduler,
-        cryptocompare_client: CryptocompareClient,
         strategy_executor: StrategyExecutor,
         state_initializer: StateInitializer,
-        coinbase_client: CoinbaseClient,
         usd_pln_quoting_client: UsdPlnQuotingBaseClient,
         state_synchronizer: StateSynchronizer,
     ):
@@ -38,10 +33,8 @@ class TraderApp:
         self.state = state
         self.event_manager = event_manager
         self.scheduler = scheduler
-        self.cryptocompare_client = cryptocompare_client
         self.strategy_executor = strategy_executor
         self.state_initializer = state_initializer
-        self.coinbase_client = coinbase_client
         self.usd_pln_quoting_client = usd_pln_quoting_client
         self.state_synchronizer = state_synchronizer
 
@@ -61,11 +54,6 @@ class TraderApp:
         self.event_manager.subscribe(
             "actions_execution_on_bitclude_requested",
             self.bitclude_client.execute_actions_list,
-        )
-
-    def attach_db_handlers_to_events(self):
-        self.event_manager.subscribe(
-            "actions_execution_on_bitclude_requested", dump_actions_to_db
         )
 
     def attach_state_handlers_to_events(self):

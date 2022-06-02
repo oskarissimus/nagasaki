@@ -7,7 +7,6 @@ from nagasaki.state import (
     OrderbookWebsocket,
     State,
 )
-from nagasaki.clients.coinbase_client import CoinbaseClient
 from nagasaki.logger import logger
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 
@@ -17,13 +16,11 @@ class StateInitializer:
         self,
         bitclude_client: BitcludeClient,
         deribit_client: DeribitClient,
-        coinbase_client: CoinbaseClient,
         usd_pln_quoting_client: UsdPlnQuotingBaseClient,
         state: State,
     ):
         self.bitclude_client = bitclude_client
         self.deribit_client = deribit_client
-        self.coinbase_client = coinbase_client
         self.usd_pln_quoting_client = usd_pln_quoting_client
         self.state = state
 
