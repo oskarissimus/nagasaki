@@ -11,10 +11,11 @@ engine = None  # pylint: disable=invalid-name
 def init_db():
     settings = Settings()
 
-    global engine  # pylint: disable=(global-statement, invalid-name)
     if settings.memory_db:
+        global engine  # pylint: disable=(global-statement, invalid-name)
         engine = create_engine("sqlite://")
     else:
+        global engine  # pylint: disable=(global-statement, invalid-name)
         engine = create_engine(settings.connection_string)
 
     global SessionLocal  # pylint: disable=(global-statement, invalid-name)
