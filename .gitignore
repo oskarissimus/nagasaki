@@ -4,4 +4,4 @@ __pycache__
 .hypothesis
 sql_app.db
 dist/
-playground/geckodriver.log
+geckodriver.log
