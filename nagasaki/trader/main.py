@@ -26,7 +26,6 @@ if __name__ == "__main__":
     filterwarnings("ignore", category=PytzUsageWarning)
     logger.info("start")
 
-    database.init_db()
     database.Base.metadata.create_all(bind=database.engine)
 
     settings = Settings()
