@@ -10,7 +10,6 @@ services:
     ports:
       # host:container
       - "5433:${DB_PORT}"
-      - "8000:8000"
 
   nagasaki:
     build: .
@@ -27,3 +26,6 @@ services:
       ]
     env_file:
       - /home/ubuntu/nagasaki/.env
+    ports:
+      # host:container
+      - "8000:8000"
