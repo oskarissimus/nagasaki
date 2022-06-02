@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     deribit_url_base: str = "https://www.deribit.com/api/v2"
     deribit_client_id: str
     deribit_client_secret: str
+    basic_auth_username: str = "papaj"
+    basic_auth_password: str
 
     @cached_property
     def connection_string(self):
