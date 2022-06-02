@@ -24,6 +24,8 @@ selenium = "^4.2.0"
 webdriver-manager = "^3.7.0"
 PyYAML = "^6.0"
 pydantic-yaml = "^0.6.3"
+fastapi = {extras = ["uvicorn"], version = "^0.78.0"}
+uvicorn = "^0.17.6"
 
 [tool.poetry.dev-dependencies]
 black = {version = "^22.1.0", allow-prereleases = true}
