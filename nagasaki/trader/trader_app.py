@@ -102,7 +102,6 @@ class TraderApp:
         self.attach_bitclude_handlers_to_events()
         self.attach_jobs_to_scheduler()
         self.attach_state_synchronizer_handlers_to_events()
-        self.attach_db_handlers_to_events()
 
         try:
             self.scheduler.start()
