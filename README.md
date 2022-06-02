@@ -114,10 +114,11 @@ flowchart
 
 
 # TODO 02.06.2022
+- [x] use api key scraper for yahoo
 - [] refactor trader/main.py
   - move clients init to another module and use as singelton
   - create strategy on demand
-- [] use api key scraper for yahoo
 - [] runtime config
 - [] delta adjusted for inventory
 - [] delta calculator
+- [] pylint + black + isort pre-commit hook

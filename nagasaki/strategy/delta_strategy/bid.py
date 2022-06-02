@@ -14,7 +14,6 @@ from nagasaki.strategy.delta_strategy.utils import (
 )
 
 
-
 def calculate_delta_price(deribit_mark_price: Decimal, delta: Decimal) -> Decimal:
     """
     delta price is distanced from deribit mark price depending on inventory parameter

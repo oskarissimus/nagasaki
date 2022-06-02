@@ -255,6 +255,14 @@ typed-ast = [
 http = ["httpx"]
 
 [[package]]
+name = "decorator"
+version = "5.1.1"
+description = "Decorators for Humans"
+category = "main"
+optional = false
+python-versions = ">=3.5"
+
+[[package]]
 name = "deprecated"
 version = "1.2.13"
 description = "Python @deprecated decorator to deprecate old python classes, functions or methods."
@@ -957,6 +965,18 @@ urllib3 = ">=1.25.10"
 tests = ["coverage (>=3.7.1,<6.0.0)", "pytest-cov", "pytest-localserver", "flake8", "types-mock", "types-requests", "types-six", "pytest (>=4.6,<5.0)", "pytest (>=4.6)", "mypy"]
 
 [[package]]
+name = "retry"
+version = "0.9.2"
+description = "Easy to use retry decorator."
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+decorator = ">=3.4.2"
+py = ">=1.4.26,<2.0.0"
+
+[[package]]
 name = "ruamel.yaml"
 version = "0.17.21"
 description = "ruamel.yaml is a YAML parser/emitter that supports roundtrip preservation of comments, seq/map flow style, and map key order"
@@ -1276,7 +1296,7 @@ h11 = ">=0.9.0,<1"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "cd7ae01b5b52ffeb3565aceef64e0a8c5e562e244f9f0ccc682c12bf24414078"
+content-hash = "3fea4cb9cd872a32773ef68ce307481f555d64f2e189e5adc3227218c9ef6c9e"
 
 [metadata.files]
 anyio = [
@@ -1457,6 +1477,10 @@ cycler = [
 datamodel-code-generator = [
     {file = "datamodel-code-generator-0.11.20.tar.gz", hash = "sha256:aac5a5afa9a3170dbdca0fbdd3cdb5bf372d60f506c624af0699fb8d8c06c8cc"},
     {file = "datamodel_code_generator-0.11.20-py3-none-any.whl", hash = "sha256:ee2e29cd8be3e15deb6d588f6d1b5bff785a765c72b9d2755bd8ea7affb862b7"},
+]
+decorator = [
+    {file = "decorator-5.1.1-py3-none-any.whl", hash = "sha256:b8c3f85900b9dc423225913c5aace94729fe1fa9763b38939a95226f02d37186"},
+    {file = "decorator-5.1.1.tar.gz", hash = "sha256:637996211036b6385ef91435e4fae22989472f9d571faba8927ba8253acbc330"},
 ]
 deprecated = [
     {file = "Deprecated-1.2.13-py2.py3-none-any.whl", hash = "sha256:64756e3e14c8c5eea9795d93c524551432a0be75629f8f29e67ab8caf076c76d"},
@@ -2066,6 +2090,10 @@ requests = [
 responses = [
     {file = "responses-0.15.0-py2.py3-none-any.whl", hash = "sha256:5955ad3468fe8eb5fb736cdab4943457b7768f8670fa3624b4e26ff52dfe20c0"},
     {file = "responses-0.15.0.tar.gz", hash = "sha256:866757987d1962aa908d9c8b3185739faefd72a359e95459de0c2e4e5369c9b2"},
+]
+retry = [
+    {file = "retry-0.9.2-py2.py3-none-any.whl", hash = "sha256:ccddf89761fa2c726ab29391837d4327f819ea14d244c232a1d24c67a2f98606"},
+    {file = "retry-0.9.2.tar.gz", hash = "sha256:f8bfa8b99b69c4506d6f5bd3b0aabf77f98cdb17f3c9fc3f5ca820033336fba4"},
 ]
 "ruamel.yaml" = [
     {file = "ruamel.yaml-0.17.21-py3-none-any.whl", hash = "sha256:742b35d3d665023981bd6d16b3d24248ce5df75fdb4e2924e93a05c1f8b61ca7"},

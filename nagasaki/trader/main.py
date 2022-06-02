@@ -47,7 +47,11 @@ if __name__ == "__main__":
 
     state = State()
 
-    usd_pln_quoting_client = YahooFinanceClient(settings.yahoo_finance_api_key)
+    usd_pln_quoting_client = YahooFinanceClient(
+        settings.yahoo_finance_api_key,
+        settings.yahoo_finance_api_email,
+        settings.yahoo_finance_api_password,
+    )
 
     state_initializer = StateInitializer(
         bitclude_client,

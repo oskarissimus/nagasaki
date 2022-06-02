@@ -4,6 +4,8 @@ from pydantic import BaseSettings
 
 class Settings(BaseSettings):
     yahoo_finance_api_key: str = "papaj"
+    yahoo_finance_api_email: str = "papaj"
+    yahoo_finance_api_password: str = "papaj"
     db_host: str = "localhost"
     db_port: int = 5432
     db_user: str = "postgres"
@@ -22,3 +24,4 @@ class Settings(BaseSettings):
 
     class Config:
         keep_untouched = (cached_property,)
+        env_file = ".env"

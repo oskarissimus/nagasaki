@@ -1,3 +1,4 @@
+from sys import platform
 from selenium import webdriver
 import selenium
 from selenium.webdriver.firefox.service import Service as FirefoxService
@@ -38,12 +39,22 @@ def scrape_api_key(email, password):
     options = Options()
     options.headless = True
 
-    executable_path = (
-        Path(__file__).parent.resolve()
-        / "drivers"
-        / "geckodriver-v0.31.0-linux64"
-        / "geckodriver"
-    )
+    if platform == "linux" or platform == "linux2":
+        executable_path = (
+            Path(__file__).parent.resolve()
+            / "drivers"
+            / "geckodriver-v0.31.0-linux64"
+            / "geckodriver"
+        )
+    elif platform == "darwin":
+        executable_path = (
+            Path(__file__).parent.resolve()
+            / "drivers"
+            / "geckodriver-v0.31.0-macos"
+            / "geckodriver"
+        )
+    else:
+        raise YahooFinanceScrapperException(f"Platform {platform} not " f"supported")
 
     service = FirefoxService(executable_path=executable_path)
     driver = webdriver.Firefox(service=service, options=options)
@@ -66,3 +77,7 @@ def scrape_api_key(email, password):
     )
 
     return element.get_attribute("innerHTML")[-40:]
+
+
+class YahooFinanceScrapperException(Exception):
+    pass
