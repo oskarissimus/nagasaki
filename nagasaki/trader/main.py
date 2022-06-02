@@ -5,8 +5,6 @@ from pytz_deprecation_shim import PytzUsageWarning
 
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
-from nagasaki.clients.coinbase_client import CoinbaseClient
-from nagasaki.clients.cryptocompare_client import CryptocompareClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
 from nagasaki.event_manager import EventManager
@@ -15,22 +13,21 @@ from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import StateSynchronizer
 
-from nagasaki.strategy import DeltaEpsilonStrategyAsk, DeltaEpsilonStrategyBid
 from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
 from nagasaki.strategy import DeltaStrategyAsk, DeltaStrategyBid
-from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
 
 from nagasaki.strategy.hedging_strategy import HedgingStrategy
 from nagasaki.strategy_executor import StrategyExecutor
 from nagasaki.trader.trader_app import TraderApp
-from nagasaki.database.database import Base, engine
+from nagasaki.database import database
 from nagasaki.settings import Settings
 
 if __name__ == "__main__":
     filterwarnings("ignore", category=PytzUsageWarning)
     logger.info("start")
 
-    Base.metadata.create_all(bind=engine)
+    database.init_db()
+    database.Base.metadata.create_all(bind=database.engine)
 
     settings = Settings()
 
@@ -48,7 +45,6 @@ if __name__ == "__main__":
         settings.deribit_client_secret,
     )
 
-    coinbase_client = CoinbaseClient()
     state = State()
 
     usd_pln_quoting_client = YahooFinanceClient(settings.yahoo_finance_api_key)
@@ -56,7 +52,6 @@ if __name__ == "__main__":
     state_initializer = StateInitializer(
         bitclude_client,
         deribit_client,
-        coinbase_client,
         usd_pln_quoting_client,
         state,
     )
@@ -77,8 +72,6 @@ if __name__ == "__main__":
 
     scheduler = BackgroundScheduler(job_defaults={"max_instances": 2})
 
-    cryptocompare_client = CryptocompareClient()
-
     app = TraderApp(
         bitclude_client=bitclude_client,
         bitclude_websocket_client=bitclude_websocket_client,
@@ -86,10 +79,8 @@ if __name__ == "__main__":
         state=state,
         event_manager=event_manager,
         scheduler=scheduler,
-        cryptocompare_client=cryptocompare_client,
         strategy_executor=strategy_executor,
         state_initializer=state_initializer,
-        coinbase_client=coinbase_client,
         usd_pln_quoting_client=usd_pln_quoting_client,
         state_synchronizer=state_synchronizer,
     )

@@ -8,16 +8,22 @@ from pydantic_yaml import YamlModel
 class RuntimeConfig:
     class Data(YamlModel):
         papiez: str
+        papiez_url: str
 
     def __init__(self, path: Path):
         self.path = path
 
-    def parse(self):
+    @property
+    def data(self):
         return self.Data.parse_raw(self.path.read_text(encoding="utf-8"))
 
     @property
     def papiez(self):
-        return self.parse().papiez
+        return self.data.papiez
+
+    @property
+    def papiez_url(self):
+        return self.data.papiez_url
 
 
 runtime_config = RuntimeConfig(
@@ -44,7 +50,7 @@ def validate_basic_auth(credentials: HTTPBasicCredentials = Depends(security)):
     dependencies=[Depends(validate_basic_auth)],
 )
 def read_runtime_config():
-    return runtime_config.parse()
+    return runtime_config.data
 
 
 @app.post(
