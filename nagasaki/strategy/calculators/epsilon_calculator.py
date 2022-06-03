@@ -1,17 +1,21 @@
 from decimal import Decimal
 
 from nagasaki.enums.common import SideTypeEnum
+from nagasaki.logger import logger
+from nagasaki.state import State
 
 
 class EpsilonCalculator:
     def __init__(self, epsilon: Decimal):
         self.epsilon = epsilon
 
-    def calculate(self, price: Decimal, side: SideTypeEnum) -> Decimal:
+    def calculate(self, state: State, side: SideTypeEnum) -> Decimal:
         if side == SideTypeEnum.ASK:
-            return self.calculate_ask(price)
-        if side == SideTypeEnum.BID:
-            return self.calculate_bid(price)
+            epsilon_price = self.calculate_ask(state.bitclude.top_ask())
+        else:
+            epsilon_price = self.calculate_bid(state.bitclude.top_bid())
+        logger.info(f"{epsilon_price=:.0f}")
+        return epsilon_price
 
     def calculate_ask(self, price):
         return price - self.epsilon

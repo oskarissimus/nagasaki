@@ -3,6 +3,7 @@ from decimal import Decimal
 import pydantic
 
 from nagasaki.enums.common import SideTypeEnum
+from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import State
 
@@ -25,9 +26,11 @@ class DeltaCalculator:
         mark_price = state.deribit.btc_mark_usd * state.usd_pln
         inventory_parameter = self.inventory_parameter(state)
         if side == SideTypeEnum.ASK:
-            return self.calculate_ask(mark_price, inventory_parameter)
-        if side == SideTypeEnum.BID:
-            return self.calculate_bid(mark_price, inventory_parameter)
+            delta_price = self.calculate_ask(mark_price, inventory_parameter)
+        else:
+            delta_price = self.calculate_bid(mark_price, inventory_parameter)
+        logger.info(f"{delta_price=:.0f}")
+        return delta_price
 
     def calculate_ask(self, mark_price, inventory_parameter):
         return mark_price * (1 + self.inventory_adjusted_delta(inventory_parameter))

@@ -31,53 +31,24 @@ class MarketMakingStrategy(AbstractStrategy):
     ):
         self.state = state
         self.dispatcher = dispatcher
-        self.epsilon_calculator = epsilon_calculator
-        self.delta_calculator = delta_calculator
+        self.calculators = [delta_calculator, epsilon_calculator]
         self.side = side
 
     def execute(self):
-        self.log_prices()
         order = make_order(self.best_price, self.amount, self.side)
-
         self.dispatcher.dispatch(order)
         write_order_maker_to_db(order)
 
     @property
     def best_price(self):
-        if not self.delta_price:
-            return self.epsilon_price
-
-        if not self.epsilon_price:
-            return self.delta_price
-
         best_func = max if self.side == SideTypeEnum.ASK else min
-        return best_func(self.delta_price, self.epsilon_price)
-
-    @property
-    def delta_price(self):
-        if not self.delta_calculator:
-            return None
-        return self.delta_calculator.calculate(self.state, self.side)
-
-    @property
-    def epsilon_price(self):
-        if not self.epsilon_calculator:
-            return None
-        return self.epsilon_calculator.calculate(self.top, self.side)
-
-    @property
-    def top(self):
-        if self.side == SideTypeEnum.ASK:
-            return self.top_ask
-        return self.top_bid
-
-    @property
-    def top_ask(self):
-        return min(self.state.bitclude.orderbook_rest.asks, key=lambda x: x.price).price
-
-    @property
-    def top_bid(self):
-        return max(self.state.bitclude.orderbook_rest.bids, key=lambda x: x.price).price
+        all_prices = [
+            calculator.calculate(self.state, self.side)
+            for calculator in self.calculators
+        ]
+        best_price = best_func(all_prices)
+        logger.info(f"{best_price=:.0f}")
+        return best_price
 
     @property
     def amount(self):
@@ -98,11 +69,3 @@ class MarketMakingStrategy(AbstractStrategy):
             self.state.bitclude.account_info.balances["PLN"].active
             + self.state.bitclude.account_info.balances["PLN"].inactive
         )
-
-    def log_prices(self):
-        if self.epsilon_price:
-            logger.info(f"{self.epsilon_price=:.0f}")
-        if self.delta_price:
-            logger.info(f"{self.delta_price=:.0f}")
-
-        logger.info(f"{self.best_price=:.0f}")

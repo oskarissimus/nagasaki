@@ -20,6 +20,12 @@ class BitcludeState(BaseModel):
     orderbook_rest: Optional[OrderbookRest]
     orderbook_websocket: Optional[OrderbookWebsocket]
 
+    def top_ask(self):
+        return min(self.orderbook_rest.asks, key=lambda x: x.price).price
+
+    def top_bid(self):
+        return max(self.orderbook_rest.bids, key=lambda x: x.price).price
+
 
 class DeribitState(BaseModel):
     btc_mark_usd: Optional[Decimal]
