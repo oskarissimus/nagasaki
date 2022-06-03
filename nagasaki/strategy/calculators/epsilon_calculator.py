@@ -7,7 +7,7 @@ class EpsilonCalculator:
     def __init__(self, epsilon: Decimal):
         self.epsilon = epsilon
 
-    def calculate(self, price: Decimal, side: SideTypeEnum):
+    def calculate(self, price: Decimal, side: SideTypeEnum) -> Decimal:
         if side == SideTypeEnum.ASK:
             return self.calculate_ask(price)
         if side == SideTypeEnum.BID:

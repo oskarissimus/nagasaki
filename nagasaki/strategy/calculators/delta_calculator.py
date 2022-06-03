@@ -15,12 +15,14 @@ class DeltaCalculator:
             assert self.delta_1 >= 0
             assert self.delta_2 >= 0
         except (pydantic.ValidationError, FileNotFoundError):
-            self.delta_1 = Decimal("0.0005")
-            self.delta_2 = Decimal("0.002")
+            pass
+
+        self.delta_1 = self.delta_1 or Decimal("0.0005")
+        self.delta_2 = self.delta_2 or Decimal("0.002")
 
     def calculate(
         self, price: Decimal, side: SideTypeEnum, inventory_parameter: Decimal
-    ):
+    ) -> Decimal:
         if side == SideTypeEnum.ASK:
             return self.calculate_ask(price, inventory_parameter)
         if side == SideTypeEnum.BID:
@@ -46,8 +48,8 @@ class DeltaCalculator:
         delta_x = delta_1 + (delta_2 - delta_1) * (inv_param + 1)/2
 
         """
-        assert inventory_parameter >= Decimal("-1")
-        assert inventory_parameter <= Decimal("1")
+        assert inventory_parameter >= -1
+        assert inventory_parameter <= 1
 
         return self.delta_1 + ((inventory_parameter + 1) / 2) * (
             self.delta_2 - self.delta_1

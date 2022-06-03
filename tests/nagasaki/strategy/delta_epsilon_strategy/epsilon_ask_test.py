@@ -27,7 +27,7 @@ def test_ask_bidding_over_epsilon(initialized_state: State, dispatcher):
     strategy = DeltaEpsilonStrategyAsk(state, dispatcher, epsilon)
 
     with mock.patch(
-        "nagasaki.strategy.delta_epsilon_strategy.ask" ".write_order_maker_to_db"
+        "nagasaki.strategy.market_making_strategy" ".write_order_maker_to_db"
     ):
         strategy.execute()
 

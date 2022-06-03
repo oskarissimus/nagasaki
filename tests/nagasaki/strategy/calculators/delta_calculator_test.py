@@ -98,3 +98,17 @@ def test_should_load_deltas_from_config():
 
     assert calculator.delta_1 == Decimal("0.2")
     assert calculator.delta_2 == Decimal("0.3")
+
+
+@pytest.mark.parametrize(
+    "inventory_parameter, delta",
+    [
+        (Decimal("0"), Decimal("0.0055")),
+        (Decimal("1"), Decimal("0.002")),
+        (Decimal("-1"), Decimal("0.009")),
+        (Decimal("0.5"), Decimal("0.00375")),
+    ],
+)
+def test_should_adjust_for_inventory(inventory_parameter, delta):
+    calculator = DeltaCalculator(Decimal("0.009"), Decimal("0.002"))
+    assert calculator.inventory_adjusted_delta(inventory_parameter) == delta

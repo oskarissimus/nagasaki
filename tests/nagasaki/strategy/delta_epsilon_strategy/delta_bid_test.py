@@ -3,6 +3,7 @@ from unittest import mock
 
 from nagasaki.state import State
 from nagasaki.strategy import DeltaEpsilonStrategyBid
+from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
 
 from .utils import (
     make_order_maker_bid,
@@ -20,7 +21,7 @@ def test_bid_bidding_over_delta(initialized_state: State, dispatcher):
     expected_price = 198_200
     expected_amount = 1
 
-    top_bid_price = 190_000
+    top_bid_price = 199_000
     top_bid_amount = 1
 
     state = initialized_state
@@ -31,9 +32,10 @@ def test_bid_bidding_over_delta(initialized_state: State, dispatcher):
     state.bitclude.account_info = make_account_info_with_delta_0_009()
 
     strategy = DeltaEpsilonStrategyBid(state, dispatcher)
+    strategy.delta_calculator = DeltaCalculator(Decimal("0.009"), Decimal("0.002"))
 
     with mock.patch(
-        "nagasaki.strategy.delta_epsilon_strategy.bid" ".write_order_maker_to_db"
+        "nagasaki.strategy.market_making_strategy" ".write_order_maker_to_db"
     ):
         strategy.execute()
 

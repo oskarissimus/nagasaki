@@ -7,16 +7,19 @@ from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
+from nagasaki.enums.common import SideTypeEnum
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import StateSynchronizer
+from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
 
 from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
 from nagasaki.strategy import DeltaStrategyAsk, DeltaStrategyBid
 
 from nagasaki.strategy.hedging_strategy import HedgingStrategy
+from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
 from nagasaki.strategy_executor import StrategyExecutor
 from nagasaki.trader.trader_app import TraderApp
 from nagasaki.database import database
@@ -62,10 +65,21 @@ if __name__ == "__main__":
     state_synchronizer = StateSynchronizer(state, bitclude_client, deribit_client)
 
     dispatcher = StrategyOrderDispatcher(client=bitclude_client, state=state)
-    des_ask = DeltaStrategyAsk(state=state, dispatcher=dispatcher)
-    des_bid = DeltaStrategyBid(state=state, dispatcher=dispatcher)
+    delta_calculator = DeltaCalculator()
+    delta_strategy_ask = MarketMakingStrategy(
+        state=state,
+        dispatcher=dispatcher,
+        side=SideTypeEnum.ASK,
+        delta_calculator=delta_calculator,
+    )
+    delta_strategy_bid = MarketMakingStrategy(
+        state=state,
+        dispatcher=dispatcher,
+        side=SideTypeEnum.BID,
+        delta_calculator=delta_calculator,
+    )
     hedging_strategy = HedgingStrategy(state=state, client=deribit_client)
-    strategies = [des_ask, des_bid, hedging_strategy]
+    strategies = [delta_strategy_ask, delta_strategy_bid, hedging_strategy]
 
     strategy_executor = StrategyExecutor(
         strategies=strategies,
