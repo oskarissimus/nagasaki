@@ -6,9 +6,10 @@ from nagasaki.enums.common import SideTypeEnum
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import State
+from nagasaki.strategy.calculators.price_calculator import PriceCalculator
 
 
-class DeltaCalculator:
+class DeltaCalculator(PriceCalculator):
     def __init__(self, delta_1: Decimal = None, delta_2: Decimal = None):
         runtime_config = RuntimeConfig()
         try:

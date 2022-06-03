@@ -52,12 +52,12 @@ def fixture_epsilon_calculator():
 def fixture_strategy_ask(
     initialized_state, dispatcher, delta_calculator, epsilon_calculator
 ):
+    calculators = [delta_calculator, epsilon_calculator]
     return MarketMakingStrategy(
         initialized_state,
         dispatcher,
         side=SideTypeEnum.ASK,
-        epsilon_calculator=epsilon_calculator,
-        delta_calculator=delta_calculator,
+        calculators=calculators,
     )
 
 
@@ -65,10 +65,10 @@ def fixture_strategy_ask(
 def fixture_strategy_bid(
     initialized_state, dispatcher, delta_calculator, epsilon_calculator
 ):
+    calculators = [delta_calculator, epsilon_calculator]
     return MarketMakingStrategy(
         initialized_state,
         dispatcher,
         side=SideTypeEnum.BID,
-        epsilon_calculator=epsilon_calculator,
-        delta_calculator=delta_calculator,
+        calculators=calculators,
     )

@@ -1,11 +1,11 @@
 from decimal import Decimal
+from typing import List
 
 from nagasaki.clients.base_client import OrderMaker
 from nagasaki.database.utils import write_order_maker_to_db
 from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
-from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
-from nagasaki.strategy.calculators.epsilon_calculator import EpsilonCalculator
+from nagasaki.strategy.calculators.price_calculator import PriceCalculator
 from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
 from nagasaki.state import State
 from nagasaki.logger import logger
@@ -26,12 +26,11 @@ class MarketMakingStrategy(AbstractStrategy):
         state: State,
         dispatcher: StrategyOrderDispatcher,
         side: SideTypeEnum = None,
-        delta_calculator: DeltaCalculator = None,
-        epsilon_calculator: EpsilonCalculator = None,
+        calculators: List[PriceCalculator] = None,
     ):
         self.state = state
         self.dispatcher = dispatcher
-        self.calculators = [delta_calculator, epsilon_calculator]
+        self.calculators = calculators or []
         self.side = side
         self.best_price = None
 

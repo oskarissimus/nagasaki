@@ -64,17 +64,18 @@ if __name__ == "__main__":
 
     dispatcher = StrategyOrderDispatcher(client=bitclude_client, state=state)
     delta_calculator = DeltaCalculator()
+    calculators = [delta_calculator]
     delta_strategy_ask = MarketMakingStrategy(
         state=state,
         dispatcher=dispatcher,
         side=SideTypeEnum.ASK,
-        delta_calculator=delta_calculator,
+        calculators=calculators,
     )
     delta_strategy_bid = MarketMakingStrategy(
         state=state,
         dispatcher=dispatcher,
         side=SideTypeEnum.BID,
-        delta_calculator=delta_calculator,
+        calculators=calculators,
     )
     hedging_strategy = HedgingStrategy(state=state, client=deribit_client)
     strategies = [delta_strategy_ask, delta_strategy_bid, hedging_strategy]
