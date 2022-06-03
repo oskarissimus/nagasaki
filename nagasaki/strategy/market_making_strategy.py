@@ -33,22 +33,27 @@ class MarketMakingStrategy(AbstractStrategy):
         self.dispatcher = dispatcher
         self.calculators = [delta_calculator, epsilon_calculator]
         self.side = side
+        self.best_price = None
 
     def execute(self):
+        self.calculate_best_price()
+
         order = make_order(self.best_price, self.amount, self.side)
+
         self.dispatcher.dispatch(order)
         write_order_maker_to_db(order)
 
-    @property
-    def best_price(self):
-        best_func = max if self.side == SideTypeEnum.ASK else min
+    def calculate_best_price(self):
         all_prices = [
             calculator.calculate(self.state, self.side)
             for calculator in self.calculators
         ]
-        best_price = best_func(all_prices)
-        logger.info(f"{best_price=:.0f}")
-        return best_price
+        self.best_price = self.best(all_prices)
+        logger.info(f"{self.best_price=:.0f}")
+
+    @property
+    def best(self):
+        return max if self.side == SideTypeEnum.ASK else min
 
     @property
     def amount(self):
