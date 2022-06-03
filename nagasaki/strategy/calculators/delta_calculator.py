@@ -1,14 +1,22 @@
 from decimal import Decimal
 
+import pydantic
+
 from nagasaki.enums.common import SideTypeEnum
+from nagasaki.runtime_config import RuntimeConfig
 
 
 class DeltaCalculator:
-    def __init__(self, delta_1: Decimal, delta_2: Decimal):
-        assert delta_1 >= 0
-        assert delta_2 >= 0
-        self.delta_1 = delta_1
-        self.delta_2 = delta_2
+    def __init__(self, delta_1: Decimal = None, delta_2: Decimal = None):
+        runtime_config = RuntimeConfig()
+        try:
+            self.delta_1 = delta_1 or runtime_config.delta_when_pln_only
+            self.delta_2 = delta_2 or runtime_config.delta_when_btc_only
+            assert self.delta_1 >= 0
+            assert self.delta_2 >= 0
+        except (pydantic.ValidationError, FileNotFoundError):
+            self.delta_1 = Decimal("0.0005")
+            self.delta_2 = Decimal("0.002")
 
     def calculate(
         self, price: Decimal, side: SideTypeEnum, inventory_parameter: Decimal

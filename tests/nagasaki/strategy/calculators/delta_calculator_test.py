@@ -1,4 +1,5 @@
 from decimal import Decimal
+from unittest import mock
 
 import pytest
 
@@ -82,3 +83,18 @@ def test_should_raise_for_incorrect_inventory_param(inventory_parameter):
         calculator.calculate(
             Decimal("100"), SideTypeEnum.ASK, inventory_parameter=inventory_parameter
         )
+
+
+def test_should_load_deltas_from_config():
+    mock_config = mock.Mock()
+    mock_config.delta_when_pln_only = Decimal("0.2")
+    mock_config.delta_when_btc_only = Decimal("0.3")
+
+    with mock.patch(
+        "nagasaki.strategy.calculators.delta_calculator" ".RuntimeConfig"
+    ) as runtime_config:
+        runtime_config.return_value = mock_config
+        calculator = DeltaCalculator()
+
+    assert calculator.delta_1 == Decimal("0.2")
+    assert calculator.delta_2 == Decimal("0.3")
