@@ -69,9 +69,7 @@ class MarketMakingStrategy(AbstractStrategy):
     def delta_price(self):
         if not self.delta_calculator:
             return None
-        return self.delta_calculator.calculate(
-            self.btc_mark_pln, self.side, inventory_parameter=self.inventory_parameter
-        )
+        return self.delta_calculator.calculate(self.state, self.side)
 
     @property
     def epsilon_price(self):

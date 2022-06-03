@@ -4,7 +4,10 @@ from unittest import mock
 import pytest
 
 from nagasaki.enums.common import SideTypeEnum
-from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
+from nagasaki.strategy.calculators.delta_calculator import (
+    DeltaCalculator,
+    calculate_inventory_parameter,
+)
 
 
 @pytest.mark.parametrize(
@@ -47,11 +50,17 @@ from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
 def test_should_calculate(
     delta_1, delta_2, side, price, inventory_parameter, expected_price
 ):
+    state = mock.Mock()
+    state.deribit.btc_mark_usd = price
+    state.usd_pln = 1
     calculator = DeltaCalculator(delta_1, delta_2)
 
-    calculated_price = calculator.calculate(
-        price, side, inventory_parameter=inventory_parameter
-    )
+    with mock.patch(
+        "nagasaki.strategy.calculators.delta_calculator"
+        ".DeltaCalculator.inventory_parameter"
+    ) as patched_inv_parameter:
+        patched_inv_parameter.return_value = inventory_parameter
+        calculated_price = calculator.calculate(state, side)
 
     assert calculated_price == expected_price
 
@@ -80,9 +89,7 @@ def test_should_raise_for_incorrect_inventory_param(inventory_parameter):
     calculator = DeltaCalculator(Decimal(0), Decimal(0))
 
     with pytest.raises(AssertionError):
-        calculator.calculate(
-            Decimal("100"), SideTypeEnum.ASK, inventory_parameter=inventory_parameter
-        )
+        calculator.inventory_adjusted_delta(inventory_parameter=inventory_parameter)
 
 
 def test_should_load_deltas_from_config():
@@ -112,3 +119,19 @@ def test_should_load_deltas_from_config():
 def test_should_adjust_for_inventory(inventory_parameter, delta):
     calculator = DeltaCalculator(Decimal("0.009"), Decimal("0.002"))
     assert calculator.inventory_adjusted_delta(inventory_parameter) == delta
+
+
+@pytest.mark.parametrize(
+    "total_pln, total_btc_value_in_pln, inventory_parameter",
+    [
+        (100, 0, -1),
+        (0, 100, 1),
+        (30, 90, 0.5),
+        (90, 90, 0),
+    ],
+)
+def test_inventory_parameter(total_pln, total_btc_value_in_pln, inventory_parameter):
+    assert (
+        calculate_inventory_parameter(total_pln, total_btc_value_in_pln)
+        == inventory_parameter
+    )
