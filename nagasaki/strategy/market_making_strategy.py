@@ -6,7 +6,7 @@ from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
 from nagasaki.strategy.calculators.epsilon_calculator import EpsilonCalculator
-from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
+from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
 from nagasaki.state import State
 from nagasaki.logger import logger
 
@@ -83,8 +83,7 @@ class MarketMakingStrategy(AbstractStrategy):
     def top(self):
         if self.side == SideTypeEnum.ASK:
             return self.top_ask
-        else:
-            return self.top_bid
+        return self.top_bid
 
     @property
     def top_ask(self):
@@ -98,8 +97,7 @@ class MarketMakingStrategy(AbstractStrategy):
     def amount(self):
         if self.side == SideTypeEnum.ASK:
             return self.total_btc
-        else:
-            return self.total_pln / self.best_price
+        return self.total_pln / self.best_price
 
     @property
     def total_btc(self):

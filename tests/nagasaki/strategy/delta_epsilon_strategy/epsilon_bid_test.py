@@ -2,8 +2,6 @@ from decimal import Decimal
 from unittest import mock
 
 from nagasaki.state import State
-from nagasaki.strategy import DeltaEpsilonStrategyBid
-from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
 
 from .utils import (
     make_orderbook_with_bid,
@@ -11,7 +9,9 @@ from .utils import (
 )
 
 
-def test_bid_bidding_over_epsilon(initialized_state: State, dispatcher):
+def test_bid_bidding_over_epsilon(
+    initialized_state: State, dispatcher, strategy_bid, epsilon_calculator
+):
     btc_mark_usd = 50_000
     top_bid_price = 170_000
     top_bid_amount = 1
@@ -28,14 +28,12 @@ def test_bid_bidding_over_epsilon(initialized_state: State, dispatcher):
     state.bitclude.orderbook_rest = make_orderbook_with_bid(
         top_bid_price, top_bid_amount
     )
-
-    strategy = DeltaEpsilonStrategyBid(state, dispatcher, epsilon)
-    strategy.delta_calculator = DeltaCalculator(Decimal("0.009"), Decimal("0.002"))
+    epsilon_calculator.epsilon = epsilon
 
     with mock.patch(
         "nagasaki.strategy.market_making_strategy" ".write_order_maker_to_db"
     ):
-        strategy.execute()
+        strategy_bid.execute()
 
     expected_create_order = make_order_maker_bid(expected_price, expected_amount)
     dispatcher.dispatch.assert_called_once_with(expected_create_order)

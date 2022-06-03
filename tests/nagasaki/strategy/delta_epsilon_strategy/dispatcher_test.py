@@ -2,7 +2,7 @@ from unittest import mock
 from unittest.mock import call
 
 import pytest
-from nagasaki.strategy.delta_epsilon_strategy.dispatcher import (
+from nagasaki.strategy.dispatcher import (
     StrategyOrderDispatcher,
     Tolerance,
 )

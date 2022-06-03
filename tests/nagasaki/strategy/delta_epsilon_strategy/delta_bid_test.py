@@ -2,8 +2,6 @@ from decimal import Decimal
 from unittest import mock
 
 from nagasaki.state import State
-from nagasaki.strategy import DeltaEpsilonStrategyBid
-from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
 
 from .utils import (
     make_order_maker_bid,
@@ -12,7 +10,7 @@ from .utils import (
 )
 
 
-def test_bid_bidding_over_delta(initialized_state: State, dispatcher):
+def test_bid_bidding_over_delta(initialized_state: State, dispatcher, strategy_bid):
     """
     Total PLN : Total BTC = 1:0 => inventory_parameter = 1 => delta = 0.002
     expected price = btc_mark_usd * usd_pln * (1 - delta)
@@ -31,13 +29,8 @@ def test_bid_bidding_over_delta(initialized_state: State, dispatcher):
     state.deribit.btc_mark_usd = Decimal(btc_mark_usd)
     state.bitclude.account_info = make_account_info_with_delta_0_009()
 
-    strategy = DeltaEpsilonStrategyBid(state, dispatcher)
-    strategy.delta_calculator = DeltaCalculator(Decimal("0.009"), Decimal("0.002"))
-
-    with mock.patch(
-        "nagasaki.strategy.market_making_strategy" ".write_order_maker_to_db"
-    ):
-        strategy.execute()
+    with mock.patch("nagasaki.strategy.market_making_strategy.write_order_maker_to_db"):
+        strategy_bid.execute()
 
     expected_create_order = make_order_maker_bid(expected_price, expected_amount)
     dispatcher.dispatch.assert_called_once_with(expected_create_order)

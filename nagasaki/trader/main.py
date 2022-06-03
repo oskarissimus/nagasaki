@@ -15,9 +15,7 @@ from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import StateSynchronizer
 from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
 
-from nagasaki.strategy.delta_epsilon_strategy.dispatcher import StrategyOrderDispatcher
-from nagasaki.strategy import DeltaStrategyAsk, DeltaStrategyBid
-
+from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
 from nagasaki.strategy.hedging_strategy import HedgingStrategy
 from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
 from nagasaki.strategy_executor import StrategyExecutor
