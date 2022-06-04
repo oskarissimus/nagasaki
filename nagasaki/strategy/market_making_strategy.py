@@ -41,7 +41,7 @@ class MarketMakingStrategy(AbstractStrategy):
     def execute(self):
         self.calculate_best_price()
 
-        order = make_order(self.best_price, self.amount, self.side)
+        order = make_order(self.best_price, self.amount, self.side, self.instrument)
 
         self.dispatcher.dispatch(order)
         write_order_maker_to_db(order)
