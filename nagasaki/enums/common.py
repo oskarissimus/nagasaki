@@ -15,6 +15,7 @@ class ActionTypeEnum(str, Enum):
 
 class InstrumentTypeEnum(Enum):
     BTC_PLN = ("BTC", "PLN")
+    ETH_PLN = ("ETH", "PLN")
     BTC_PERPETUAL = auto()
 
     def __init__(self, market_1=None, market_2=None):
@@ -39,4 +40,5 @@ class ActionEnum(str, Enum):
 
 class MarketEnum(str, Enum):
     BTC = "BTC"
+    ETH = "ETH"
     PLN = "PLN"

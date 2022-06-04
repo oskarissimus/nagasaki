@@ -11,12 +11,14 @@ from nagasaki.state import State
 from nagasaki.logger import logger
 
 
-def make_order(price: Decimal, amount: Decimal, side: SideTypeEnum) -> OrderMaker:
+def make_order(
+    price: Decimal, amount: Decimal, side: SideTypeEnum, instrument: InstrumentTypeEnum
+) -> OrderMaker:
     return OrderMaker(
         side=side,
         price=price,
         amount=amount,
-        instrument=InstrumentTypeEnum.BTC_PLN,
+        instrument=instrument,
     )
 
 
