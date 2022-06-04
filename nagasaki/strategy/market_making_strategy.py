@@ -25,9 +25,9 @@ class MarketMakingStrategy(AbstractStrategy):
         self,
         state: State,
         dispatcher: StrategyOrderDispatcher,
+        side: SideTypeEnum,
+        instrument: InstrumentTypeEnum,
         calculators: List[PriceCalculator] = None,
-        side: SideTypeEnum = None,
-        instrument: InstrumentTypeEnum = None,
     ):
         self.state = state
         self.dispatcher = dispatcher

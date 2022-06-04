@@ -19,7 +19,6 @@ class BitcludeState(BaseModel):
     account_info: Optional[AccountInfo]
     active_offers: Optional[List[Offer]]
     orderbooks: Optional[Dict[str, OrderbookRest]] = defaultdict()
-    orderbook_rest: Optional[OrderbookRest]
     orderbook_websocket: Optional[OrderbookWebsocket]
 
     def top_ask(self, asset_symbol):
@@ -38,12 +37,6 @@ class State(BaseModel):
     usd_pln: Optional[Decimal]
     bitclude: Optional[BitcludeState]
     deribit: Optional[DeribitState]
-
-    def get_top_ask(self) -> Decimal:
-        return min(self.bitclude.orderbook_rest.asks, key=lambda x: x.price).price
-
-    def get_top_bid(self) -> Decimal:
-        return max(self.bitclude.orderbook_rest.bids, key=lambda x: x.price).price
 
     @property
     def grand_total_delta(self) -> Decimal:

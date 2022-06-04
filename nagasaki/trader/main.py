@@ -7,7 +7,7 @@ from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
-from nagasaki.enums.common import SideTypeEnum
+from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.state import State
@@ -69,12 +69,14 @@ if __name__ == "__main__":
         state=state,
         dispatcher=dispatcher,
         side=SideTypeEnum.ASK,
+        instrument=InstrumentTypeEnum.BTC_PLN,
         calculators=calculators,
     )
     delta_strategy_bid = MarketMakingStrategy(
         state=state,
         dispatcher=dispatcher,
         side=SideTypeEnum.BID,
+        instrument=InstrumentTypeEnum.BTC_PLN,
         calculators=calculators,
     )
     hedging_strategy = HedgingStrategy(state=state, client=deribit_client)
