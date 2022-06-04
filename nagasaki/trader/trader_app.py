@@ -75,6 +75,11 @@ class TraderApp:
             seconds=10,
         )
         self.scheduler.add_job(
+            self.get_eth_mark_usd_from_deribit_and_write_to_state,
+            "interval",
+            seconds=10,
+        )
+        self.scheduler.add_job(
             self.fetch_usd_pln_and_write_to_state,
             "interval",
             minutes=20,
@@ -87,10 +92,15 @@ class TraderApp:
         )
 
     def get_btc_mark_usd_from_deribit_and_write_to_state(self):
-        self.state.deribit.btc_mark_usd = (
-            self.deribit_client.fetch_index_price_btc_usd()
-        )
+        self.state.deribit.mark_price[
+            "BTC"
+        ] = self.deribit_client.fetch_index_price_btc_usd()
         # logger.info(f"{self.state.btc_mark_usd=}")
+
+    def get_eth_mark_usd_from_deribit_and_write_to_state(self):
+        self.state.deribit.mark_price[
+            "ETH"
+        ] = self.deribit_client.fetch_index_price_btc_usd()
 
     def fetch_usd_pln_and_write_to_state(self):
         usd_pln = self.usd_pln_quoting_client.fetch_usd_pln_quote()

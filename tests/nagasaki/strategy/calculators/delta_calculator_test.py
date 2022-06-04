@@ -1,9 +1,10 @@
+from collections import defaultdict
 from decimal import Decimal
 from unittest import mock
 
 import pytest
 
-from nagasaki.enums.common import SideTypeEnum
+from nagasaki.enums.common import SideTypeEnum, MarketEnum
 from nagasaki.strategy.calculators.delta_calculator import (
     DeltaCalculator,
     calculate_inventory_parameter,
@@ -51,7 +52,8 @@ def test_should_calculate(
     delta_1, delta_2, side, price, inventory_parameter, expected_price
 ):
     state = mock.Mock()
-    state.deribit.btc_mark_usd = price
+    state.deribit.mark_price = defaultdict()
+    state.deribit.mark_price["BTC"] = price
     state.usd_pln = 1
     calculator = DeltaCalculator(delta_1, delta_2)
 
@@ -60,7 +62,7 @@ def test_should_calculate(
         ".DeltaCalculator.inventory_parameter"
     ) as patched_inv_parameter:
         patched_inv_parameter.return_value = inventory_parameter
-        calculated_price = calculator.calculate(state, side)
+        calculated_price = calculator.calculate(state, side, MarketEnum.BTC)
 
     assert calculated_price == expected_price
 

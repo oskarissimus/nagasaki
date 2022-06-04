@@ -1,6 +1,7 @@
 from decimal import Decimal
 from unittest import mock
 
+from nagasaki.enums.common import MarketEnum
 from nagasaki.state import State
 
 from .utils import (
@@ -23,10 +24,10 @@ def test_bid_bidding_over_delta(initialized_state: State, dispatcher, strategy_b
     top_bid_amount = 1
 
     state = initialized_state
-    state.bitclude.orderbook_rest = make_orderbook_with_bid(
+    state.bitclude.orderbooks[MarketEnum.BTC] = make_orderbook_with_bid(
         top_bid_price, top_bid_amount
     )
-    state.deribit.btc_mark_usd = Decimal(btc_mark_usd)
+    state.deribit.mark_price["BTC"] = Decimal(btc_mark_usd)
     state.bitclude.account_info = make_account_info_with_delta_0_009()
 
     with mock.patch("nagasaki.strategy.market_making_strategy.write_order_maker_to_db"):

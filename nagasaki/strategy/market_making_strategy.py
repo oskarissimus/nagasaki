@@ -3,7 +3,7 @@ from typing import List
 
 from nagasaki.clients.base_client import OrderMaker
 from nagasaki.database.utils import write_order_maker_to_db
-from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
+from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum, MarketEnum
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.strategy.calculators.price_calculator import PriceCalculator
 from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
@@ -25,13 +25,15 @@ class MarketMakingStrategy(AbstractStrategy):
         self,
         state: State,
         dispatcher: StrategyOrderDispatcher,
-        side: SideTypeEnum = None,
         calculators: List[PriceCalculator] = None,
+        side: SideTypeEnum = None,
+        instrument: InstrumentTypeEnum = None,
     ):
         self.state = state
         self.dispatcher = dispatcher
         self.calculators = calculators or []
         self.side = side
+        self.instrument = instrument
         self.best_price = None
 
     def execute(self):
@@ -44,7 +46,7 @@ class MarketMakingStrategy(AbstractStrategy):
 
     def calculate_best_price(self):
         all_prices = [
-            calculator.calculate(self.state, self.side)
+            calculator.calculate(self.state, self.side, self.asset)
             for calculator in self.calculators
         ]
         self.best_price = self.best(all_prices)
@@ -57,14 +59,14 @@ class MarketMakingStrategy(AbstractStrategy):
     @property
     def amount(self):
         if self.side == SideTypeEnum.ASK:
-            return self.total_btc
+            return self.total_assets
         return self.total_pln / self.best_price
 
     @property
-    def total_btc(self):
+    def total_assets(self):
         return (
-            self.state.bitclude.account_info.balances["BTC"].active
-            + self.state.bitclude.account_info.balances["BTC"].inactive
+            self.state.bitclude.account_info.balances[self.asset].active
+            + self.state.bitclude.account_info.balances[self.asset].inactive
         )
 
     @property
@@ -73,3 +75,7 @@ class MarketMakingStrategy(AbstractStrategy):
             self.state.bitclude.account_info.balances["PLN"].active
             + self.state.bitclude.account_info.balances["PLN"].inactive
         )
+
+    @property
+    def asset(self):
+        return MarketEnum(self.instrument.market_1)

@@ -2,7 +2,7 @@ from decimal import Decimal
 
 import pydantic
 
-from nagasaki.enums.common import SideTypeEnum
+from nagasaki.enums.common import SideTypeEnum, MarketEnum
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import State
@@ -23,9 +23,11 @@ class DeltaCalculator(PriceCalculator):
         self.delta_1 = self.delta_1 or Decimal("0.0005")
         self.delta_2 = self.delta_2 or Decimal("0.002")
 
-    def calculate(self, state: State, side: SideTypeEnum) -> Decimal:
-        mark_price = state.deribit.btc_mark_usd * state.usd_pln
-        inventory_parameter = self.inventory_parameter(state)
+    def calculate(
+        self, state: State, side: SideTypeEnum, asset_symbol: MarketEnum
+    ) -> Decimal:
+        mark_price = state.deribit.mark_price[asset_symbol] * state.usd_pln
+        inventory_parameter = self.inventory_parameter(state, asset_symbol)
         if side == SideTypeEnum.ASK:
             delta_price = self.calculate_ask(mark_price, inventory_parameter)
         else:
@@ -60,11 +62,11 @@ class DeltaCalculator(PriceCalculator):
             self.delta_2 - self.delta_1
         )
 
-    def inventory_parameter(self, state):
-        mark_price = state.deribit.btc_mark_usd * state.usd_pln
+    def inventory_parameter(self, state, asset_symbol: MarketEnum):
+        mark_price = state.deribit.mark_price[asset_symbol] * state.usd_pln
         balances = state.bitclude.account_info.balances
         total_pln = balances["PLN"].active + balances["PLN"].inactive
-        total_btc = balances["BTC"].active + balances["BTC"].inactive
+        total_btc = balances[asset_symbol].active + balances[asset_symbol].inactive
 
         total_btc_value_in_pln = calculate_btc_value_in_pln(total_btc, mark_price)
         return calculate_inventory_parameter(total_pln, total_btc_value_in_pln)

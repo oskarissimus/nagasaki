@@ -142,6 +142,12 @@ class DeribitClient(BaseClient):
         )
         return Decimal(response.json()["result"]["index_price"])
 
+    def fetch_index_price_eth_usd(self) -> Decimal:
+        response = requests.get(
+            f"{self.deribit_url_base}/public/get_index_price?index_name=eth_usd"
+        )
+        return Decimal(response.json()["result"]["index_price"])
+
     def cancel_order(self, order: OrderTaker):
         pass
 

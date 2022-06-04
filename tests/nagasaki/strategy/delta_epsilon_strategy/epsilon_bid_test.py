@@ -1,6 +1,7 @@
 from decimal import Decimal
 from unittest import mock
 
+from nagasaki.enums.common import MarketEnum
 from nagasaki.state import State
 
 from .utils import (
@@ -23,16 +24,14 @@ def test_bid_bidding_over_epsilon(
 
     state = initialized_state
     state.bitclude.active_offers = []
-    state.deribit.btc_mark_usd = Decimal(btc_mark_usd)
+    state.deribit.mark_price["BTC"] = Decimal(btc_mark_usd)
     state.bitclude.account_info.balances["PLN"].active = Decimal("170_000.01")
-    state.bitclude.orderbook_rest = make_orderbook_with_bid(
+    state.bitclude.orderbooks[MarketEnum.BTC] = make_orderbook_with_bid(
         top_bid_price, top_bid_amount
     )
     epsilon_calculator.epsilon = epsilon
 
-    with mock.patch(
-        "nagasaki.strategy.market_making_strategy" ".write_order_maker_to_db"
-    ):
+    with mock.patch("nagasaki.strategy.market_making_strategy.write_order_maker_to_db"):
         strategy_bid.execute()
 
     expected_create_order = make_order_maker_bid(expected_price, expected_amount)

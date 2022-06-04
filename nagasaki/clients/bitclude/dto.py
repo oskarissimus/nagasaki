@@ -155,17 +155,6 @@ class CreateRequestDTO(BaseModel):
         )
 
     @classmethod
-    def from_bitclude_order(cls, order: BitcludeOrder):
-        action = ActionEnum.BUY if order.side == SideTypeEnum.BID else ActionEnum.SELL
-        return cls(
-            action=action,
-            market1="BTC",
-            market2="PLN",
-            amount=order.amount,
-            rate=order.price,
-        )
-
-    @classmethod
     def from_order_maker(cls, order: OrderMaker):
         action = ActionEnum.BUY if order.side == SideTypeEnum.BID else ActionEnum.SELL
         return cls(

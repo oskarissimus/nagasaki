@@ -1,6 +1,7 @@
 from decimal import Decimal
 from unittest import mock
 
+from nagasaki.enums.common import MarketEnum
 from nagasaki.state import State
 
 
@@ -24,8 +25,8 @@ def test_ask_bidding_over_delta(initialized_state: State, dispatcher, strategy_a
     top_ask_amount = 1
 
     state = initialized_state
-    state.deribit.btc_mark_usd = Decimal(btc_mark_usd)
-    state.bitclude.orderbook_rest = make_orderbook_with_ask(
+    state.deribit.mark_price["BTC"] = Decimal(btc_mark_usd)
+    state.bitclude.orderbooks[MarketEnum.BTC] = make_orderbook_with_ask(
         top_ask_price, top_ask_amount
     )
     state.bitclude.account_info = make_account_info_with_delta_0_002()

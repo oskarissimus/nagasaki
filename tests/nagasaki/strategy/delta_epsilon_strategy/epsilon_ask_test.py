@@ -1,6 +1,7 @@
 from decimal import Decimal
 from unittest import mock
 
+from nagasaki.enums.common import MarketEnum
 from nagasaki.state import State
 
 from .utils import (
@@ -21,7 +22,7 @@ def test_ask_bidding_over_epsilon(
     epsilon = Decimal("0.01")
 
     state = initialized_state
-    state.bitclude.orderbook_rest = make_orderbook_with_ask(
+    state.bitclude.orderbooks[MarketEnum.BTC] = make_orderbook_with_ask(
         top_ask_price, top_ask_amount
     )
     epsilon_calculator.epsilon = epsilon

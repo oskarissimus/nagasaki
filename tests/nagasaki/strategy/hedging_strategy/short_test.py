@@ -25,7 +25,7 @@ def fixture_state():
 
     state = State()
     state.deribit = DeribitState()
-    state.deribit.btc_mark_usd = Decimal(btc_price_deribit)
+    state.deribit.mark_price["BTC"] = Decimal(btc_price_deribit)
     state.usd_pln = Decimal(usd_pln)
     state.bitclude = BitcludeState()
     state.bitclude.account_info = AccountInfo(

@@ -1,5 +1,6 @@
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
+from nagasaki.enums.common import MarketEnum
 from nagasaki.state import State
 from nagasaki.logger import logger
 
@@ -19,7 +20,7 @@ class StateSynchronizer:
         logger.info("Synchronizing state")
         self.state.bitclude.account_info = self.bitclude_client.fetch_account_info()
         self.state.bitclude.active_offers = self.bitclude_client.fetch_active_offers()
-        self.state.bitclude.orderbook_rest = (
-            self.bitclude_client.fetch_orderbook().to_orderbook_rest()
-        )
+        self.state.bitclude.orderbooks[
+            MarketEnum.BTC
+        ] = self.bitclude_client.fetch_orderbook(MarketEnum.BTC).to_orderbook_rest()
         self.state.deribit.account_summary = self.deribit_client.fetch_account_summary()

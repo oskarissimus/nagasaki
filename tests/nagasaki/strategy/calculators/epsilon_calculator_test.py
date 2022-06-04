@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from nagasaki.enums.common import SideTypeEnum
+from nagasaki.enums.common import SideTypeEnum, MarketEnum
 from nagasaki.strategy.calculators.epsilon_calculator import EpsilonCalculator
 
 
@@ -22,6 +22,6 @@ def test_should_calculate(epsilon, side, price, expected_price):
     state.bitclude.top_bid.return_value = price
     calculator = EpsilonCalculator(epsilon=epsilon)
 
-    calculated_price = calculator.calculate(state, side)
+    calculated_price = calculator.calculate(state, side, asset_symbol=MarketEnum.BTC)
 
     assert calculated_price == expected_price

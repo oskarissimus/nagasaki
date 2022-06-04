@@ -30,7 +30,7 @@ class HedgingStrategy(AbstractStrategy):
     def execute(self):
         delta = self.state.grand_total_delta
 
-        btc_mark_usd = self.state.deribit.btc_mark_usd
+        btc_mark_usd = self.state.deribit.mark_price["BTC"]
 
         order = None
 

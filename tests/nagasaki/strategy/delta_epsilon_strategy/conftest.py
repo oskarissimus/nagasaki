@@ -4,7 +4,7 @@ from unittest import mock
 import pytest
 
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance
-from nagasaki.enums.common import SideTypeEnum
+from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
 from nagasaki.state import State, DeribitState, BitcludeState
 from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
 from nagasaki.strategy.calculators.epsilon_calculator import EpsilonCalculator
@@ -21,7 +21,7 @@ def fixture_initialized_state():
 
     state = State()
     state.deribit = DeribitState()
-    state.deribit.btc_mark_usd = Decimal(btc_price_deribit)
+    state.deribit.mark_price["BTC"] = Decimal(btc_price_deribit)
     state.usd_pln = Decimal(usd_pln)
     state.bitclude = BitcludeState()
     state.bitclude.account_info = AccountInfo(
@@ -56,8 +56,9 @@ def fixture_strategy_ask(
     return MarketMakingStrategy(
         initialized_state,
         dispatcher,
-        side=SideTypeEnum.ASK,
         calculators=calculators,
+        side=SideTypeEnum.ASK,
+        instrument=InstrumentTypeEnum.BTC_PLN,
     )
 
 
@@ -69,6 +70,7 @@ def fixture_strategy_bid(
     return MarketMakingStrategy(
         initialized_state,
         dispatcher,
-        side=SideTypeEnum.BID,
         calculators=calculators,
+        side=SideTypeEnum.BID,
+        instrument=InstrumentTypeEnum.BTC_PLN,
     )

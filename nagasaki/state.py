@@ -1,5 +1,6 @@
+from collections import defaultdict
 from decimal import Decimal
-from typing import List, Optional
+from typing import List, Optional, Dict
 
 from pydantic import BaseModel
 
@@ -17,18 +18,19 @@ from nagasaki.models.bitclude import (
 class BitcludeState(BaseModel):
     account_info: Optional[AccountInfo]
     active_offers: Optional[List[Offer]]
+    orderbooks: Optional[Dict[str, OrderbookRest]] = defaultdict()
     orderbook_rest: Optional[OrderbookRest]
     orderbook_websocket: Optional[OrderbookWebsocket]
 
-    def top_ask(self):
-        return min(self.orderbook_rest.asks, key=lambda x: x.price).price
+    def top_ask(self, asset_symbol):
+        return min(self.orderbooks[asset_symbol].asks, key=lambda x: x.price).price
 
-    def top_bid(self):
-        return max(self.orderbook_rest.bids, key=lambda x: x.price).price
+    def top_bid(self, asset_symbol):
+        return max(self.orderbooks[asset_symbol].bids, key=lambda x: x.price).price
 
 
 class DeribitState(BaseModel):
-    btc_mark_usd: Optional[Decimal]
+    mark_price: Dict[str, Optional[Decimal]] = defaultdict(None)
     account_summary: Optional[AccountSummary]
 
 

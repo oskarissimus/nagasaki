@@ -16,7 +16,7 @@ from nagasaki.clients.bitclude.dto import (
     CreateRequestDTO,
     CreateResponseDTO,
 )
-from nagasaki.enums.common import ActionTypeEnum
+from nagasaki.enums.common import ActionTypeEnum, MarketEnum
 from nagasaki.event_manager import EventManager
 from nagasaki.exceptions import BitcludeClientException, CannotParseResponse
 from nagasaki.logger import logger
@@ -232,11 +232,14 @@ class BitcludeClient(BaseClient):
                 return True
             sleep(1)
 
-    def fetch_orderbook(self) -> OrderbookResponseDTO:
-        logger.info("fetching orderbook")
+    def fetch_orderbook(self, asset_symbol: MarketEnum) -> OrderbookResponseDTO:
+        logger.info(f"fetching {asset_symbol} orderbook")
         # self.last_500_request_times.append(datetime.now())
         # self.last_500_request_times.log_request_times()
-        response = requests.get(f"{self.bitclude_url_base}/stats/orderbook_btcpln.json")
+        asset_url_code = asset_symbol.lower()
+        response = requests.get(
+            f"{self.bitclude_url_base}/stats/orderbook_{asset_url_code}pln.json"
+        )
         if response.status_code == 200:
             parsed_response = BitcludeClient._parse_orderbook_response(response)
             return parsed_response
