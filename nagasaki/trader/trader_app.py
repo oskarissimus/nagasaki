@@ -100,7 +100,7 @@ class TraderApp:
     def get_eth_mark_usd_from_deribit_and_write_to_state(self):
         self.state.deribit.mark_price[
             "ETH"
-        ] = self.deribit_client.fetch_index_price_btc_usd()
+        ] = self.deribit_client.fetch_index_price_eth_usd()
 
     def fetch_usd_pln_and_write_to_state(self):
         usd_pln = self.usd_pln_quoting_client.fetch_usd_pln_quote()

@@ -30,6 +30,7 @@ class SideTypeEnum(str, Enum):
 
 class OfferCurrencyEnum(str, Enum):
     btc = "btc"
+    eth = "eth"
     pln = "pln"
 
 
