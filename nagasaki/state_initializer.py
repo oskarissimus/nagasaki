@@ -44,7 +44,7 @@ class StateInitializer:
             MarketEnum.BTC
         ] = self.bitclude_client.fetch_orderbook(MarketEnum.BTC).to_orderbook_rest()
 
-        for orderbook in self.state.bitclude.orderbooks:
+        for orderbook in self.state.bitclude.orderbooks.values():
             logger.info(orderbook)
 
         logger.info(self.state.deribit.mark_price["BTC"])
