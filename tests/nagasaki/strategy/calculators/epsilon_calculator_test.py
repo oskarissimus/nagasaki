@@ -1,9 +1,16 @@
 from decimal import Decimal
+<<<<<<< Updated upstream
 from unittest import mock
 
 import pytest
 
 from nagasaki.enums.common import SideTypeEnum, MarketEnum
+=======
+
+import pytest
+
+from nagasaki.enums.common import SideTypeEnum
+>>>>>>> Stashed changes
 from nagasaki.strategy.calculators.epsilon_calculator import EpsilonCalculator
 
 
