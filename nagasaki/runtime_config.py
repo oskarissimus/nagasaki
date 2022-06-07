@@ -6,8 +6,8 @@ from pydantic_yaml import YamlModel
 
 class RuntimeConfig:
     class Data(YamlModel):
-        delta_when_btc_only: float
-        delta_when_pln_only: float
+        delta_when_btc_only: str
+        delta_when_pln_only: str
 
     def __init__(self):
         self.path = Path("runtime_config.yml")

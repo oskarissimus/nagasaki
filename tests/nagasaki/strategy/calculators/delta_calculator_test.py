@@ -5,6 +5,7 @@ from unittest import mock
 import pytest
 
 from nagasaki.enums.common import SideTypeEnum, MarketEnum
+from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.strategy.calculators.delta_calculator import (
     DeltaCalculator,
     calculate_inventory_parameter,
@@ -77,7 +78,9 @@ def test_should_calculate(
 )
 def test_should_raise_for_negative_delta(delta_1, delta_2):
     with pytest.raises(AssertionError):
-        DeltaCalculator(delta_1, delta_2)
+        calculator = DeltaCalculator(delta_1, delta_2)
+        calculator.delta_1
+        calculator.delta_2
 
 
 @pytest.mark.parametrize(
@@ -95,18 +98,21 @@ def test_should_raise_for_incorrect_inventory_param(inventory_parameter):
 
 
 def test_should_load_deltas_from_config():
-    mock_config = mock.Mock()
-    mock_config.delta_when_pln_only = Decimal("0.2")
-    mock_config.delta_when_btc_only = Decimal("0.3")
+    runtime_config = RuntimeConfig()
 
-    with mock.patch(
-        "nagasaki.strategy.calculators.delta_calculator" ".RuntimeConfig"
-    ) as runtime_config:
-        runtime_config.return_value = mock_config
-        calculator = DeltaCalculator()
+    with open(runtime_config.path, "w", encoding="utf-8") as file:
+        file.write(f"delta_when_pln_only: 0.1\n" f"delta_when_btc_only: 0.2\n")
 
-    assert calculator.delta_1 == Decimal("0.2")
-    assert calculator.delta_2 == Decimal("0.3")
+    calculator = DeltaCalculator()
+
+    assert calculator.delta_1 == Decimal("0.1")
+    assert calculator.delta_2 == Decimal("0.2")
+
+    with open(runtime_config.path, "w", encoding="utf-8") as file:
+        file.write(f"delta_when_pln_only: 0.3\n" f"delta_when_btc_only: 0.4\n")
+
+    assert calculator.delta_1 == Decimal("0.3")
+    assert calculator.delta_2 == Decimal("0.4")
 
 
 @pytest.mark.parametrize(
