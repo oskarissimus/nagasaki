@@ -41,11 +41,11 @@ class HedgingStrategy(AbstractStrategy):
 
         if delta > 0.001:
             btcs_to_short_in_dollars = round(delta * btc_mark_usd, -1)
-            order = sell_order(btcs_to_short_in_dollars)
+            order = sell_order(btcs_to_short_in_dollars, self.instrument)
 
         if delta < -0.001:
             btcs_to_long_in_dollars = round(-1 * delta * btc_mark_usd, -1)
-            order = buy_order(btcs_to_long_in_dollars)
+            order = buy_order(btcs_to_long_in_dollars, self.instrument)
 
         if order:
             self.client.create_order(order)
