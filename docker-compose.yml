@@ -4,7 +4,7 @@ services:
   db:
     image: postgres:14.3-bullseye
     volumes:
-      - ./postgres/data:/var/lib/postgresql/data
+      - ${POSTGRES_VOLUME_PATH}:/var/lib/postgresql/data
     environment:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
@@ -24,8 +24,24 @@ services:
         "python",
         "nagasaki/trader/main.py"
       ]
-    env_file:
-      - ./.env
+    environment:
+      - DERIBIT_URL_BASE: ${DERIBIT_URL_BASE}
+      - DERIBIT_CLIENT_ID: ${DERIBIT_CLIENT_ID}
+      - DERIBIT_CLIENT_SECRET: ${DERIBIT_CLIENT_SECRET}
+      - BITCLUDE_URL_BASE: ${BITCLUDE_URL_BASE}
+      - BITCLUDE_ID: ${BITCLUDE_ID}
+      - BITCLUDE_KEY: ${BITCLUDE_KEY}
+      - YAHOO_FINANCE_API_KEY: ${YAHOO_FINANCE_API_KEY}
+      - MEMORY_DB: ${MEMORY_DB}
+      - DB_HOST: ${DB_HOST}
+      - DB_PORT: ${DB_PORT}
+      - DB_USER: ${DB_USER}
+      - DB_PASSWORD: ${DB_PASSWORD}
+      - DB_NAME: ${DB_NAME}
+      - YAHOO_FINANCE_API_EMAIL: ${YAHOO_FINANCE_API_EMAIL}
+      - YAHOO_FINANCE_API_PASSWORD: ${YAHOO_FINANCE_API_PASSWORD}
+      - BASIC_AUTH_PASSWORD: ${BASIC_AUTH_PASSWORD}
+      - BASIC_AUTH_USERNAME: ${BASIC_AUTH_USERNAME}
     ports:
       # host:container
       - "8000:8000"
