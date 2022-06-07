@@ -10,6 +10,7 @@ from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
 from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
+from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import StateSynchronizer
@@ -62,6 +63,8 @@ if __name__ == "__main__":
 
     state_synchronizer = StateSynchronizer(state, bitclude_client, deribit_client)
 
+    runtime_config = RuntimeConfig()
+
     dispatcher = StrategyOrderDispatcher(client=bitclude_client, state=state)
     delta_calculator = DeltaCalculator()
     calculators = [delta_calculator]
@@ -69,17 +72,20 @@ if __name__ == "__main__":
         state=state,
         dispatcher=dispatcher,
         side=SideTypeEnum.ASK,
-        instrument=InstrumentTypeEnum.BTC_PLN,
+        instrument=runtime_config.market_making_instrument,
         calculators=calculators,
     )
     delta_strategy_bid = MarketMakingStrategy(
         state=state,
         dispatcher=dispatcher,
         side=SideTypeEnum.BID,
-        instrument=InstrumentTypeEnum.BTC_PLN,
+        instrument=runtime_config.market_making_instrument,
         calculators=calculators,
     )
-    hedging_strategy = HedgingStrategy(state=state, client=deribit_client)
+
+    hedging_strategy = HedgingStrategy(
+        state=state, client=deribit_client, instrument=runtime_config.hedging_instrument
+    )
     strategies = [delta_strategy_ask, delta_strategy_bid, hedging_strategy]
 
     strategy_executor = StrategyExecutor(

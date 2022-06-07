@@ -118,14 +118,6 @@ class BitcludeClient(BaseClient):
             return AccountInfo(**response_json)
         raise BitcludeClientException(response_json)
 
-    def fetch_ticker_btc_pln(self) -> Ticker:
-        response = requests.get(f"{self.bitclude_url_base}/stats/ticker.json")
-        try:
-            response_json = response.json()
-        except json.decoder.JSONDecodeError as json_decode_error:
-            raise CannotParseResponse(response.text) from json_decode_error
-        return Ticker(**response_json["btc_pln"])
-
     def fetch_active_offers(self) -> List[Offer]:
         logger.info("fetching active offers")
         self.last_500_request_times.append(datetime.now())

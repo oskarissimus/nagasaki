@@ -5,6 +5,7 @@ import pytest
 
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance
 from nagasaki.clients.deribit_client import AccountSummary
+from nagasaki.enums.common import InstrumentTypeEnum
 from nagasaki.state import BitcludeState, DeribitState, State
 from nagasaki.strategy.hedging_strategy import HedgingStrategy
 from .utils import make_order_taker_sell
@@ -50,9 +51,9 @@ def fixture_state():
 def test_should_short_2_btcs(state: State, client: mock.Mock):
     btcs_to_short_in_dollars = 80_000
 
-    strategy = HedgingStrategy(state, client)
+    strategy = HedgingStrategy(state, client, InstrumentTypeEnum.BTC_PERPETUAL)
 
-    with mock.patch("nagasaki.strategy.hedging_strategy" ".write_order_taker_to_db"):
+    with mock.patch("nagasaki.strategy.hedging_strategy.write_order_taker_to_db"):
         strategy.execute()
 
     expected_create_order = make_order_taker_sell(

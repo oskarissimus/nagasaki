@@ -5,8 +5,9 @@ from pydantic import BaseModel
 import requests
 
 from nagasaki.clients.base_client import BaseClient, OrderTaker
-from nagasaki.enums.common import SideTypeEnum
+from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
 from nagasaki.logger import logger
+from nagasaki.runtime_config import RuntimeConfig
 
 
 class DeribitClientException(Exception):
@@ -82,9 +83,9 @@ class DeribitClient(BaseClient):
         }
 
     def fetch_account_summary(self) -> AccountSummary:
-
+        runtime_config = RuntimeConfig()
         params = (
-            ("currency", "BTC"),
+            ("currency", runtime_config.hedging_instrument.market_1),
             ("extended", "true"),
         )
 
@@ -137,14 +138,18 @@ class DeribitClient(BaseClient):
         return self.create_order_perpetual(amount_in_usd, "buy", dry_run=dry_run)
 
     def fetch_index_price_btc_usd(self) -> Decimal:
-        response = requests.get(
-            f"{self.deribit_url_base}/public/get_index_price?index_name=btc_usd"
-        )
-        return Decimal(response.json()["result"]["index_price"])
+        return self.fetch_index_price_in_usd(InstrumentTypeEnum.BTC_PLN)
 
     def fetch_index_price_eth_usd(self) -> Decimal:
         response = requests.get(
             f"{self.deribit_url_base}/public/get_index_price?index_name=eth_usd"
+        )
+        return Decimal(response.json()["result"]["index_price"])
+
+    def fetch_index_price_in_usd(self, instrument: InstrumentTypeEnum) -> Decimal:
+        response = requests.get(
+            f"{self.deribit_url_base}/public/get_index_price?index_name="
+            f"{instrument.market_1.lower()}_usd"
         )
         return Decimal(response.json()["result"]["index_price"])
 

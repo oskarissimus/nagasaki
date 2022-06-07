@@ -1,10 +1,11 @@
 from collections import defaultdict
 from decimal import Decimal
+from pathlib import Path
 from unittest import mock
 
 import pytest
 
-from nagasaki.enums.common import SideTypeEnum, MarketEnum
+from nagasaki.enums.common import SideTypeEnum, MarketEnum, InstrumentTypeEnum
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.strategy.calculators.delta_calculator import (
     DeltaCalculator,
@@ -98,10 +99,16 @@ def test_should_raise_for_incorrect_inventory_param(inventory_parameter):
 
 
 def test_should_load_deltas_from_config():
-    runtime_config = RuntimeConfig()
+    runtime_config = RuntimeConfig(Path("test_runtime_config.yml"))
 
     with open(runtime_config.path, "w", encoding="utf-8") as file:
-        file.write(f"delta_when_pln_only: 0.1\n" f"delta_when_btc_only: 0.2\n")
+        data = RuntimeConfig.Data(
+            delta_when_pln_only="0.1",
+            delta_when_btc_only="0.2",
+            market_making_instrument="BTC_PLN",
+            hedging_instrument="BTC_PERPETUAL",
+        )
+        file.write(data.yaml())
 
     calculator = DeltaCalculator()
 
@@ -109,7 +116,13 @@ def test_should_load_deltas_from_config():
     assert calculator.delta_2 == Decimal("0.2")
 
     with open(runtime_config.path, "w", encoding="utf-8") as file:
-        file.write(f"delta_when_pln_only: 0.3\n" f"delta_when_btc_only: 0.4\n")
+        data = RuntimeConfig.Data(
+            delta_when_pln_only="0.3",
+            delta_when_btc_only="0.4",
+            market_making_instrument="BTC_PLN",
+            hedging_instrument="BTC_PERPETUAL",
+        )
+        file.write(data.yaml())
 
     assert calculator.delta_1 == Decimal("0.3")
     assert calculator.delta_2 == Decimal("0.4")

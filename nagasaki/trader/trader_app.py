@@ -6,6 +6,7 @@ from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
+from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import StateSynchronizer
@@ -70,12 +71,7 @@ class TraderApp:
     def attach_jobs_to_scheduler(self):
         # self.scheduler.add_job(tick, "interval", seconds=3)
         self.scheduler.add_job(
-            self.get_btc_mark_usd_from_deribit_and_write_to_state,
-            "interval",
-            seconds=10,
-        )
-        self.scheduler.add_job(
-            self.get_eth_mark_usd_from_deribit_and_write_to_state,
+            self.get_mark_price_in_usd_from_deribit_and_write_to_state,
             "interval",
             seconds=10,
         )
@@ -91,10 +87,14 @@ class TraderApp:
             seconds=10,
         )
 
-    def get_btc_mark_usd_from_deribit_and_write_to_state(self):
+    def get_mark_price_in_usd_from_deribit_and_write_to_state(self):
+        runtime_config = RuntimeConfig()
+
         self.state.deribit.mark_price[
-            "BTC"
-        ] = self.deribit_client.fetch_index_price_btc_usd()
+            runtime_config.market_making_instrument.market_1
+        ] = self.deribit_client.fetch_index_price_in_usd(
+            runtime_config.market_making_instrument
+        )
         # logger.info(f"{self.state.btc_mark_usd=}")
 
     def get_eth_mark_usd_from_deribit_and_write_to_state(self):

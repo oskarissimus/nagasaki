@@ -1,6 +1,7 @@
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.enums.common import MarketEnum
+from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import (
     BitcludeState,
     DeribitState,
@@ -28,6 +29,8 @@ class StateInitializer:
     def initialize_state(self):
         logger.info("initialize_state")
 
+        runtime_config = RuntimeConfig()
+
         self.state.bitclude = BitcludeState()
         self.state.bitclude.orderbook_websocket = OrderbookWebsocket()
         self.state.deribit = DeribitState()
@@ -36,16 +39,24 @@ class StateInitializer:
         self.state.bitclude.active_offers = self.bitclude_client.fetch_active_offers()
         self.state.deribit.account_summary = self.deribit_client.fetch_account_summary()
         self.state.deribit.mark_price[
-            MarketEnum.BTC
-        ] = self.deribit_client.fetch_index_price_btc_usd()
+            runtime_config.market_making_instrument.market_1
+        ] = self.deribit_client.fetch_index_price_in_usd(
+            runtime_config.market_making_instrument
+        )
         self.state.usd_pln = self.usd_pln_quoting_client.fetch_usd_pln_quote()
 
         self.state.bitclude.orderbooks[
-            MarketEnum.BTC
-        ] = self.bitclude_client.fetch_orderbook(MarketEnum.BTC).to_orderbook_rest()
+            runtime_config.market_making_instrument.market_1
+        ] = self.bitclude_client.fetch_orderbook(
+            runtime_config.market_making_instrument.market_1
+        ).to_orderbook_rest()
 
         for orderbook in self.state.bitclude.orderbooks.values():
             logger.info(orderbook)
 
-        logger.info(self.state.deribit.mark_price["BTC"])
+        logger.info(
+            self.state.deribit.mark_price[
+                runtime_config.market_making_instrument.market_1
+            ]
+        )
         logger.info("initialized")

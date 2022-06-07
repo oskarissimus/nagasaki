@@ -28,6 +28,9 @@ class Balance(BaseModel):
 class AccountInfo(BaseModel):
     balances: Dict[str, Balance]
 
+    def assets_total(self, currency: MarketEnum) -> Decimal:
+        return self.balances[currency].active + self.balances[currency].inactive
+
     @property
     def btcs(self) -> Decimal:
         return self.btcs_active + self.btcs_inactive
@@ -88,25 +91,10 @@ class Offer(BaseModel):
     def convert_to_uppercase(cls, v):
         return v.upper()
 
-    def to_bitclude_order(self) -> BitcludeOrder:
-        return BitcludeOrder(
-            amount=self.amount,
-            price=self.price,
-            side=self.offertype,
-            order_id=self.nr,
-        )
-
     def to_order_maker(self) -> OrderMaker:
-        if (
-            self.currency1 == OfferCurrencyEnum.btc
-            and self.currency2 == OfferCurrencyEnum.pln
-        ):
-            instrument = InstrumentTypeEnum.BTC_PLN
-        else:
-            raise ValueError(
-                f"Undefined casting from {self.currency1} and "
-                f"{self.currency2} to InstrumentTypeEnum"
-            )
+        instrument = InstrumentTypeEnum(
+            (self.currency1.value.upper(), self.currency2.value.upper())
+        )
         return OrderMaker(
             amount=self.amount,
             price=self.price,

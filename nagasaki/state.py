@@ -9,10 +9,12 @@ from nagasaki.clients.bitclude.dto import (
     Offer,
 )
 from nagasaki.clients.deribit_client import AccountSummary
+from nagasaki.enums.common import MarketEnum
 from nagasaki.models.bitclude import (
     OrderbookRest,
     OrderbookWebsocket,
 )
+from nagasaki.runtime_config import RuntimeConfig
 
 
 class BitcludeState(BaseModel):
@@ -40,9 +42,11 @@ class State(BaseModel):
 
     @property
     def grand_total_delta(self) -> Decimal:
-        bitclude_btcs = self.bitclude.account_info.btcs
+        runtime_config = RuntimeConfig()
+        currency = MarketEnum(runtime_config.market_making_instrument.market_1)
+        bitclude_assets = self.bitclude.account_info.assets_total(currency)
         deribit_total_delta = (
             self.deribit.account_summary.margin_balance
             + self.deribit.account_summary.delta_total
         )
-        return bitclude_btcs + deribit_total_delta
+        return bitclude_assets + deribit_total_delta

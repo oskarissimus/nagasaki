@@ -13,13 +13,13 @@ class Settings(BaseSettings):
     db_password: str = "example"
     db_name: str = "postgres"
     bitclude_url_base: str = "https://api.bitclude.com"
-    bitclude_id: str
-    bitclude_key: str
+    bitclude_id: str = ""
+    bitclude_key: str = ""
     deribit_url_base: str = "https://www.deribit.com/api/v2"
-    deribit_client_id: str
-    deribit_client_secret: str
+    deribit_client_id: str = ""
+    deribit_client_secret: str = ""
     basic_auth_username: str = "papaj"
-    basic_auth_password: str
+    basic_auth_password: str = ""
 
     @cached_property
     def connection_string(self):

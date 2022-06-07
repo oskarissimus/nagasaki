@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from nagasaki.clients import BaseClient
 from nagasaki.clients.base_client import OrderTaker
 from nagasaki.database.utils import write_order_taker_to_db
@@ -6,31 +8,34 @@ from nagasaki.state import State
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 
 
-def sell_order(amount):
+def sell_order(amount: Decimal, instrument: InstrumentTypeEnum):
     return OrderTaker(
         side=SideTypeEnum.ASK,
         amount=amount,
-        instrument=InstrumentTypeEnum.BTC_PERPETUAL,
+        instrument=instrument,
     )
 
 
-def buy_order(amount):
+def buy_order(amount: Decimal, instrument: InstrumentTypeEnum):
     return OrderTaker(
         side=SideTypeEnum.BID,
         amount=amount,
-        instrument=InstrumentTypeEnum.BTC_PERPETUAL,
+        instrument=instrument,
     )
 
 
 class HedgingStrategy(AbstractStrategy):
-    def __init__(self, state: State, client: BaseClient):
+    def __init__(
+        self, state: State, client: BaseClient, instrument: InstrumentTypeEnum
+    ):
         self.state = state
         self.client = client
+        self.instrument = instrument
 
     def execute(self):
         delta = self.state.grand_total_delta
 
-        btc_mark_usd = self.state.deribit.mark_price["BTC"]
+        btc_mark_usd = self.state.deribit.mark_price[self.instrument.market_1]
 
         order = None
 
