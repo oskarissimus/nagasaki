@@ -12,5 +12,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - run: docker image prune -af
-      - run: docker-compose down
+      - run: docker-compose --env-file=/home/ubuntu/nagasaki/.env down
       - run: docker-compose --env-file=/home/ubuntu/nagasaki/.env up --build -d 
