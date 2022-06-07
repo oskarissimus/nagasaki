@@ -30,8 +30,8 @@ class RuntimeConfig:
 
     @property
     def market_making_instrument(self):
-        return InstrumentTypeEnum(self.data.market_making_instrument)
+        return InstrumentTypeEnum.from_str(self.data.market_making_instrument)
 
     @property
     def hedging_instrument(self):
-        return InstrumentTypeEnum(self.data.hedging_instrument)
+        return InstrumentTypeEnum.from_str(self.data.hedging_instrument)

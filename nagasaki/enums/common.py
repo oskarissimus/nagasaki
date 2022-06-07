@@ -1,4 +1,4 @@
-from enum import Enum, auto
+from enum import Enum
 
 
 class OrderActionEnum(str, Enum):
@@ -22,6 +22,10 @@ class InstrumentTypeEnum(Enum):
     def __init__(self, market_1=None, market_2=None):
         self.market_1 = market_1
         self.market_2 = market_2
+
+    @classmethod
+    def from_str(cls, value):
+        return cls(tuple(value.split("_")))
 
 
 class SideTypeEnum(str, Enum):
