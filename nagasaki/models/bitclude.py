@@ -1,12 +1,9 @@
 from decimal import Decimal
-from typing import Optional, List
+from typing import List, Optional
+
 from pydantic import BaseModel, root_validator, validator
 
-from nagasaki.enums.common import (
-    ActionTypeEnum,
-    OrderActionEnum,
-    SideTypeEnum,
-)
+from nagasaki.enums.common import ActionTypeEnum, OrderActionEnum, SideTypeEnum
 
 
 class BitcludeOrder(BaseModel):

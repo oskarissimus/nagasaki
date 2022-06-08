@@ -1,8 +1,8 @@
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.enums.common import MarketEnum
-from nagasaki.state import State
 from nagasaki.logger import logger
+from nagasaki.state import State
 
 
 class StateSynchronizer:

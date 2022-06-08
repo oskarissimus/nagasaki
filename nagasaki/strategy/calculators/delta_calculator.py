@@ -2,7 +2,7 @@ from decimal import Decimal
 
 import pydantic
 
-from nagasaki.enums.common import SideTypeEnum, MarketEnum
+from nagasaki.enums.common import MarketEnum, SideTypeEnum
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import State

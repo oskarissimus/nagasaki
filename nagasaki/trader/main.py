@@ -3,27 +3,22 @@ from warnings import filterwarnings
 from apscheduler.schedulers.background import BackgroundScheduler
 from pytz_deprecation_shim import PytzUsageWarning
 
-from nagasaki.clients.bitclude.core import BitcludeClient
-from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
-from nagasaki.clients.deribit_client import DeribitClient
-from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
 from nagasaki.containers import Clients
+from nagasaki.database import database
 from nagasaki.enums.common import SideTypeEnum
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
+from nagasaki.settings import Settings
 from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import StateSynchronizer
 from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
-
 from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
 from nagasaki.strategy.hedging_strategy import HedgingStrategy
 from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
 from nagasaki.strategy_executor import StrategyExecutor
 from nagasaki.trader.trader_app import TraderApp
-from nagasaki.database import database
-from nagasaki.settings import Settings
 
 if __name__ == "__main__":
     filterwarnings("ignore", category=PytzUsageWarning)
@@ -36,18 +31,12 @@ if __name__ == "__main__":
     clients.config.from_pydantic(settings)
 
     event_manager = EventManager()
-    bitclude_websocket_client = BitcludeWebsocketClient(event_manager)
+
     bitclude_client = clients.bitclude_client()
     deribit_client = clients.deribit_client()
+    usd_pln_quoting_client = clients.yahoo_finance_client()
 
     state = State()
-
-    usd_pln_quoting_client = YahooFinanceClient(
-        settings.yahoo_finance_api_key,
-        settings.yahoo_finance_api_email,
-        settings.yahoo_finance_api_password,
-    )
-
     state_initializer = StateInitializer(
         bitclude_client,
         deribit_client,
@@ -92,7 +81,6 @@ if __name__ == "__main__":
 
     app = TraderApp(
         bitclude_client=bitclude_client,
-        bitclude_websocket_client=bitclude_websocket_client,
         deribit_client=deribit_client,
         state=state,
         event_manager=event_manager,

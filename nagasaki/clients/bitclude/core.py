@@ -1,24 +1,23 @@
-from datetime import datetime
 import json
+from datetime import datetime
 from time import sleep
 from typing import List
 
 import requests
 
-from nagasaki.clients.base_client import OrderMaker, BaseClient
+from nagasaki.clients.base_client import BaseClient, OrderMaker
 from nagasaki.clients.bitclude.dto import (
     AccountInfo,
-    Offer,
-    OrderbookResponseDTO,
     CancelRequestDTO,
     CancelResponseDTO,
     CreateRequestDTO,
     CreateResponseDTO,
+    Offer,
+    OrderbookResponseDTO,
 )
-from nagasaki.enums.common import ActionTypeEnum, MarketEnum
+from nagasaki.enums.common import MarketEnum
 from nagasaki.exceptions import BitcludeClientException, CannotParseResponse
 from nagasaki.logger import logger
-from nagasaki.models.bitclude import Action
 
 
 class RequestTimesRingBuffer:
@@ -79,17 +78,17 @@ class BitcludeClient(BaseClient):
 
     def __init__(
         self,
-        bitclude_url_base: str,
-        bitclude_client_id: str,
-        bitclude_client_key: str,
+        client_id: str,
+        client_key: str,
+        url_base: str = "https://api.bitclude.com",
     ):
-        self.bitclude_url_base = bitclude_url_base
-        self.bitclude_client_id = bitclude_client_id
-        self.bitclude_client_key = bitclude_client_key
+        self.url_base = url_base
+        self.client_id = client_id
+        self.client_key = client_key
         self.last_500_request_times = RequestTimesRingBuffer(500)
         self._auth_params = {
-            "id": self.bitclude_client_id,
-            "key": self.bitclude_client_key,
+            "id": self.client_id,
+            "key": self.client_key,
         }
 
     def fetch_account_info(self) -> AccountInfo:
@@ -97,12 +96,12 @@ class BitcludeClient(BaseClient):
         self.last_500_request_times.append(datetime.now())
         self.last_500_request_times.log_request_times()
         response = requests.get(
-            self.bitclude_url_base,
+            self.url_base,
             params={
                 "method": "account",
                 "action": "info",
-                "id": self.bitclude_client_id,
-                "key": self.bitclude_client_key,
+                "id": self.client_id,
+                "key": self.client_key,
             },
         )
         try:
@@ -119,12 +118,12 @@ class BitcludeClient(BaseClient):
         self.last_500_request_times.append(datetime.now())
         self.last_500_request_times.log_request_times()
         response = requests.get(
-            self.bitclude_url_base,
+            self.url_base,
             params={
                 "method": "account",
                 "action": "activeoffers",
-                "id": self.bitclude_client_id,
-                "key": self.bitclude_client_key,
+                "id": self.client_id,
+                "key": self.client_key,
             },
         )
         try:
@@ -166,7 +165,7 @@ class BitcludeClient(BaseClient):
         params = {**order_params, **auth_params}
         self.last_500_request_times.append(datetime.now())
         self.last_500_request_times.log_request_times()
-        response = requests.get(self.bitclude_url_base, params=params)
+        response = requests.get(self.url_base, params=params)
         if response.status_code == 200:
             parsed_response = BitcludeClient._parse_response_as_dto(
                 response, CreateResponseDTO
@@ -184,7 +183,7 @@ class BitcludeClient(BaseClient):
         params = {**order_params, **auth_params}
         self.last_500_request_times.append(datetime.now())
         self.last_500_request_times.log_request_times()
-        response = requests.get(self.bitclude_url_base, params=params)
+        response = requests.get(self.url_base, params=params)
         if response.status_code == 200:
             parsed_response = BitcludeClient._parse_response_as_dto(
                 response, CancelResponseDTO
@@ -195,21 +194,6 @@ class BitcludeClient(BaseClient):
     def cancel_and_wait(self, order: OrderMaker):
         self.cancel_order(order)
         self.wait_for_offer_cancellation(order.order_id)
-
-    def execute_action(self, action: Action):
-        if action.action_type == ActionTypeEnum.CREATE:
-            self.create_order(CreateRequestDTO.from_bitclude_order(action.order))
-
-        if action.action_type == ActionTypeEnum.CANCEL:
-            self.cancel_order(CancelRequestDTO.from_bitclude_order(action.order))
-
-        if action.action_type == ActionTypeEnum.CANCEL_AND_WAIT:
-            self.cancel_order(CancelRequestDTO.from_bitclude_order(action.order))
-            self.wait_for_offer_cancellation(action.order.order_id)
-
-    def execute_actions_list(self, actions: List[Action]):
-        for action in actions:
-            self.execute_action(action)
 
     def wait_for_offer_cancellation(self, offer_id: int):
         while True:
@@ -226,7 +210,7 @@ class BitcludeClient(BaseClient):
         # self.last_500_request_times.log_request_times()
         asset_url_code = asset_symbol.lower()
         response = requests.get(
-            f"{self.bitclude_url_base}/stats/orderbook_{asset_url_code}pln.json"
+            f"{self.url_base}/stats/orderbook_{asset_url_code}pln.json"
         )
         if response.status_code == 200:
             parsed_response = BitcludeClient._parse_orderbook_response(response)

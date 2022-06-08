@@ -1,8 +1,8 @@
 from decimal import Decimal
 
-from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
 from nagasaki.clients.base_client import OrderMaker
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance, Offer
+from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
 from nagasaki.models.bitclude import OrderbookRest, OrderbookRestItem, OrderbookRestList
 
 

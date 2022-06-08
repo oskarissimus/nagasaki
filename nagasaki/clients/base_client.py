@@ -2,8 +2,7 @@ import abc
 from decimal import Decimal
 from typing import Optional
 
-
-from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
+from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
 from nagasaki.utils.common import HashableBaseModel
 
 

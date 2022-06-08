@@ -4,10 +4,7 @@ from unittest import mock
 from nagasaki.enums.common import MarketEnum
 from nagasaki.state import State
 
-from .utils import (
-    make_orderbook_with_bid,
-    make_order_maker_bid,
-)
+from .utils import make_order_maker_bid, make_orderbook_with_bid
 
 
 def test_bid_bidding_over_epsilon(

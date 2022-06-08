@@ -1,11 +1,11 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-from pydantic import BaseModel
 import requests
+from pydantic import BaseModel
 
 from nagasaki.clients.base_client import BaseClient, OrderTaker
-from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
+from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
 
@@ -22,11 +22,14 @@ class AccountSummary(BaseModel):
 
 class DeribitClient(BaseClient):
     def __init__(
-        self, deribit_url_base: str, deribit_client_id: str, deribit_client_secret: str
+        self,
+        client_id: str,
+        client_secret: str,
+        url_base: str = "https://www.deribit.com/api/v2",
     ):
-        self.deribit_url_base = deribit_url_base
-        self.deribit_client_id = deribit_client_id
-        self.deribit_client_secret = deribit_client_secret
+        self.url_base = url_base
+        self.client_id = client_id
+        self.client_secret = client_secret
         self.token = None
         self.token_expiration = None
 
@@ -45,13 +48,13 @@ class DeribitClient(BaseClient):
         }
 
         params = (
-            ("client_id", self.deribit_client_id),
-            ("client_secret", self.deribit_client_secret),
+            ("client_id", self.client_id),
+            ("client_secret", self.client_secret),
             ("grant_type", "client_credentials"),
         )
 
         response = requests.get(
-            f"{self.deribit_url_base}/public/auth", headers=headers, params=params
+            f"{self.url_base}/public/auth", headers=headers, params=params
         )
         data = response.json()
         if "result" in data:
@@ -90,7 +93,7 @@ class DeribitClient(BaseClient):
         )
 
         response = requests.get(
-            f"{self.deribit_url_base}/private/get_account_summary",
+            f"{self.url_base}/private/get_account_summary",
             headers=self.headers_with_token,
             params=params,
         )
@@ -122,7 +125,7 @@ class DeribitClient(BaseClient):
         )
 
         response = requests.get(
-            f"{self.deribit_url_base}/private/{order_type}",
+            f"{self.url_base}/private/{order_type}",
             headers=self.headers_with_token,
             params=params,
         )
@@ -142,13 +145,13 @@ class DeribitClient(BaseClient):
 
     def fetch_index_price_eth_usd(self) -> Decimal:
         response = requests.get(
-            f"{self.deribit_url_base}/public/get_index_price?index_name=eth_usd"
+            f"{self.url_base}/public/get_index_price?index_name=eth_usd"
         )
         return Decimal(response.json()["result"]["index_price"])
 
     def fetch_index_price_in_usd(self, instrument: InstrumentTypeEnum) -> Decimal:
         response = requests.get(
-            f"{self.deribit_url_base}/public/get_index_price?index_name="
+            f"{self.url_base}/public/get_index_price?index_name="
             f"{instrument.market_1.lower()}_usd"
         )
         return Decimal(response.json()["result"]["index_price"])

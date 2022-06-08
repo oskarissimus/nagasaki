@@ -1,7 +1,7 @@
 import uvicorn
 from apscheduler.schedulers.background import BackgroundScheduler
+
 from nagasaki.clients.bitclude.core import BitcludeClient
-from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 from nagasaki.event_manager import EventManager
@@ -19,7 +19,6 @@ class TraderApp:
     def __init__(
         self,
         bitclude_client: BitcludeClient,
-        bitclude_websocket_client: BitcludeWebsocketClient,
         deribit_client: DeribitClient,
         state: State,
         event_manager: EventManager,
@@ -30,7 +29,6 @@ class TraderApp:
         state_synchronizer: StateSynchronizer,
     ):
         self.bitclude_client = bitclude_client
-        self.bitclude_websocket_client = bitclude_websocket_client
         self.deribit_client = deribit_client
         self.state = state
         self.event_manager = event_manager
@@ -50,12 +48,6 @@ class TraderApp:
         self.event_manager.subscribe(
             "strategy_execution_requested",
             self.strategy_executor.on_strategy_execution_requested,
-        )
-
-    def attach_bitclude_handlers_to_events(self):
-        self.event_manager.subscribe(
-            "actions_execution_on_bitclude_requested",
-            self.bitclude_client.execute_actions_list,
         )
 
     def attach_state_handlers_to_events(self):
@@ -110,7 +102,6 @@ class TraderApp:
     def run(self):
         self.state_initializer.initialize_state()
         self.attach_strategy_handlers_to_events()
-        self.attach_bitclude_handlers_to_events()
         self.attach_jobs_to_scheduler()
         self.attach_state_synchronizer_handlers_to_events()
 

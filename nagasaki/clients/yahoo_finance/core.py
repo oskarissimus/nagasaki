@@ -1,9 +1,11 @@
 from decimal import Decimal
+
 import requests
 from retry import retry
 
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 from nagasaki.clients.yahoo_finance.dto import Model
+from nagasaki.logger import logger
 from nagasaki.scrapers.yahoo_finance_api import scrape_api_key
 
 
@@ -13,9 +15,15 @@ class YahooFinanceClientException(Exception):
 
 # pylint: disable=too-few-public-methods
 class YahooFinanceClient(UsdPlnQuotingBaseClient):
-    def __init__(self, api_key: str, email: str, password: str):
+    def __init__(
+        self,
+        api_key: str,
+        email: str,
+        password: str,
+        url_base: str = "https://yfapi.net",
+    ):
         self.api_key = api_key
-        self.base_url = "https://yfapi.net"
+        self.url_base = url_base
         self.email = email
         self.password = password
 
@@ -25,7 +33,7 @@ class YahooFinanceClient(UsdPlnQuotingBaseClient):
         headers = {"x-api-key": self.api_key}
         response = requests.request(
             "GET",
-            f"{self.base_url}/v6/finance/quote",
+            f"{self.url_base}/v6/finance/quote",
             headers=headers,
             params=params,
         )
@@ -42,4 +50,6 @@ class YahooFinanceClient(UsdPlnQuotingBaseClient):
 
     def fetch_usd_pln_quote(self) -> Decimal:
         finance_quote = self._fetch_finance_quote()
-        return finance_quote.quoteResponse.result[0].regularMarketPrice
+        price = finance_quote.quoteResponse.result[0].regularMarketPrice
+        logger.info(f"Fetched USD/PLN quote: {price}")
+        return price

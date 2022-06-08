@@ -3,12 +3,12 @@ from typing import List
 
 from nagasaki.clients.base_client import OrderMaker
 from nagasaki.database.utils import write_order_maker_to_db
-from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum, MarketEnum
+from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
+from nagasaki.logger import logger
+from nagasaki.state import State
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.strategy.calculators.price_calculator import PriceCalculator
 from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
-from nagasaki.state import State
-from nagasaki.logger import logger
 
 
 def make_order(

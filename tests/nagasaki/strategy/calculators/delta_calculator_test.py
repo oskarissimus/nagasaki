@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 
-from nagasaki.enums.common import SideTypeEnum, MarketEnum, InstrumentTypeEnum
+from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.strategy.calculators.delta_calculator import (
     DeltaCalculator,

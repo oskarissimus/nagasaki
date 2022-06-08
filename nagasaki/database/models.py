@@ -1,7 +1,8 @@
 from datetime import datetime
-from sqlalchemy import Column, Integer, Enum, Numeric, DateTime
-from nagasaki.clients.base_client import OrderMaker, OrderTaker
 
+from sqlalchemy import Column, DateTime, Enum, Integer, Numeric
+
+from nagasaki.clients.base_client import OrderMaker, OrderTaker
 from nagasaki.database.database import Base
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
 

@@ -3,7 +3,7 @@ from decimal import Decimal
 from nagasaki.clients import BaseClient
 from nagasaki.clients.base_client import OrderTaker
 from nagasaki.database.utils import write_order_taker_to_db
-from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
+from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
 from nagasaki.state import State
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 

@@ -1,19 +1,13 @@
 from collections import defaultdict
 from decimal import Decimal
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
-from nagasaki.clients.bitclude.dto import (
-    AccountInfo,
-    Offer,
-)
+from nagasaki.clients.bitclude.dto import AccountInfo, Offer
 from nagasaki.clients.deribit_client import AccountSummary
 from nagasaki.enums.common import MarketEnum
-from nagasaki.models.bitclude import (
-    OrderbookRest,
-    OrderbookWebsocket,
-)
+from nagasaki.models.bitclude import OrderbookRest, OrderbookWebsocket
 from nagasaki.runtime_config import RuntimeConfig
 
 

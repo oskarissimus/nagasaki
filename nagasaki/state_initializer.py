@@ -1,16 +1,14 @@
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
-from nagasaki.enums.common import MarketEnum
+from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
+from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import (
     BitcludeState,
     DeribitState,
-    OrderbookRest,
     OrderbookWebsocket,
     State,
 )
-from nagasaki.logger import logger
-from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 
 
 class StateInitializer:

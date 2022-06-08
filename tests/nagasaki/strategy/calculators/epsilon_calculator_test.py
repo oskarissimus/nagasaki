@@ -3,7 +3,7 @@ from unittest import mock
 
 import pytest
 
-from nagasaki.enums.common import SideTypeEnum, MarketEnum
+from nagasaki.enums.common import MarketEnum, SideTypeEnum
 from nagasaki.strategy.calculators.epsilon_calculator import EpsilonCalculator
 
 

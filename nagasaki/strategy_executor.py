@@ -1,10 +1,10 @@
 from typing import List
 
-from nagasaki.logger import logger
 from nagasaki.event_manager import EventManager
+from nagasaki.logger import logger
 from nagasaki.models.bitclude import BitcludeEventOrderbook
-from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.state import State
+from nagasaki.strategy.abstract_strategy import AbstractStrategy
 
 
 class StrategyExecutor:

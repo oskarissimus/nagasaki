@@ -1,18 +1,19 @@
 import datetime
 from decimal import Decimal
 from typing import Dict, List
+
 from pydantic import BaseModel, validator
 
 from nagasaki.clients.base_client import OrderMaker
 from nagasaki.enums.common import (
-    OfferCurrencyEnum,
-    SideTypeEnum,
-    MarketEnum,
     ActionEnum,
     InstrumentTypeEnum,
+    MarketEnum,
+    OfferCurrencyEnum,
+    SideTypeEnum,
 )
-from nagasaki.utils.common import HashableBaseModel, round_decimals_down
 from nagasaki.models.bitclude import BitcludeOrder, OrderbookRest, OrderbookRestItem
+from nagasaki.utils.common import HashableBaseModel, round_decimals_down
 
 
 class Ticker(BaseModel):

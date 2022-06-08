@@ -1,6 +1,6 @@
 import abc
 
-from nagasaki.enums.common import SideTypeEnum, MarketEnum
+from nagasaki.enums.common import MarketEnum, SideTypeEnum
 from nagasaki.state import State
 
 

@@ -1,4 +1,5 @@
 from functools import cached_property
+
 from pydantic import BaseSettings
 
 
@@ -6,6 +7,7 @@ class Settings(BaseSettings):
     yahoo_finance_api_key: str = "papaj"
     yahoo_finance_api_email: str = "papaj"
     yahoo_finance_api_password: str = "papaj"
+    yahoo_finance_api_url_base: str = "https://yfapi.net"
     memory_db: bool = False
     db_host: str = "localhost"
     db_port: int = 5432

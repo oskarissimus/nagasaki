@@ -3,9 +3,10 @@ import json
 import time
 
 import websocket
+
 from nagasaki.event_manager import EventManager
-from nagasaki.models.bitclude import BitcludeEventOrderbook
 from nagasaki.logger import logger
+from nagasaki.models.bitclude import BitcludeEventOrderbook
 
 
 class BitcludeWebsocketClient:

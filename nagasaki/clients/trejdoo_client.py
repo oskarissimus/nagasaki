@@ -1,6 +1,9 @@
 from decimal import Decimal
+
 import requests
+
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
+
 
 # pylint: disable=too-few-public-methods
 class TrejdooClient(UsdPlnQuotingBaseClient):

@@ -1,7 +1,8 @@
-import requests
-import pandas as pd
 import json
 from decimal import Decimal
+
+import pandas as pd
+import requests
 
 
 class CannotParseResponse(Exception):

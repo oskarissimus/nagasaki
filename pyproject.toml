@@ -37,3 +37,12 @@ matplotlib = "^3.5.2"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+known_first_party = ["nagasaki"]
+profile="black"
+line_length=88
+
+[tool.black]
+line_length=88
+

@@ -1,8 +1,9 @@
 import secrets
 
 from fastapi import Depends, HTTPException
-from fastapi.security import HTTPBasicCredentials, HTTPBasic
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from starlette import status
+
 from nagasaki.settings import Settings
 
 

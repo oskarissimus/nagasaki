@@ -5,8 +5,8 @@ from nagasaki.enums.common import MarketEnum
 from nagasaki.state import State
 
 from .utils import (
-    make_order_maker_bid,
     make_account_info_with_delta_0_009,
+    make_order_maker_bid,
     make_orderbook_with_bid,
 )
 

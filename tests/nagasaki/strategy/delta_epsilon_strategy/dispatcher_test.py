@@ -2,16 +2,11 @@ from unittest import mock
 from unittest.mock import call
 
 import pytest
-from nagasaki.strategy.dispatcher import (
-    StrategyOrderDispatcher,
-    Tolerance,
-)
-from nagasaki.state import State, BitcludeState
 
-from .utils import (
-    make_order_maker_ask,
-    make_offer,
-)
+from nagasaki.state import BitcludeState, State
+from nagasaki.strategy.dispatcher import StrategyOrderDispatcher, Tolerance
+
+from .utils import make_offer, make_order_maker_ask
 
 
 @pytest.fixture(name="dispatcher")

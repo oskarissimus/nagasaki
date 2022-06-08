@@ -4,8 +4,8 @@ from unittest import mock
 import pytest
 
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance
-from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
-from nagasaki.state import State, DeribitState, BitcludeState
+from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
+from nagasaki.state import BitcludeState, DeribitState, State
 from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
 from nagasaki.strategy.calculators.epsilon_calculator import EpsilonCalculator
 from nagasaki.strategy.market_making_strategy import MarketMakingStrategy

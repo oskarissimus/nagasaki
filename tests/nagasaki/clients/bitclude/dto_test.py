@@ -3,12 +3,12 @@ from decimal import Decimal
 import pytest
 
 from nagasaki.clients.base_client import OrderMaker
-from nagasaki.clients.bitclude.dto import CreateRequestDTO, CancelRequestDTO
+from nagasaki.clients.bitclude.dto import CancelRequestDTO, CreateRequestDTO
 from nagasaki.enums.common import (
-    InstrumentTypeEnum,
-    SideTypeEnum,
     ActionEnum,
+    InstrumentTypeEnum,
     MarketEnum,
+    SideTypeEnum,
 )
 
 

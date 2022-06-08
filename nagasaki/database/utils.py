@@ -1,5 +1,4 @@
 from nagasaki.clients.base_client import OrderMaker, OrderTaker
-
 from nagasaki.database.database import SessionLocal
 from nagasaki.database.models import OrderMakerDB, OrderTakerDB
 

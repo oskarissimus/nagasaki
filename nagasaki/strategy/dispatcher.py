@@ -7,8 +7,8 @@ from nagasaki.clients import BaseClient
 from nagasaki.clients.base_client import Order, OrderMaker
 from nagasaki.clients.bitclude.dto import Offer
 from nagasaki.enums.common import SideTypeEnum
-from nagasaki.state import State
 from nagasaki.logger import logger
+from nagasaki.state import State
 
 
 class Tolerance(BaseModel):

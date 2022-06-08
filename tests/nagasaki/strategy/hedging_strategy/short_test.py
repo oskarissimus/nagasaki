@@ -8,6 +8,7 @@ from nagasaki.clients.deribit_client import AccountSummary
 from nagasaki.enums.common import InstrumentTypeEnum
 from nagasaki.state import BitcludeState, DeribitState, State
 from nagasaki.strategy.hedging_strategy import HedgingStrategy
+
 from .utils import make_order_taker_sell
 
 

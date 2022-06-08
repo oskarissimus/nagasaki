@@ -4,8 +4,8 @@
 
 from __future__ import annotations
 
-from typing import Any, List
 from decimal import Decimal
+from typing import Any, List
 
 from pydantic import BaseModel
 

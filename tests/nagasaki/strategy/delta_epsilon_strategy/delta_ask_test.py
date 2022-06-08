@@ -4,10 +4,9 @@ from unittest import mock
 from nagasaki.enums.common import MarketEnum
 from nagasaki.state import State
 
-
 from .utils import (
-    make_order_maker_ask,
     make_account_info_with_delta_0_002,
+    make_order_maker_ask,
     make_orderbook_with_ask,
 )
 
