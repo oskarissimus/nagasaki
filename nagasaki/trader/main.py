@@ -31,6 +31,7 @@ def main(
     yahoo_finance_client: YahooFinanceClient = Provide[
         Application.clients.yahoo_finance_client
     ],
+    state: State = Provide[Application.states.state],
 ):
     filterwarnings("ignore", category=PytzUsageWarning)
     logger.info("start")
@@ -41,7 +42,6 @@ def main(
 
     usd_pln_quoting_client = yahoo_finance_client
 
-    state = State()
     state_initializer = StateInitializer(
         bitclude_client,
         deribit_client,
