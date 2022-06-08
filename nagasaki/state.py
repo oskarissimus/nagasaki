@@ -33,14 +33,3 @@ class State(BaseModel):
     usd_pln: Optional[Decimal]
     bitclude: Optional[BitcludeState]
     deribit: Optional[DeribitState]
-
-    @property
-    def grand_total_delta(self) -> Decimal:
-        runtime_config = RuntimeConfig()
-        currency = MarketEnum(runtime_config.market_making_instrument.market_1)
-        bitclude_assets = self.bitclude.account_info.assets_total(currency)
-        deribit_total_delta = (
-            self.deribit.account_summary.margin_balance
-            + self.deribit.account_summary.delta_total
-        )
-        return bitclude_assets + deribit_total_delta

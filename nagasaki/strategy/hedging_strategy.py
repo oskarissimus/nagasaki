@@ -3,7 +3,9 @@ from decimal import Decimal
 from nagasaki.clients import BaseClient
 from nagasaki.clients.base_client import OrderTaker
 from nagasaki.database.utils import write_order_taker_to_db
-from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
+from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
+from nagasaki.logger import logger
+from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import State
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 
@@ -33,7 +35,8 @@ class HedgingStrategy(AbstractStrategy):
         self.instrument = instrument
 
     def execute(self):
-        delta = self.state.grand_total_delta
+        delta = self.grand_total_delta()
+        logger.info(f"Grand Total Δ: {delta:.8f}")
 
         btc_mark_usd = self.state.deribit.mark_price[self.instrument.market_1]
 
@@ -50,3 +53,13 @@ class HedgingStrategy(AbstractStrategy):
         if order:
             self.client.create_order(order)
             write_order_taker_to_db(order)
+
+    def grand_total_delta(self) -> Decimal:
+        runtime_config = RuntimeConfig()
+        currency = MarketEnum(runtime_config.market_making_instrument.market_1)
+        bitclude_assets = self.state.bitclude.account_info.assets_total(currency)
+        deribit_total_delta = (
+            self.state.deribit.account_summary.margin_balance
+            + self.state.deribit.account_summary.delta_total
+        )
+        return bitclude_assets + deribit_total_delta
