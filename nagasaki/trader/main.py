@@ -32,17 +32,13 @@ if __name__ == "__main__":
     database.Base.metadata.create_all(bind=database.engine)
 
     settings = Settings()
-    container = Clients()
-    container.config.from_pydantic(settings)
+    clients = Clients()
+    clients.config.from_pydantic(settings)
 
     event_manager = EventManager()
     bitclude_websocket_client = BitcludeWebsocketClient(event_manager)
-    bitclude_client = container.bitclude_client()
-    deribit_client = DeribitClient(
-        settings.deribit_url_base,
-        settings.deribit_client_id,
-        settings.deribit_client_secret,
-    )
+    bitclude_client = clients.bitclude_client()
+    deribit_client = clients.deribit_client()
 
     state = State()
 

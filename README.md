@@ -125,3 +125,5 @@ flowchart
 - [] refactor trader/main.py
   - move clients init to another module and use as singelton
   - create strategy on demand
+- [] rename `bitclude_id` in `Settings` and in `.env` files to `bitclude_client_id`
+- [] rename `bitclude_key` in `Settings` and in `.env` files to `bitclude_client_key`
