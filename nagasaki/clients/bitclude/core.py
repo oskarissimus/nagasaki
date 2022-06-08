@@ -10,14 +10,12 @@ from nagasaki.clients.bitclude.dto import (
     AccountInfo,
     Offer,
     OrderbookResponseDTO,
-    Ticker,
     CancelRequestDTO,
     CancelResponseDTO,
     CreateRequestDTO,
     CreateResponseDTO,
 )
 from nagasaki.enums.common import ActionTypeEnum, MarketEnum
-from nagasaki.event_manager import EventManager
 from nagasaki.exceptions import BitcludeClientException, CannotParseResponse
 from nagasaki.logger import logger
 from nagasaki.models.bitclude import Action
@@ -84,12 +82,10 @@ class BitcludeClient(BaseClient):
         bitclude_url_base: str,
         bitclude_client_id: str,
         bitclude_client_key: str,
-        event_manager: EventManager = None,
     ):
         self.bitclude_url_base = bitclude_url_base
         self.bitclude_client_id = bitclude_client_id
         self.bitclude_client_key = bitclude_client_key
-        self.event_manager = event_manager or EventManager()
         self.last_500_request_times = RequestTimesRingBuffer(500)
         self._auth_params = {
             "id": self.bitclude_client_id,

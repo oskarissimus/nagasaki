@@ -7,7 +7,8 @@ from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.bitclude_websocket_client import BitcludeWebsocketClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
-from nagasaki.enums.common import SideTypeEnum, InstrumentTypeEnum
+from nagasaki.containers import Clients
+from nagasaki.enums.common import SideTypeEnum
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
@@ -31,15 +32,12 @@ if __name__ == "__main__":
     database.Base.metadata.create_all(bind=database.engine)
 
     settings = Settings()
+    container = Clients()
+    container.config.from_pydantic(settings)
 
     event_manager = EventManager()
     bitclude_websocket_client = BitcludeWebsocketClient(event_manager)
-    bitclude_client = BitcludeClient(
-        settings.bitclude_url_base,
-        settings.bitclude_id,
-        settings.bitclude_key,
-        event_manager=event_manager,
-    )
+    bitclude_client = container.bitclude_client()
     deribit_client = DeribitClient(
         settings.deribit_url_base,
         settings.deribit_client_id,
