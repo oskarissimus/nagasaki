@@ -5,7 +5,7 @@ import pytest
 
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
-from nagasaki.state import BitcludeState, DeribitState, State
+from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
 from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
 from nagasaki.strategy.calculators.epsilon_calculator import EpsilonCalculator
 from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
@@ -22,7 +22,8 @@ def fixture_initialized_state():
     state = State()
     state.deribit = DeribitState()
     state.deribit.mark_price["BTC"] = Decimal(btc_price_deribit)
-    state.usd_pln = Decimal(usd_pln)
+    state.yahoo = YahooFinanceState()
+    state.yahoo.usd_pln = Decimal(usd_pln)
     state.bitclude = BitcludeState()
     state.bitclude.account_info = AccountInfo(
         balances={

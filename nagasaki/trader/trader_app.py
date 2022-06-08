@@ -96,8 +96,8 @@ class TraderApp:
 
     def fetch_usd_pln_and_write_to_state(self):
         usd_pln = self.usd_pln_quoting_client.fetch_usd_pln_quote()
-        self.state.usd_pln = usd_pln
-        logger.info(f"USD_PLN{self.state.usd_pln:.2f}")
+        self.state.yahoo.usd_pln = usd_pln
+        logger.info(f"USD_PLN{self.state.yahoo.usd_pln:.2f}")
 
     def run(self):
         self.state_initializer.initialize_state()

@@ -56,7 +56,7 @@ def test_should_calculate(
     state = mock.Mock()
     state.deribit.mark_price = defaultdict()
     state.deribit.mark_price["BTC"] = price
-    state.usd_pln = 1
+    state.yahoo.usd_pln = 1
     calculator = DeltaCalculator(delta_1, delta_2)
 
     with mock.patch(

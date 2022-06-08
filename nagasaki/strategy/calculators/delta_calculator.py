@@ -16,7 +16,7 @@ class DeltaCalculator(PriceCalculator):
     def calculate(
         self, state: State, side: SideTypeEnum, asset_symbol: MarketEnum
     ) -> Decimal:
-        mark_price = state.deribit.mark_price[asset_symbol] * state.usd_pln
+        mark_price = state.deribit.mark_price[asset_symbol] * state.yahoo.usd_pln
         inventory_parameter = self.inventory_parameter(state, asset_symbol)
         if side == SideTypeEnum.ASK:
             delta_price = self.calculate_ask(mark_price, inventory_parameter)
@@ -53,7 +53,7 @@ class DeltaCalculator(PriceCalculator):
         )
 
     def inventory_parameter(self, state, asset_symbol: MarketEnum):
-        mark_price = state.deribit.mark_price[asset_symbol] * state.usd_pln
+        mark_price = state.deribit.mark_price[asset_symbol] * state.yahoo.usd_pln
         balances = state.bitclude.account_info.balances
         total_pln = balances["PLN"].active + balances["PLN"].inactive
         total_btc = balances[asset_symbol].active + balances[asset_symbol].inactive

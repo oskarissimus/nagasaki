@@ -3,7 +3,13 @@ from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
-from nagasaki.state import BitcludeState, DeribitState, OrderbookWebsocket, State
+from nagasaki.state import (
+    BitcludeState,
+    DeribitState,
+    OrderbookWebsocket,
+    State,
+    YahooFinanceState,
+)
 
 
 class StateInitializer:
@@ -27,6 +33,7 @@ class StateInitializer:
         self.state.bitclude = BitcludeState()
         self.state.bitclude.orderbook_websocket = OrderbookWebsocket()
         self.state.deribit = DeribitState()
+        self.state.yahoo = YahooFinanceState()
 
         self.state.bitclude.account_info = self.bitclude_client.fetch_account_info()
         self.state.bitclude.active_offers = self.bitclude_client.fetch_active_offers()
@@ -36,7 +43,7 @@ class StateInitializer:
         ] = self.deribit_client.fetch_index_price_in_usd(
             runtime_config.market_making_instrument
         )
-        self.state.usd_pln = self.usd_pln_quoting_client.fetch_usd_pln_quote()
+        self.state.yahoo.usd_pln = self.usd_pln_quoting_client.fetch_usd_pln_quote()
 
         self.state.bitclude.orderbooks[
             runtime_config.market_making_instrument.market_1
