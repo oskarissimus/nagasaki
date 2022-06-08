@@ -3,6 +3,9 @@ from dependency_injector import containers, providers
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
+from nagasaki.settings import Settings
+from nagasaki.state import BitcludeState
+from nagasaki.state_synchronizer import bitclude_state_synchronizer
 
 
 class Clients(
@@ -28,3 +31,19 @@ class Clients(
         password=config.yahoo_finance_api_password,
         url_base=config.yahoo_finance_api_url_base,
     )
+
+
+class States(containers.DeclarativeContainer):
+    config = providers.Configuration()
+
+    clients = providers.Container(Clients, config=config)
+    bitclude_state = providers.Singleton(
+        bitclude_state_synchronizer, clients.bitclude_client
+    )
+
+
+class Application(containers.DeclarativeContainer):
+    config = providers.Configuration(pydantic_settings=[Settings()])
+
+    clients = providers.Container(Clients, config=config)
+    states = providers.Container(States, config=config)

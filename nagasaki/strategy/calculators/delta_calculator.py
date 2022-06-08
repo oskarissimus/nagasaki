@@ -13,7 +13,9 @@ class DeltaCalculator(PriceCalculator):
         assert self.delta_1 >= 0
         assert self.delta_2 >= 0
 
-    def calculate(self, state: State, side: SideTypeEnum, asset_symbol: MarketEnum) -> Decimal:
+    def calculate(
+        self, state: State, side: SideTypeEnum, asset_symbol: MarketEnum
+    ) -> Decimal:
         mark_price = state.deribit.mark_price[asset_symbol] * state.usd_pln
         inventory_parameter = self.inventory_parameter(state, asset_symbol)
         if side == SideTypeEnum.ASK:

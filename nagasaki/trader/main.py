@@ -1,15 +1,18 @@
 from warnings import filterwarnings
 
 from apscheduler.schedulers.background import BackgroundScheduler
+from dependency_injector.wiring import Provide, inject
 from pytz_deprecation_shim import PytzUsageWarning
 
-from nagasaki.containers import Clients
+from nagasaki.clients import YahooFinanceClient
+from nagasaki.clients.bitclude.core import BitcludeClient
+from nagasaki.clients.deribit_client import DeribitClient
+from nagasaki.containers import Application
 from nagasaki.database import database
 from nagasaki.enums.common import SideTypeEnum
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
-from nagasaki.settings import Settings
 from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import StateSynchronizer
@@ -20,21 +23,23 @@ from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
 from nagasaki.strategy_executor import StrategyExecutor
 from nagasaki.trader.trader_app import TraderApp
 
-if __name__ == "__main__":
+
+@inject
+def main(
+    bitclude_client: BitcludeClient = Provide[Application.clients.bitclude_client],
+    deribit_client: DeribitClient = Provide[Application.clients.deribit_client],
+    yahoo_finance_client: YahooFinanceClient = Provide[
+        Application.clients.yahoo_finance_client
+    ],
+):
     filterwarnings("ignore", category=PytzUsageWarning)
     logger.info("start")
 
     database.Base.metadata.create_all(bind=database.engine)
 
-    settings = Settings()
-    clients = Clients()
-    clients.config.from_pydantic(settings)
-
     event_manager = EventManager()
 
-    bitclude_client = clients.bitclude_client()
-    deribit_client = clients.deribit_client()
-    usd_pln_quoting_client = clients.yahoo_finance_client()
+    usd_pln_quoting_client = yahoo_finance_client
 
     state = State()
     state_initializer = StateInitializer(
@@ -92,3 +97,9 @@ if __name__ == "__main__":
     )
 
     app.run()
+
+
+if __name__ == "__main__":
+    application = Application()
+    application.wire(modules=[__name__])
+    main()
