@@ -3,12 +3,7 @@ from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
-from nagasaki.state import (
-    BitcludeState,
-    DeribitState,
-    OrderbookWebsocket,
-    State,
-)
+from nagasaki.state import BitcludeState, DeribitState, OrderbookWebsocket, State
 
 
 class StateInitializer:

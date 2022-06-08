@@ -1,4 +1,4 @@
-delta_when_btc_only: '0.2'
-delta_when_pln_only: '0.1'
+delta_when_btc_only: '0.4'
+delta_when_pln_only: '0.3'
 hedging_instrument: BTC_PERPETUAL
 market_making_instrument: BTC_PLN

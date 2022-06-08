@@ -1,23 +1,19 @@
 from decimal import Decimal
 
-import pydantic
-
 from nagasaki.enums.common import MarketEnum, SideTypeEnum
 from nagasaki.logger import logger
-from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import State
 from nagasaki.strategy.calculators.price_calculator import PriceCalculator
 
 
 class DeltaCalculator(PriceCalculator):
-    def __init__(self, delta_1: Decimal = None, delta_2: Decimal = None):
-        self._delta_1 = delta_1
-        self._delta_2 = delta_2
-        self.runtime_config = RuntimeConfig()
+    def __init__(self, delta_1: str = None, delta_2: str = None):
+        self.delta_1 = Decimal(delta_1 or "0.1")
+        self.delta_2 = Decimal(delta_2 or "0.2")
+        assert self.delta_1 >= 0
+        assert self.delta_2 >= 0
 
-    def calculate(
-        self, state: State, side: SideTypeEnum, asset_symbol: MarketEnum
-    ) -> Decimal:
+    def calculate(self, state: State, side: SideTypeEnum, asset_symbol: MarketEnum) -> Decimal:
         mark_price = state.deribit.mark_price[asset_symbol] * state.usd_pln
         inventory_parameter = self.inventory_parameter(state, asset_symbol)
         if side == SideTypeEnum.ASK:
@@ -62,34 +58,6 @@ class DeltaCalculator(PriceCalculator):
 
         total_btc_value_in_pln = calculate_btc_value_in_pln(total_btc, mark_price)
         return calculate_inventory_parameter(total_pln, total_btc_value_in_pln)
-
-    @property
-    def delta_1(self):
-        if self._delta_1:
-            assert self._delta_1 >= 0
-            return self._delta_1
-
-        try:
-            runtime_config_delta_1 = self.runtime_config.delta_when_pln_only
-        except (pydantic.ValidationError, FileNotFoundError):
-            return Decimal("0.0005")
-
-        assert runtime_config_delta_1 >= 0
-        return runtime_config_delta_1
-
-    @property
-    def delta_2(self):
-        if self._delta_2:
-            assert self._delta_2 >= 0
-            return self._delta_2
-
-        try:
-            runtime_config_delta_2 = self.runtime_config.delta_when_btc_only
-        except (pydantic.ValidationError, FileNotFoundError):
-            return Decimal("0.002")
-
-        assert runtime_config_delta_2 >= 0
-        return runtime_config_delta_2
 
 
 def calculate_btc_value_in_pln(btc: Decimal, price: Decimal) -> Decimal:

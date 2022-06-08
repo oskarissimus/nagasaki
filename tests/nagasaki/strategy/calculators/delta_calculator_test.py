@@ -98,36 +98,6 @@ def test_should_raise_for_incorrect_inventory_param(inventory_parameter):
         calculator.inventory_adjusted_delta(inventory_parameter=inventory_parameter)
 
 
-def test_should_load_deltas_from_config():
-    runtime_config = RuntimeConfig(Path("test_runtime_config.yml"))
-
-    with open(runtime_config.path, "w", encoding="utf-8") as file:
-        data = RuntimeConfig.Data(
-            delta_when_pln_only="0.1",
-            delta_when_btc_only="0.2",
-            market_making_instrument="BTC_PLN",
-            hedging_instrument="BTC_PERPETUAL",
-        )
-        file.write(data.yaml())
-
-    calculator = DeltaCalculator()
-
-    assert calculator.delta_1 == Decimal("0.1")
-    assert calculator.delta_2 == Decimal("0.2")
-
-    with open(runtime_config.path, "w", encoding="utf-8") as file:
-        data = RuntimeConfig.Data(
-            delta_when_pln_only="0.3",
-            delta_when_btc_only="0.4",
-            market_making_instrument="BTC_PLN",
-            hedging_instrument="BTC_PERPETUAL",
-        )
-        file.write(data.yaml())
-
-    assert calculator.delta_1 == Decimal("0.3")
-    assert calculator.delta_2 == Decimal("0.4")
-
-
 @pytest.mark.parametrize(
     "inventory_parameter, delta",
     [
