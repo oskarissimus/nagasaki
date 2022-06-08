@@ -3,7 +3,7 @@ from functools import cached_property
 from pydantic import BaseSettings
 
 
-class Settings(BaseSettings):
+class StartupSettings(BaseSettings):
     yahoo_finance_api_key: str = "papaj"
     yahoo_finance_api_email: str = "papaj"
     yahoo_finance_api_password: str = "papaj"
