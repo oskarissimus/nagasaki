@@ -70,25 +70,41 @@ def fixture_epsilon_calculator():
 
 @pytest.fixture(name="strategy_ask")
 def fixture_strategy_ask(
-    initialized_state, dispatcher, delta_calculator, epsilon_calculator
+    dispatcher,
+    delta_calculator,
+    epsilon_calculator,
+    bitclude_state,
+    deribit_state,
+    yahoo_finance_state,
 ):
     calculators = [delta_calculator, epsilon_calculator]
     return MarketMakingStrategy(
         dispatcher,
-        calculators=calculators,
         side=SideTypeEnum.ASK,
         instrument=InstrumentTypeEnum.BTC_PLN,
+        bitclude_state=bitclude_state,
+        deribit_state=deribit_state,
+        yahoo_finance_state=yahoo_finance_state,
+        calculators=calculators,
     )
 
 
 @pytest.fixture(name="strategy_bid")
 def fixture_strategy_bid(
-    initialized_state, dispatcher, delta_calculator, epsilon_calculator
+    dispatcher,
+    delta_calculator,
+    epsilon_calculator,
+    bitclude_state,
+    deribit_state,
+    yahoo_finance_state,
 ):
     calculators = [delta_calculator, epsilon_calculator]
     return MarketMakingStrategy(
         dispatcher,
-        calculators=calculators,
         side=SideTypeEnum.BID,
         instrument=InstrumentTypeEnum.BTC_PLN,
+        bitclude_state=bitclude_state,
+        deribit_state=deribit_state,
+        yahoo_finance_state=yahoo_finance_state,
+        calculators=calculators,
     )

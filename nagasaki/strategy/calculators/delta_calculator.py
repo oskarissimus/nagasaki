@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from nagasaki.enums.common import MarketEnum, SideTypeEnum
 from nagasaki.logger import logger
-from nagasaki.state import State
+from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.calculators.price_calculator import PriceCalculator
 
 
@@ -14,10 +14,19 @@ class DeltaCalculator(PriceCalculator):
         assert self.delta_2 >= 0
 
     def calculate(
-        self, side: SideTypeEnum, asset_symbol: MarketEnum, state: State
+        self,
+        side: SideTypeEnum,
+        asset_symbol: MarketEnum,
+        bitclude_state: BitcludeState,
+        deribit_state: DeribitState,
+        yahoo_finance_state: YahooFinanceState,
     ) -> Decimal:
-        mark_price = state.deribit.mark_price[asset_symbol] * state.yahoo.usd_pln
-        inventory_parameter = self.inventory_parameter(state, asset_symbol)
+        mark_price = (
+            deribit_state.mark_price[asset_symbol] * yahoo_finance_state.usd_pln
+        )
+        inventory_parameter = self.inventory_parameter(
+            asset_symbol, bitclude_state, deribit_state, yahoo_finance_state
+        )
         if side == SideTypeEnum.ASK:
             delta_price = self.calculate_ask(mark_price, inventory_parameter)
         else:
@@ -52,9 +61,17 @@ class DeltaCalculator(PriceCalculator):
             self.delta_2 - self.delta_1
         )
 
-    def inventory_parameter(self, state, asset_symbol: MarketEnum):
-        mark_price = state.deribit.mark_price[asset_symbol] * state.yahoo.usd_pln
-        balances = state.bitclude.account_info.balances
+    def inventory_parameter(
+        self,
+        asset_symbol: MarketEnum,
+        bitclude_state: BitcludeState,
+        deribit_state: DeribitState,
+        yahoo_finance_state: YahooFinanceState,
+    ):
+        mark_price = (
+            deribit_state.mark_price[asset_symbol] * yahoo_finance_state.usd_pln
+        )
+        balances = bitclude_state.account_info.balances
         total_pln = balances["PLN"].active + balances["PLN"].inactive
         total_btc = balances[asset_symbol].active + balances[asset_symbol].inactive
 

@@ -53,10 +53,11 @@ from nagasaki.strategy.calculators.delta_calculator import (
 def test_should_calculate(
     delta_1, delta_2, side, price, inventory_parameter, expected_price
 ):
-    state = mock.Mock()
-    state.deribit.mark_price = defaultdict()
-    state.deribit.mark_price["BTC"] = price
-    state.yahoo.usd_pln = 1
+    deribit = mock.Mock()
+    deribit.mark_price = defaultdict()
+    deribit.mark_price["BTC"] = price
+    yahoo = mock.Mock()
+    yahoo.usd_pln = 1
     calculator = DeltaCalculator(delta_1, delta_2)
 
     with mock.patch(
@@ -64,7 +65,9 @@ def test_should_calculate(
         ".DeltaCalculator.inventory_parameter"
     ) as patched_inv_parameter:
         patched_inv_parameter.return_value = inventory_parameter
-        calculated_price = calculator.calculate(side, MarketEnum.BTC, state)
+        calculated_price = calculator.calculate(
+            side, MarketEnum.BTC, None, deribit, yahoo
+        )
 
     assert calculated_price == expected_price
 

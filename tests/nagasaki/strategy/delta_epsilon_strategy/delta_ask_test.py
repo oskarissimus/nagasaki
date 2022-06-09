@@ -11,7 +11,9 @@ from .utils import (
 )
 
 
-def test_ask_bidding_over_delta(initialized_state: State, dispatcher, strategy_ask):
+def test_ask_bidding_over_delta(
+    bitclude_state, deribit_state, dispatcher, strategy_ask
+):
     """
     Total PLN : Total BTC = 1:0 => inventory_parameter = 1 => delta = 0.002
     expected price = btc_mark_usd * usd_pln * (1 + delta)
@@ -23,15 +25,14 @@ def test_ask_bidding_over_delta(initialized_state: State, dispatcher, strategy_a
     top_ask_price = 170_000
     top_ask_amount = 1
 
-    state = initialized_state
-    state.deribit.mark_price["BTC"] = Decimal(btc_mark_usd)
-    state.bitclude.orderbooks[MarketEnum.BTC] = make_orderbook_with_ask(
+    deribit_state.mark_price["BTC"] = Decimal(btc_mark_usd)
+    bitclude_state.orderbooks[MarketEnum.BTC] = make_orderbook_with_ask(
         top_ask_price, top_ask_amount
     )
-    state.bitclude.account_info = make_account_info_with_delta_0_002()
+    bitclude_state.account_info = make_account_info_with_delta_0_002()
 
     with mock.patch("nagasaki.strategy.market_making_strategy.write_order_maker_to_db"):
-        strategy_ask.execute(state)
+        strategy_ask.execute()
 
     expected_create_order = make_order_maker_ask(expected_price, expected_amount)
     dispatcher.dispatch.assert_called_once_with(expected_create_order)

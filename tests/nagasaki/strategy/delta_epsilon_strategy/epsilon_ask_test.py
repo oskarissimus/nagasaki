@@ -8,7 +8,7 @@ from .utils import make_order_maker_ask, make_orderbook_with_ask
 
 
 def test_ask_bidding_over_epsilon(
-    initialized_state: State, dispatcher, epsilon_calculator, strategy_ask
+    dispatcher, epsilon_calculator, strategy_ask, bitclude_state
 ):
     top_ask_price = 170_000
     top_ask_amount = 1
@@ -18,14 +18,13 @@ def test_ask_bidding_over_epsilon(
 
     epsilon = Decimal("0.01")
 
-    state = initialized_state
-    state.bitclude.orderbooks[MarketEnum.BTC] = make_orderbook_with_ask(
+    bitclude_state.orderbooks[MarketEnum.BTC] = make_orderbook_with_ask(
         top_ask_price, top_ask_amount
     )
     epsilon_calculator.epsilon = epsilon
 
     with mock.patch("nagasaki.strategy.market_making_strategy.write_order_maker_to_db"):
-        strategy_ask.execute(state)
+        strategy_ask.execute()
 
     expected_create_order = make_order_maker_ask(expected_price, expected_amount)
     dispatcher.dispatch.assert_called_once_with(expected_create_order)

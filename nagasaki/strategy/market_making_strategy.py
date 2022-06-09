@@ -8,7 +8,7 @@ from nagasaki.containers import Application
 from nagasaki.database.utils import write_order_maker_to_db
 from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
 from nagasaki.logger import logger
-from nagasaki.state import State
+from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.strategy.calculators.price_calculator import PriceCalculator
 from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
@@ -31,18 +31,21 @@ class MarketMakingStrategy(AbstractStrategy):
         dispatcher: StrategyOrderDispatcher,
         side: SideTypeEnum,
         instrument: InstrumentTypeEnum,
+        bitclude_state: BitcludeState,
+        deribit_state: DeribitState,
+        yahoo_finance_state: YahooFinanceState,
         calculators: List[PriceCalculator] = None,
     ):
         self.dispatcher = dispatcher
-        self.calculators = calculators or []
         self.side = side
         self.instrument = instrument
+        self.bitclude_state = bitclude_state
+        self.deribit_state = deribit_state
+        self.yahoo_finance_state = yahoo_finance_state
+        self.calculators = calculators or []
         self.best_price = None
-        self.state = None
 
-    @inject
-    def execute(self, state: State = Provide[Application.states.state]):
-        self.state = state
+    def execute(self):
         self.calculate_best_price()
 
         order = make_order(self.best_price, self.amount, self.side, self.instrument)
@@ -52,7 +55,13 @@ class MarketMakingStrategy(AbstractStrategy):
 
     def calculate_best_price(self):
         all_prices = [
-            calculator.calculate(self.side, self.asset, self.state)
+            calculator.calculate(
+                self.side,
+                self.asset,
+                self.bitclude_state,
+                self.deribit_state,
+                self.yahoo_finance_state,
+            )
             for calculator in self.calculators
         ]
         self.best_price = self.best(all_prices)
@@ -71,15 +80,15 @@ class MarketMakingStrategy(AbstractStrategy):
     @property
     def total_assets(self):
         return (
-            self.state.bitclude.account_info.balances[self.asset].active
-            + self.state.bitclude.account_info.balances[self.asset].inactive
+            self.bitclude_state.account_info.balances[self.asset].active
+            + self.bitclude_state.account_info.balances[self.asset].inactive
         )
 
     @property
     def total_pln(self):
         return (
-            self.state.bitclude.account_info.balances["PLN"].active
-            + self.state.bitclude.account_info.balances["PLN"].inactive
+            self.bitclude_state.account_info.balances["PLN"].active
+            + self.bitclude_state.account_info.balances["PLN"].inactive
         )
 
     @property

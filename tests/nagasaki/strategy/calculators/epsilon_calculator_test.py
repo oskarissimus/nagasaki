@@ -17,13 +17,11 @@ from nagasaki.strategy.calculators.epsilon_calculator import EpsilonCalculator
     ],
 )
 def test_should_calculate(epsilon, side, price, expected_price):
-    state = mock.Mock()
-    state.bitclude.top_ask.return_value = price
-    state.bitclude.top_bid.return_value = price
+    bitclude = mock.Mock()
+    bitclude.top_ask.return_value = price
+    bitclude.top_bid.return_value = price
     calculator = EpsilonCalculator(epsilon=epsilon)
 
-    calculated_price = calculator.calculate(
-        side, asset_symbol=MarketEnum.BTC, state=state
-    )
+    calculated_price = calculator.calculate(side, MarketEnum.BTC, bitclude, None, None)
 
     assert calculated_price == expected_price
