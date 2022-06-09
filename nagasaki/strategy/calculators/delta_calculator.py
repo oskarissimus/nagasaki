@@ -14,7 +14,7 @@ class DeltaCalculator(PriceCalculator):
         assert self.delta_2 >= 0
 
     def calculate(
-        self, state: State, side: SideTypeEnum, asset_symbol: MarketEnum
+        self, side: SideTypeEnum, asset_symbol: MarketEnum, state: State
     ) -> Decimal:
         mark_price = state.deribit.mark_price[asset_symbol] * state.yahoo.usd_pln
         inventory_parameter = self.inventory_parameter(state, asset_symbol)

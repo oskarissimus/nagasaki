@@ -13,6 +13,9 @@ class State(BaseModel):
 
 class States(containers.DeclarativeContainer):
     sub_state = providers.Singleton(SubState)
+    s = sub_state()
+    print(f"SubState in container: {id(s)}")
+
     state = providers.Singleton(State, sub_state=sub_state)
 
 
@@ -22,11 +25,13 @@ class Strategy:
 
     def read_state(self):
         print(self.state)
+        print(f"Read sub_state: {id(self.state.sub_state)}")
 
 
 @inject
 def modify_state(sub_state: State = Provide[States.sub_state]):
     sub_state.cipa = "mod-1"
+    print(f"Modified substate: {id(sub_state)}")
 
 
 @inject
@@ -36,7 +41,7 @@ def main(state: State = Provide[States.state]):
     st.read_state()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     states = States()
     states.wire(modules=[__name__])
     main()

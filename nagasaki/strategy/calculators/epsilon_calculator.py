@@ -11,7 +11,7 @@ class EpsilonCalculator(PriceCalculator):
         self.epsilon = Decimal(epsilon) or Decimal("0.01")
 
     def calculate(
-        self, state: State, side: SideTypeEnum, asset_symbol: MarketEnum
+        self, side: SideTypeEnum, asset_symbol: MarketEnum, state: State
     ) -> Decimal:
         if side == SideTypeEnum.ASK:
             epsilon_price = self.calculate_ask(state.bitclude.top_ask(asset_symbol))

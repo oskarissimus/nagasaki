@@ -33,13 +33,10 @@ class Clients(
 
 
 class States(containers.DeclarativeContainer):
-    config = providers.Configuration()
-
-    clients = providers.Container(Clients, config=config)
     bitclude_state = providers.Singleton(BitcludeState)
     deribit_state = providers.Singleton(DeribitState)
     yahoo_finance_state = providers.Singleton(YahooFinanceState)
-    state = providers.Singleton(
+    state = providers.Factory(
         State, bitclude=bitclude_state, deribit=deribit_state, yahoo=yahoo_finance_state
     )
 
@@ -48,4 +45,4 @@ class Application(containers.DeclarativeContainer):
     config = providers.Configuration(pydantic_settings=[Settings()])
 
     clients = providers.Container(Clients, config=config)
-    states = providers.Container(States, config=config)
+    states = providers.Container(States)

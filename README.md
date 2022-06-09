@@ -118,12 +118,18 @@ flowchart
 - [x] runtime config
 - [x] delta adjusted for inventory
 - [x] delta calculator
-- [] pylint + black + isort pre-commit hook
+- [ ] pylint + black + isort pre-commit hook
 
 
 # TODO 08.06.2022
-- [] refactor trader/main.py
+- [ ] refactor trader/main.py
   - move clients init to another module and use as singelton
   - create strategy on demand
-- [] rename `bitclude_id` in `Settings` and in `.env` files to `bitclude_client_id`
-- [] rename `bitclude_key` in `Settings` and in `.env` files to `bitclude_client_key`
+- [ ] rename `bitclude_id` in `Settings` and in `.env` files to `bitclude_client_id`
+- [ ] rename `bitclude_key` in `Settings` and in `.env` files to `bitclude_client_key`
+
+
+# TODO 09.06.2022
+- [ ] Modify strategy tests to use granular states
+- [ ] Modify calculator tests to use granular states
+- [ ] Remove state object

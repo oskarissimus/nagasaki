@@ -54,10 +54,10 @@ def fixture_state():
 def test_should_long_2_btcs(state: State, client: mock.Mock):
     btcs_to_long_in_dollars = 80_000
 
-    strategy = HedgingStrategy(state, client, InstrumentTypeEnum.BTC_PERPETUAL)
+    strategy = HedgingStrategy(client, InstrumentTypeEnum.BTC_PERPETUAL)
 
     with mock.patch("nagasaki.strategy.hedging_strategy.write_order_taker_to_db"):
-        strategy.execute()
+        strategy.execute(state)
 
     expected_create_order = make_order_taker_buy(
         amount=Decimal(btcs_to_long_in_dollars)

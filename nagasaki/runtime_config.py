@@ -10,8 +10,8 @@ class RuntimeConfig:
     class Data(YamlModel):
         delta_when_btc_only: str
         delta_when_pln_only: str
-        market_making_instrument: str
-        hedging_instrument: str
+        market_making_instrument: str = "BTC_PLN"
+        hedging_instrument: str = "BTC_PERPETUAL"
 
     def __init__(self, path: Path = None):
         self.path = path or Path(__file__).parent.parent / "runtime_config.yml"

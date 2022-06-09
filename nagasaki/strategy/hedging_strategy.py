@@ -1,7 +1,10 @@
 from decimal import Decimal
 
+from dependency_injector.wiring import Provide, inject
+
 from nagasaki.clients import BaseClient
 from nagasaki.clients.base_client import OrderTaker
+from nagasaki.containers import Application
 from nagasaki.database.utils import write_order_taker_to_db
 from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
 from nagasaki.logger import logger
@@ -27,14 +30,14 @@ def buy_order(amount: Decimal, instrument: InstrumentTypeEnum):
 
 
 class HedgingStrategy(AbstractStrategy):
-    def __init__(
-        self, state: State, client: BaseClient, instrument: InstrumentTypeEnum
-    ):
-        self.state = state
+    def __init__(self, client: BaseClient, instrument: InstrumentTypeEnum):
         self.client = client
         self.instrument = instrument
+        self.state = None
 
-    def execute(self):
+    @inject
+    def execute(self, state: State = Provide[Application.states.state]):
+        self.state = state
         delta = self.grand_total_delta()
         logger.info(f"Grand Total Δ: {delta:.8f}")
 

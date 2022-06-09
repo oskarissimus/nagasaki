@@ -1,7 +1,10 @@
 from decimal import Decimal
 from typing import List
 
+from dependency_injector.wiring import Provide, inject
+
 from nagasaki.clients.base_client import OrderMaker
+from nagasaki.containers import Application
 from nagasaki.database.utils import write_order_maker_to_db
 from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
 from nagasaki.logger import logger
@@ -25,20 +28,21 @@ def make_order(
 class MarketMakingStrategy(AbstractStrategy):
     def __init__(
         self,
-        state: State,
         dispatcher: StrategyOrderDispatcher,
         side: SideTypeEnum,
         instrument: InstrumentTypeEnum,
         calculators: List[PriceCalculator] = None,
     ):
-        self.state = state
         self.dispatcher = dispatcher
         self.calculators = calculators or []
         self.side = side
         self.instrument = instrument
         self.best_price = None
+        self.state = None
 
-    def execute(self):
+    @inject
+    def execute(self, state: State = Provide[Application.states.state]):
+        self.state = state
         self.calculate_best_price()
 
         order = make_order(self.best_price, self.amount, self.side, self.instrument)
@@ -48,7 +52,7 @@ class MarketMakingStrategy(AbstractStrategy):
 
     def calculate_best_price(self):
         all_prices = [
-            calculator.calculate(self.state, self.side, self.asset)
+            calculator.calculate(self.side, self.asset, self.state)
             for calculator in self.calculators
         ]
         self.best_price = self.best(all_prices)

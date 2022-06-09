@@ -6,5 +6,5 @@ from nagasaki.state import State
 
 class PriceCalculator(abc.ABC):
     @abc.abstractmethod
-    def calculate(self, state: State, side: SideTypeEnum, asset_symbol: MarketEnum):
+    def calculate(self, side: SideTypeEnum, asset_symbol: MarketEnum, state: State):
         pass

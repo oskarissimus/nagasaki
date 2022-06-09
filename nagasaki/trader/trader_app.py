@@ -9,7 +9,10 @@ from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import State
 from nagasaki.state_initializer import StateInitializer
-from nagasaki.state_synchronizer import StateSynchronizer
+from nagasaki.state_synchronizer import (
+    StateSynchronizer,
+    synchronize_yahoo_finance_state,
+)
 from nagasaki.strategy_executor import StrategyExecutor
 
 
@@ -95,8 +98,7 @@ class TraderApp:
         ] = self.deribit_client.fetch_index_price_eth_usd()
 
     def fetch_usd_pln_and_write_to_state(self):
-        usd_pln = self.usd_pln_quoting_client.fetch_usd_pln_quote()
-        self.state.yahoo.usd_pln = usd_pln
+        synchronize_yahoo_finance_state()
         logger.info(f"USD_PLN{self.state.yahoo.usd_pln:.2f}")
 
     def run(self):

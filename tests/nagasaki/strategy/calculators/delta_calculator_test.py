@@ -64,7 +64,7 @@ def test_should_calculate(
         ".DeltaCalculator.inventory_parameter"
     ) as patched_inv_parameter:
         patched_inv_parameter.return_value = inventory_parameter
-        calculated_price = calculator.calculate(state, side, MarketEnum.BTC)
+        calculated_price = calculator.calculate(side, MarketEnum.BTC, state)
 
     assert calculated_price == expected_price
 

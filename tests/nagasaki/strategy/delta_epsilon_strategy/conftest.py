@@ -12,26 +12,45 @@ from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
 
 
 @pytest.fixture(name="initialized_state")
-def fixture_initialized_state():
-    btc_price_deribit = 40_000
-    usd_pln = 4
+def fixture_initialized_state(bitclude_state, deribit_state, yahoo_finance_state):
+    state = State()
+    state.bitclude = bitclude_state
+    state.deribit = deribit_state
+    state.yahoo = yahoo_finance_state
+    return state
 
+
+@pytest.fixture(name="bitclude_state")
+def fixture_bitclude_state():
     active_plns = 100_000
     active_btcs = 1
 
-    state = State()
-    state.deribit = DeribitState()
-    state.deribit.mark_price["BTC"] = Decimal(btc_price_deribit)
-    state.yahoo = YahooFinanceState()
-    state.yahoo.usd_pln = Decimal(usd_pln)
-    state.bitclude = BitcludeState()
-    state.bitclude.account_info = AccountInfo(
+    bitclude = BitcludeState()
+    bitclude.account_info = AccountInfo(
         balances={
             "PLN": Balance(active=Decimal(active_plns), inactive=Decimal("0")),
             "BTC": Balance(active=Decimal(active_btcs), inactive=Decimal("0")),
         }
     )
-    return state
+    return bitclude
+
+
+@pytest.fixture(name="deribit_state")
+def fixture_deribit_state():
+    btc_price_deribit = 40_000
+
+    deribit = DeribitState()
+    deribit.mark_price["BTC"] = Decimal(btc_price_deribit)
+    return deribit
+
+
+@pytest.fixture(name="yahoo_finance_state")
+def fixture_yahoo_finance_state():
+    usd_pln = 4
+
+    yahoo = YahooFinanceState()
+    yahoo.usd_pln = Decimal(usd_pln)
+    return yahoo
 
 
 @pytest.fixture(name="dispatcher")
@@ -55,7 +74,6 @@ def fixture_strategy_ask(
 ):
     calculators = [delta_calculator, epsilon_calculator]
     return MarketMakingStrategy(
-        initialized_state,
         dispatcher,
         calculators=calculators,
         side=SideTypeEnum.ASK,
@@ -69,7 +87,6 @@ def fixture_strategy_bid(
 ):
     calculators = [delta_calculator, epsilon_calculator]
     return MarketMakingStrategy(
-        initialized_state,
         dispatcher,
         calculators=calculators,
         side=SideTypeEnum.BID,

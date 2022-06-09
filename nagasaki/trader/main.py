@@ -4,6 +4,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from dependency_injector.wiring import Provide, inject
 from pytz_deprecation_shim import PytzUsageWarning
 
+import nagasaki
 from nagasaki.clients import YahooFinanceClient
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
@@ -42,14 +43,9 @@ def main(
 
     usd_pln_quoting_client = yahoo_finance_client
 
-    state_initializer = StateInitializer(
-        bitclude_client,
-        deribit_client,
-        usd_pln_quoting_client,
-        state,
-    )
+    state_initializer = StateInitializer()
 
-    state_synchronizer = StateSynchronizer(state, bitclude_client, deribit_client)
+    state_synchronizer = StateSynchronizer()
 
     runtime_config = RuntimeConfig()
 
@@ -57,14 +53,12 @@ def main(
     delta_calculator = DeltaCalculator()
     calculators = [delta_calculator]
     delta_strategy_ask = MarketMakingStrategy(
-        state=state,
         dispatcher=dispatcher,
         side=SideTypeEnum.ASK,
         instrument=runtime_config.market_making_instrument,
         calculators=calculators,
     )
     delta_strategy_bid = MarketMakingStrategy(
-        state=state,
         dispatcher=dispatcher,
         side=SideTypeEnum.BID,
         instrument=runtime_config.market_making_instrument,
@@ -72,7 +66,7 @@ def main(
     )
 
     hedging_strategy = HedgingStrategy(
-        state=state, client=deribit_client, instrument=runtime_config.hedging_instrument
+        client=deribit_client, instrument=runtime_config.hedging_instrument
     )
     strategies = [delta_strategy_ask, delta_strategy_bid, hedging_strategy]
 
@@ -101,5 +95,5 @@ def main(
 
 if __name__ == "__main__":
     application = Application()
-    application.wire(modules=[__name__])
+    application.wire(modules=[__name__], packages=[nagasaki])
     main()

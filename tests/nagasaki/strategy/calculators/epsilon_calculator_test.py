@@ -22,6 +22,8 @@ def test_should_calculate(epsilon, side, price, expected_price):
     state.bitclude.top_bid.return_value = price
     calculator = EpsilonCalculator(epsilon=epsilon)
 
-    calculated_price = calculator.calculate(state, side, asset_symbol=MarketEnum.BTC)
+    calculated_price = calculator.calculate(
+        side, asset_symbol=MarketEnum.BTC, state=state
+    )
 
     assert calculated_price == expected_price

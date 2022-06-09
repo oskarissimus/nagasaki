@@ -12,7 +12,7 @@ from nagasaki.models.bitclude import OrderbookRest, OrderbookWebsocket
 class BitcludeState(BaseModel):
     account_info: Optional[AccountInfo]
     active_offers: Optional[List[Offer]]
-    orderbooks: Optional[Dict[str, OrderbookRest]] = defaultdict()
+    orderbooks: Optional[Dict[str, OrderbookRest]] = defaultdict(lambda: None)
     orderbook_websocket: Optional[OrderbookWebsocket]
 
     def top_ask(self, asset_symbol):
@@ -23,7 +23,7 @@ class BitcludeState(BaseModel):
 
 
 class DeribitState(BaseModel):
-    mark_price: Dict[str, Optional[Decimal]] = defaultdict(None)
+    mark_price: Dict[str, Optional[Decimal]] = defaultdict(lambda: None)
     account_summary: Optional[AccountSummary]
 
 
