@@ -1,12 +1,10 @@
 from collections import defaultdict
 from decimal import Decimal
-from pathlib import Path
 from unittest import mock
 
 import pytest
 
-from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
-from nagasaki.runtime_config import RuntimeConfig
+from nagasaki.enums.common import MarketEnum, SideTypeEnum
 from nagasaki.strategy.calculators.delta_calculator import (
     DeltaCalculator,
     calculate_inventory_parameter,
@@ -82,9 +80,7 @@ def test_should_calculate(
 )
 def test_should_raise_for_negative_delta(delta_1, delta_2):
     with pytest.raises(AssertionError):
-        calculator = DeltaCalculator(delta_1, delta_2)
-        calculator.delta_1
-        calculator.delta_2
+        DeltaCalculator(delta_1, delta_2)
 
 
 @pytest.mark.parametrize(

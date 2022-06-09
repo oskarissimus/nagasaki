@@ -9,7 +9,7 @@ def test_should_execute_strategies():
 
     strategies = [strategy_1, strategy_2]
     event_manager = mock.Mock()
-    strategy_executor = StrategyExecutor(strategies, event_manager, mock.Mock())
+    strategy_executor = StrategyExecutor(strategies, event_manager)
 
     strategy_executor.on_strategy_execution_requested()
 

@@ -4,7 +4,7 @@ from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
 from nagasaki.settings import Settings
-from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
+from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 
 
 class Clients(
@@ -36,9 +36,6 @@ class States(containers.DeclarativeContainer):
     bitclude_state = providers.Singleton(BitcludeState)
     deribit_state = providers.Singleton(DeribitState)
     yahoo_finance_state = providers.Singleton(YahooFinanceState)
-    state = providers.Factory(
-        State, bitclude=bitclude_state, deribit=deribit_state, yahoo=yahoo_finance_state
-    )
 
 
 class Application(containers.DeclarativeContainer):

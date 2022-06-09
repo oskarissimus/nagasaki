@@ -130,6 +130,7 @@ flowchart
 
 
 # TODO 09.06.2022
-- [ ] Modify strategy tests to use granular states
-- [ ] Modify calculator tests to use granular states
-- [ ] Remove state object
+- [x] Modify strategy tests to use granular states
+- [x] Modify calculator tests to use granular states
+- [x] Remove state object
+- 

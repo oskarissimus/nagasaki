@@ -1,15 +1,14 @@
 from decimal import Decimal
 
-from dependency_injector.wiring import Provide, inject
+from dependency_injector.wiring import inject
 
 from nagasaki.clients import BaseClient
 from nagasaki.clients.base_client import OrderTaker
-from nagasaki.containers import Application
 from nagasaki.database.utils import write_order_taker_to_db
 from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
-from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
+from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 
 

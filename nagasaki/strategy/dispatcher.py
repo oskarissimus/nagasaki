@@ -8,7 +8,7 @@ from nagasaki.clients.base_client import Order, OrderMaker
 from nagasaki.clients.bitclude.dto import Offer
 from nagasaki.enums.common import SideTypeEnum
 from nagasaki.logger import logger
-from nagasaki.state import State
+from nagasaki.state import BitcludeState
 
 
 class Tolerance(BaseModel):
@@ -28,12 +28,17 @@ def offer_is_within_tolerance(
 
 
 class StrategyOrderDispatcher:
-    def __init__(self, client: BaseClient, state: State, tolerance: Tolerance = None):
+    def __init__(
+        self,
+        client: BaseClient,
+        bitclude_state: BitcludeState,
+        tolerance: Tolerance = None,
+    ):
         self.client = client
         self.tolerance = tolerance or Tolerance(
             price=Decimal("100"), amount=Decimal("0.000_3")
         )
-        self.state = state
+        self.bitclude_state = bitclude_state
 
     def dispatch(self, desirable_order: Order):
         if self.has_exactly_one_own_offer(desirable_order.side):
@@ -53,7 +58,7 @@ class StrategyOrderDispatcher:
 
     @property
     def active_offers(self) -> List[Offer]:
-        return self.state.bitclude.active_offers or []
+        return self.bitclude_state.active_offers or []
 
     def has_exactly_one_own_offer(self, side: SideTypeEnum) -> bool:
         offers = [offer for offer in self.active_offers if offer.offertype == side]

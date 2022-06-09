@@ -2,7 +2,6 @@ from decimal import Decimal
 from unittest import mock
 
 from nagasaki.enums.common import MarketEnum
-from nagasaki.state import State
 
 from .utils import make_order_maker_ask, make_orderbook_with_ask
 

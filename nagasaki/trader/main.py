@@ -14,7 +14,7 @@ from nagasaki.enums.common import SideTypeEnum
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
-from nagasaki.state import State
+from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import StateSynchronizer
 from nagasaki.strategy.calculators import DeltaCalculator
@@ -32,7 +32,11 @@ def main(
     yahoo_finance_client: YahooFinanceClient = Provide[
         Application.clients.yahoo_finance_client
     ],
-    state: State = Provide[Application.states.state],
+    bitclude_state: BitcludeState = Provide[Application.states.bitclude_state],
+    deribit_state: DeribitState = Provide[Application.states.deribit_state],
+    yahoo_finance_state: YahooFinanceState = Provide[
+        Application.states.yahoo_finance_state
+    ],
 ):
     filterwarnings("ignore", category=PytzUsageWarning)
     logger.info("start")
@@ -49,31 +53,42 @@ def main(
 
     runtime_config = RuntimeConfig()
 
-    dispatcher = StrategyOrderDispatcher(client=bitclude_client, state=state)
+    dispatcher = StrategyOrderDispatcher(
+        client=bitclude_client, bitclude_state=bitclude_state
+    )
     delta_calculator = DeltaCalculator()
     calculators = [delta_calculator]
     delta_strategy_ask = MarketMakingStrategy(
         dispatcher=dispatcher,
         side=SideTypeEnum.ASK,
         instrument=runtime_config.market_making_instrument,
+        bitclude_state=bitclude_state,
+        deribit_state=deribit_state,
+        yahoo_finance_state=yahoo_finance_state,
         calculators=calculators,
     )
     delta_strategy_bid = MarketMakingStrategy(
         dispatcher=dispatcher,
         side=SideTypeEnum.BID,
         instrument=runtime_config.market_making_instrument,
+        bitclude_state=bitclude_state,
+        deribit_state=deribit_state,
+        yahoo_finance_state=yahoo_finance_state,
         calculators=calculators,
     )
 
     hedging_strategy = HedgingStrategy(
-        client=deribit_client, instrument=runtime_config.hedging_instrument
+        client=deribit_client,
+        instrument=runtime_config.hedging_instrument,
+        bitclude_state=bitclude_state,
+        deribit_state=deribit_state,
+        yahoo_finance_state=yahoo_finance_state,
     )
     strategies = [delta_strategy_ask, delta_strategy_bid, hedging_strategy]
 
     strategy_executor = StrategyExecutor(
         strategies=strategies,
         event_manager=event_manager,
-        state=state,
     )
 
     scheduler = BackgroundScheduler(job_defaults={"max_instances": 2})
@@ -81,7 +96,9 @@ def main(
     app = TraderApp(
         bitclude_client=bitclude_client,
         deribit_client=deribit_client,
-        state=state,
+        bitclude_state=bitclude_state,
+        deribit_state=deribit_state,
+        yahoo_finance_state=yahoo_finance_state,
         event_manager=event_manager,
         scheduler=scheduler,
         strategy_executor=strategy_executor,

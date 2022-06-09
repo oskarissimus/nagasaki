@@ -7,7 +7,7 @@ from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
-from nagasaki.state import State
+from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import (
     StateSynchronizer,
@@ -23,7 +23,9 @@ class TraderApp:
         self,
         bitclude_client: BitcludeClient,
         deribit_client: DeribitClient,
-        state: State,
+        bitclude_state: BitcludeState,
+        deribit_state: DeribitState,
+        yahoo_finance_state: YahooFinanceState,
         event_manager: EventManager,
         scheduler: BackgroundScheduler,
         strategy_executor: StrategyExecutor,
@@ -33,7 +35,9 @@ class TraderApp:
     ):
         self.bitclude_client = bitclude_client
         self.deribit_client = deribit_client
-        self.state = state
+        self.bitclude_state = bitclude_state
+        self.deribit_state = deribit_state
+        self.yahoo_finance_state = yahoo_finance_state
         self.event_manager = event_manager
         self.scheduler = scheduler
         self.strategy_executor = strategy_executor
@@ -51,12 +55,6 @@ class TraderApp:
         self.event_manager.subscribe(
             "strategy_execution_requested",
             self.strategy_executor.on_strategy_execution_requested,
-        )
-
-    def attach_state_handlers_to_events(self):
-        self.event_manager.subscribe(
-            "created_order",
-            self.state.set_own_order,
         )
 
     def synchronize_state_and_execute_strategy(self):
@@ -85,7 +83,7 @@ class TraderApp:
     def get_mark_price_in_usd_from_deribit_and_write_to_state(self):
         runtime_config = RuntimeConfig()
 
-        self.state.deribit.mark_price[
+        self.deribit_state.mark_price[
             runtime_config.market_making_instrument.market_1
         ] = self.deribit_client.fetch_index_price_in_usd(
             runtime_config.market_making_instrument
@@ -93,13 +91,13 @@ class TraderApp:
         # logger.info(f"{self.state.btc_mark_usd=}")
 
     def get_eth_mark_usd_from_deribit_and_write_to_state(self):
-        self.state.deribit.mark_price[
+        self.deribit_state.mark_price[
             "ETH"
         ] = self.deribit_client.fetch_index_price_eth_usd()
 
     def fetch_usd_pln_and_write_to_state(self):
         synchronize_yahoo_finance_state()
-        logger.info(f"USD_PLN{self.state.yahoo.usd_pln:.2f}")
+        logger.info(f"USD_PLN{self.yahoo_finance_state.usd_pln:.2f}")
 
     def run(self):
         self.state_initializer.initialize_state()

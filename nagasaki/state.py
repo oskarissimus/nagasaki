@@ -29,9 +29,3 @@ class DeribitState(BaseModel):
 
 class YahooFinanceState(BaseModel):
     usd_pln: Optional[Decimal]
-
-
-class State(BaseModel):
-    yahoo: Optional[YahooFinanceState]
-    bitclude: Optional[BitcludeState]
-    deribit: Optional[DeribitState]

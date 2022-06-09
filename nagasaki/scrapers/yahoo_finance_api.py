@@ -1,7 +1,6 @@
 from pathlib import Path
 from sys import platform
 
-import selenium
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.firefox.options import Options
@@ -17,13 +16,13 @@ class element_inner_html_len_is_greater_than(object):
     returns the WebElement once its inner html length is greater than the particular length
     """
 
-    def __init__(self, locator, len):
+    def __init__(self, locator, length):
         self.locator = locator
-        self.len = len
+        self.length = length
 
     def __call__(self, driver):
         element = driver.find_element(*self.locator)  # Finding the referenced element
-        if len(element.get_attribute("innerHTML")) > self.len:
+        if len(element.get_attribute("innerHTML")) > self.length:
             return element
         else:
             return False
