@@ -9,7 +9,7 @@ from nagasaki.database.utils import write_order_taker_to_db
 from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
-from nagasaki.state import State
+from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 
 
@@ -30,18 +30,26 @@ def buy_order(amount: Decimal, instrument: InstrumentTypeEnum):
 
 
 class HedgingStrategy(AbstractStrategy):
-    def __init__(self, client: BaseClient, instrument: InstrumentTypeEnum):
+    def __init__(
+        self,
+        client: BaseClient,
+        instrument: InstrumentTypeEnum,
+        bitclude_state: BitcludeState,
+        deribit_state: DeribitState,
+        yahoo_finance_state: YahooFinanceState,
+    ):
         self.client = client
         self.instrument = instrument
-        self.state = None
+        self.bitclude_state = bitclude_state
+        self.deribit_state = deribit_state
+        self.yahoo_finance_state = yahoo_finance_state
 
     @inject
-    def execute(self, state: State = Provide[Application.states.state]):
-        self.state = state
+    def execute(self):
         delta = self.grand_total_delta()
         logger.info(f"Grand Total Δ: {delta:.8f}")
 
-        btc_mark_usd = self.state.deribit.mark_price[self.instrument.market_1]
+        btc_mark_usd = self.deribit_state.mark_price[self.instrument.market_1]
 
         order = None
 
@@ -60,9 +68,9 @@ class HedgingStrategy(AbstractStrategy):
     def grand_total_delta(self) -> Decimal:
         runtime_config = RuntimeConfig()
         currency = MarketEnum(runtime_config.market_making_instrument.market_1)
-        bitclude_assets = self.state.bitclude.account_info.assets_total(currency)
+        bitclude_assets = self.bitclude_state.account_info.assets_total(currency)
         deribit_total_delta = (
-            self.state.deribit.account_summary.margin_balance
-            + self.state.deribit.account_summary.delta_total
+            self.deribit_state.account_summary.margin_balance
+            + self.deribit_state.account_summary.delta_total
         )
         return bitclude_assets + deribit_total_delta

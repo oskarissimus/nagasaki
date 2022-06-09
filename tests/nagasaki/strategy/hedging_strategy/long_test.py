@@ -6,33 +6,21 @@ import pytest
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance
 from nagasaki.clients.deribit_client import AccountSummary
 from nagasaki.enums.common import InstrumentTypeEnum
-from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
+from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.hedging_strategy import HedgingStrategy
 
 from .utils import make_order_taker_buy
 
 
-@pytest.fixture(name="state")
-def fixture_state():
-    btc_price_deribit = 40_000
-    usd_pln = 4
-
+@pytest.fixture(name="bitclude_state")
+def fixture_bitclude_state():
     active_bitclude_plns = 100_000
     inactive_bitclude_plns = 0
     active_bitclude_btcs = 0.5
     inactive_bitclude_btcs = 0.5
 
-    # Only delta_total_deribit can be negative
-    delta_total_deribit = -3.5
-    margin_balance_deribit = 0.5
-
-    state = State()
-    state.deribit = DeribitState()
-    state.deribit.mark_price["BTC"] = Decimal(btc_price_deribit)
-    state.yahoo = YahooFinanceState()
-    state.yahoo.usd_pln = Decimal(usd_pln)
-    state.bitclude = BitcludeState()
-    state.bitclude.account_info = AccountInfo(
+    bitclude = BitcludeState()
+    bitclude.account_info = AccountInfo(
         balances={
             "PLN": Balance(
                 active=Decimal(active_bitclude_plns),
@@ -44,20 +32,53 @@ def fixture_state():
             ),
         }
     )
-    state.deribit.account_summary = AccountSummary(
+    bitclude.active_offers = []
+
+    return bitclude
+
+
+@pytest.fixture(name="deribit_state")
+def fixture_deribit_state():
+    btc_price_deribit = 40_000
+
+    # Only delta_total_deribit can be negative
+    delta_total_deribit = -3.5
+    margin_balance_deribit = 0.5
+
+    deribit = DeribitState()
+    deribit.mark_price["BTC"] = Decimal(btc_price_deribit)
+    deribit.account_summary = AccountSummary(
         equity=0, delta_total=delta_total_deribit, margin_balance=margin_balance_deribit
     )
-    state.bitclude.active_offers = []
-    return state
+
+    return deribit
 
 
-def test_should_long_2_btcs(state: State, client: mock.Mock):
+@pytest.fixture(name="yahoo_finance_state")
+def fixture_yahoo_finanace_state():
+    usd_pln = 4
+
+    yahoo = YahooFinanceState()
+    yahoo.usd_pln = Decimal(usd_pln)
+
+    return yahoo
+
+
+def test_should_long_2_btcs(
+    client: mock.Mock, bitclude_state, deribit_state, yahoo_finance_state
+):
     btcs_to_long_in_dollars = 80_000
 
-    strategy = HedgingStrategy(client, InstrumentTypeEnum.BTC_PERPETUAL)
+    strategy = HedgingStrategy(
+        client,
+        InstrumentTypeEnum.BTC_PERPETUAL,
+        bitclude_state,
+        deribit_state,
+        yahoo_finance_state,
+    )
 
     with mock.patch("nagasaki.strategy.hedging_strategy.write_order_taker_to_db"):
-        strategy.execute(state)
+        strategy.execute()
 
     expected_create_order = make_order_taker_buy(
         amount=Decimal(btcs_to_long_in_dollars)

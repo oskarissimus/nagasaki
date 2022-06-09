@@ -11,15 +11,6 @@ from nagasaki.strategy.calculators.epsilon_calculator import EpsilonCalculator
 from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
 
 
-@pytest.fixture(name="initialized_state")
-def fixture_initialized_state(bitclude_state, deribit_state, yahoo_finance_state):
-    state = State()
-    state.bitclude = bitclude_state
-    state.deribit = deribit_state
-    state.yahoo = yahoo_finance_state
-    return state
-
-
 @pytest.fixture(name="bitclude_state")
 def fixture_bitclude_state():
     active_plns = 100_000
