@@ -129,9 +129,10 @@ flowchart
 - [ ] rename `bitclude_key` in `Settings` and in `.env` files to `bitclude_client_key`
 
 
-# TODO 09.06.2022
+# TODO 6/9/22
 - [x] Modify strategy tests to use granular states
 - [x] Modify calculator tests to use granular states
 - [x] Remove state object
-- [ ] Move strategy creation to containers
-- [ ] Clean up states' init/sync
+- [x] Move strategy creation to containers
+- [x] Clean up states' init/sync
+

@@ -10,15 +10,9 @@ from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.containers import Application
 from nagasaki.database import database
-from nagasaki.enums.common import SideTypeEnum
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
-from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
-from nagasaki.state_initializer import StateInitializer
-from nagasaki.state_synchronizer import StateSynchronizer
-from nagasaki.strategy.calculators import DeltaCalculator
-from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
 from nagasaki.strategy.hedging_strategy import HedgingStrategy
 from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
 from nagasaki.strategy_executor import StrategyExecutor
@@ -60,10 +54,6 @@ def main(
 
     usd_pln_quoting_client = yahoo_finance_client
 
-    state_initializer = StateInitializer()
-
-    state_synchronizer = StateSynchronizer()
-
     strategies = [
         market_making_strategy_ask,
         market_making_strategy_bid,
@@ -86,9 +76,7 @@ def main(
         event_manager=event_manager,
         scheduler=scheduler,
         strategy_executor=strategy_executor,
-        state_initializer=state_initializer,
         usd_pln_quoting_client=usd_pln_quoting_client,
-        state_synchronizer=state_synchronizer,
     )
 
     app.run()

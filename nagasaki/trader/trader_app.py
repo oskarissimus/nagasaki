@@ -8,9 +8,9 @@ from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
-from nagasaki.state_initializer import StateInitializer
 from nagasaki.state_synchronizer import (
-    StateSynchronizer,
+    initialize_states,
+    synchronize_bitclude_state,
     synchronize_yahoo_finance_state,
 )
 from nagasaki.strategy_executor import StrategyExecutor
@@ -29,9 +29,7 @@ class TraderApp:
         event_manager: EventManager,
         scheduler: BackgroundScheduler,
         strategy_executor: StrategyExecutor,
-        state_initializer: StateInitializer,
         usd_pln_quoting_client: UsdPlnQuotingBaseClient,
-        state_synchronizer: StateSynchronizer,
     ):
         self.bitclude_client = bitclude_client
         self.deribit_client = deribit_client
@@ -41,13 +39,11 @@ class TraderApp:
         self.event_manager = event_manager
         self.scheduler = scheduler
         self.strategy_executor = strategy_executor
-        self.state_initializer = state_initializer
         self.usd_pln_quoting_client = usd_pln_quoting_client
-        self.state_synchronizer = state_synchronizer
 
     def attach_state_synchronizer_handlers_to_events(self):
         self.event_manager.subscribe(
-            "synchronize_bitclude_state", self.state_synchronizer.synchronize_state
+            "synchronize_bitclude_state", synchronize_bitclude_state
         )
 
     def attach_strategy_handlers_to_events(self):
@@ -100,7 +96,7 @@ class TraderApp:
         logger.info(f"USD_PLN{self.yahoo_finance_state.usd_pln:.2f}")
 
     def run(self):
-        self.state_initializer.initialize_state()
+        initialize_states()
         self.attach_strategy_handlers_to_events()
         self.attach_jobs_to_scheduler()
         self.attach_state_synchronizer_handlers_to_events()

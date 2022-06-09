@@ -9,11 +9,12 @@ from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 
 
-class StateSynchronizer:
-    def synchronize_state(self):
-        logger.info("Synchronizing state")
-        synchronize_bitclude_state()
-        synchronize_deribit_state()
+def initialize_states():
+    logger.info("Initializing States")
+    synchronize_bitclude_state()
+    synchronize_deribit_state()
+    synchronize_yahoo_finance_state()
+    log_states()
 
 
 @inject
@@ -57,3 +58,24 @@ def synchronize_yahoo_finance_state(
     ],
 ):
     yahoo_finance_state.usd_pln = yahoo_finance_client.fetch_usd_pln_quote()
+
+
+@inject
+def log_states(
+    bitclude_state: BitcludeState = Provide[Application.states.bitclude_state_provider],
+    deribit_state: DeribitState = Provide[Application.states.deribit_state_provider],
+    yahoo_finance_state: YahooFinanceState = Provide[
+        Application.states.yahoo_finance_state_provider
+    ],
+):
+    runtime_config = RuntimeConfig()
+
+    logger.info(bitclude_state.account_info)
+    for orderbook in bitclude_state.orderbooks.values():
+        logger.info(orderbook)
+    logger.info(f"{bitclude_state.active_offers=}")
+
+    currency = runtime_config.market_making_instrument.market_1
+    logger.info(f"{currency}/USD: {deribit_state.mark_price[currency]}")
+
+    logger.info(f"USD/PLN: {yahoo_finance_state.usd_pln}")

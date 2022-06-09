@@ -13,7 +13,6 @@ class BitcludeState(BaseModel):
     account_info: Optional[AccountInfo]
     active_offers: Optional[List[Offer]]
     orderbooks: Optional[Dict[str, OrderbookRest]] = defaultdict(lambda: None)
-    orderbook_websocket: Optional[OrderbookWebsocket]
 
     def top_ask(self, asset_symbol):
         return min(self.orderbooks[asset_symbol].asks, key=lambda x: x.price).price
