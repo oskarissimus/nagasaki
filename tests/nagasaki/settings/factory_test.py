@@ -2,8 +2,16 @@ from decimal import Decimal
 from unittest import mock
 
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
-from nagasaki.settings.factory import calculator_factory, market_making_strategy_factory
-from nagasaki.settings.runtime import CalculatorSettings, MarketMakingStrategySettings
+from nagasaki.settings.factory import (
+    calculator_factory,
+    hedging_strategy_factory,
+    market_making_strategy_factory,
+)
+from nagasaki.settings.runtime import (
+    CalculatorSettings,
+    HedgingStrategySettings,
+    MarketMakingStrategySettings,
+)
 from nagasaki.strategy import calculators
 from nagasaki.strategy.calculators import EpsilonCalculator
 
@@ -49,10 +57,10 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
 
     strategy = market_making_strategy_factory(
         config,
+        dispatcher,
         bitclude_state,
         deribit_state,
         yahoo_state,
-        dispatcher=dispatcher,
     )
 
     assert strategy.side == SideTypeEnum.BID
@@ -62,3 +70,22 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
     assert strategy.yahoo_finance_state is yahoo_state
     assert strategy.dispatcher is dispatcher
     assert len(strategy.calculators) == 2
+
+
+def test_should_create_hedging_strategy_eth():
+    client = mock.Mock()
+    bitclude_state = mock.Mock()
+    deribit_state = mock.Mock()
+    yahoo_state = mock.Mock()
+
+    config = HedgingStrategySettings(instrument="eth_perpetual")
+
+    strategy = hedging_strategy_factory(
+        config, client, bitclude_state, deribit_state, yahoo_state
+    )
+
+    assert strategy.instrument == InstrumentTypeEnum.ETH_PERPETUAL
+    assert strategy.client is client
+    assert strategy.bitclude_state is bitclude_state
+    assert strategy.deribit_state is deribit_state
+    assert strategy.yahoo_finance_state is yahoo_state

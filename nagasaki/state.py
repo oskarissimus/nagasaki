@@ -6,7 +6,7 @@ from pydantic import BaseModel
 
 from nagasaki.clients.bitclude.dto import AccountInfo, Offer
 from nagasaki.clients.deribit_client import AccountSummary
-from nagasaki.models.bitclude import OrderbookRest, OrderbookWebsocket
+from nagasaki.models.bitclude import OrderbookRest
 
 
 class BitcludeState(BaseModel):

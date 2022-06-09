@@ -1,8 +1,14 @@
+from nagasaki.clients import BaseClient
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
-from nagasaki.settings.runtime import CalculatorSettings, MarketMakingStrategySettings
+from nagasaki.settings.runtime import (
+    CalculatorSettings,
+    HedgingStrategySettings,
+    MarketMakingStrategySettings,
+)
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy import calculators
 from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
+from nagasaki.strategy.hedging_strategy import HedgingStrategy
 from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
 
 CALCULATOR_TYPE_MAP = {
@@ -18,10 +24,10 @@ def calculator_factory(settings: CalculatorSettings) -> calculators.PriceCalcula
 
 def market_making_strategy_factory(
     settings: MarketMakingStrategySettings,
+    dispatcher: StrategyOrderDispatcher,
     bitclude_state: BitcludeState,
     deribit_state: DeribitState,
     yahoo_finance_state: YahooFinanceState,
-    dispatcher: StrategyOrderDispatcher,
 ):
     calculators = [
         calculator_factory(calculator_settings)
@@ -35,4 +41,20 @@ def market_making_strategy_factory(
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
         calculators=calculators,
+    )
+
+
+def hedging_strategy_factory(
+    settings: HedgingStrategySettings,
+    client: BaseClient,
+    bitclude_state: BitcludeState,
+    deribit_state: DeribitState,
+    yahoo_finance_state: YahooFinanceState,
+):
+    return HedgingStrategy(
+        client=client,
+        instrument=InstrumentTypeEnum.from_str(settings.instrument),
+        bitclude_state=bitclude_state,
+        deribit_state=deribit_state,
+        yahoo_finance_state=yahoo_finance_state,
     )

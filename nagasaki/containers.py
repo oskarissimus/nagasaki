@@ -3,15 +3,18 @@ from dependency_injector import containers, providers
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
-from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
 from nagasaki.settings import Settings
-from nagasaki.settings.factory import market_making_strategy_factory
-from nagasaki.settings.runtime import CalculatorSettings, MarketMakingStrategySettings
+from nagasaki.settings.factory import (
+    hedging_strategy_factory,
+    market_making_strategy_factory,
+)
+from nagasaki.settings.runtime import (
+    CalculatorSettings,
+    HedgingStrategySettings,
+    MarketMakingStrategySettings,
+)
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
-from nagasaki.strategy.calculators import DeltaCalculator
 from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
-from nagasaki.strategy.hedging_strategy import HedgingStrategy
-from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
 
 
 class Clients(
@@ -91,10 +94,11 @@ class Strategies(containers.DeclarativeContainer):
         yahoo_finance_state=states.yahoo_finance_state_provider,
     )
 
+    hedge_config = HedgingStrategySettings(instrument="BTC_PERPETUAL")
     hedging_strategy = providers.Singleton(
-        HedgingStrategy,
+        hedging_strategy_factory,
+        settings=hedge_config,
         client=clients.deribit_client_provider,
-        instrument=InstrumentTypeEnum.BTC_PERPETUAL,
         bitclude_state=states.bitclude_state_provider,
         deribit_state=states.deribit_state_provider,
         yahoo_finance_state=states.yahoo_finance_state_provider,
