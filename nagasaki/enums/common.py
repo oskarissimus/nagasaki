@@ -25,7 +25,7 @@ class InstrumentTypeEnum(Enum):
 
     @classmethod
     def from_str(cls, value):
-        return cls(tuple(value.split("_")))
+        return cls(tuple(value.upper().split("_")))
 
 
 class SideTypeEnum(str, Enum):

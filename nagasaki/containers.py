@@ -5,6 +5,8 @@ from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
 from nagasaki.settings import Settings
+from nagasaki.settings.factory import market_making_strategy_factory
+from nagasaki.settings.runtime import CalculatorSettings, MarketMakingStrategySettings
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.calculators import DeltaCalculator
 from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
@@ -53,26 +55,40 @@ class Strategies(containers.DeclarativeContainer):
         bitclude_state=states.bitclude_state_provider,
     )
 
+    bid_config = MarketMakingStrategySettings(
+        side="BID",
+        instrument="BTC_PLN",
+        calculator_settings=[
+            CalculatorSettings(
+                calculator_type="delta", params={"delta_1": "0.1", "delta_2": "0.2"}
+            )
+        ],
+    )
     market_making_strategy_bid = providers.Singleton(
-        MarketMakingStrategy,
+        market_making_strategy_factory,
+        settings=bid_config,
         dispatcher=dispatcher,
-        side=SideTypeEnum.BID,
-        instrument=InstrumentTypeEnum.BTC_PLN,
         bitclude_state=states.bitclude_state_provider,
         deribit_state=states.deribit_state_provider,
         yahoo_finance_state=states.yahoo_finance_state_provider,
-        calculators=[DeltaCalculator()],
     )
 
+    ask_config = MarketMakingStrategySettings(
+        side="ASK",
+        instrument="BTC_PLN",
+        calculator_settings=[
+            CalculatorSettings(
+                calculator_type="delta", params={"delta_1": "0.1", "delta_2": "0.2"}
+            )
+        ],
+    )
     market_making_strategy_ask = providers.Singleton(
-        MarketMakingStrategy,
+        market_making_strategy_factory,
+        settings=ask_config,
         dispatcher=dispatcher,
-        side=SideTypeEnum.ASK,
-        instrument=InstrumentTypeEnum.BTC_PLN,
         bitclude_state=states.bitclude_state_provider,
         deribit_state=states.deribit_state_provider,
         yahoo_finance_state=states.yahoo_finance_state_provider,
-        calculators=[DeltaCalculator()],
     )
 
     hedging_strategy = providers.Singleton(

@@ -2,17 +2,17 @@ from typing import Dict, List
 
 from pydantic import BaseModel
 
-from nagasaki.strategy import calculators
-
 
 class CalculatorSettings(BaseModel):
     calculator_type: str
     params: Dict[str, str]
 
 
-class StrategySettings(BaseModel):
-    calculator: List[CalculatorSettings]
+class MarketMakingStrategySettings(BaseModel):
+    side: str
+    instrument: str
+    calculator_settings: List[CalculatorSettings]
 
 
 class RuntimeSettings(BaseModel):
-    strategies: List[StrategySettings]
+    market_making_strategies: List[MarketMakingStrategySettings]
