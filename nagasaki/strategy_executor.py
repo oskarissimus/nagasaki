@@ -1,25 +1,17 @@
 from typing import List
 
-from nagasaki.event_manager import EventManager
+from dependency_injector.wiring import Provide
+
+from nagasaki.containers import Application
 from nagasaki.logger import logger
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 
 
-class StrategyExecutor:
-    """
-    does side-effects on state
-    generates events to execute actions
-    """
-
-    def __init__(
-        self,
-        strategies: List[AbstractStrategy],
-        event_manager: EventManager,
-    ):
-        self.strategies = strategies
-        self.event_manager = event_manager
-
-    def on_strategy_execution_requested(self):
-        logger.debug("strategy execution requested")
-        for strategy in self.strategies:
-            strategy.execute()
+def execute_all_strategies(
+    strategies: List[AbstractStrategy] = Provide[
+        Application.strategies.strategies_provider
+    ],
+):
+    logger.debug("strategy execution requested")
+    for strategy in strategies:
+        strategy.execute()

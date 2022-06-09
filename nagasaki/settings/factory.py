@@ -1,9 +1,12 @@
 from nagasaki.clients import BaseClient
+from nagasaki.clients.bitclude.core import BitcludeClient
+from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
 from nagasaki.settings.runtime import (
     CalculatorSettings,
     HedgingStrategySettings,
     MarketMakingStrategySettings,
+    StrategySettingsList,
 )
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy import calculators
@@ -24,7 +27,7 @@ def calculator_factory(settings: CalculatorSettings) -> calculators.PriceCalcula
 
 def market_making_strategy_factory(
     settings: MarketMakingStrategySettings,
-    dispatcher: StrategyOrderDispatcher,
+    client: BaseClient,
     bitclude_state: BitcludeState,
     deribit_state: DeribitState,
     yahoo_finance_state: YahooFinanceState,
@@ -33,6 +36,7 @@ def market_making_strategy_factory(
         calculator_factory(calculator_settings)
         for calculator_settings in settings.calculator_settings
     ]
+    dispatcher = StrategyOrderDispatcher(client=client, bitclude_state=bitclude_state)
     return MarketMakingStrategy(
         dispatcher=dispatcher,
         side=SideTypeEnum(settings.side.upper()),
@@ -58,3 +62,38 @@ def hedging_strategy_factory(
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
     )
+
+
+def create_strategies(
+    settings: StrategySettingsList,
+    bitclude_client: BitcludeClient,
+    deribit_client: DeribitClient,
+    bitclude_state: BitcludeState,
+    deribit_state: DeribitState,
+    yahoo_finance_state: YahooFinanceState,
+):
+    strategies = []
+
+    for mm_settings in settings.market_making_strategies or ():
+        strategies.append(
+            market_making_strategy_factory(
+                mm_settings,
+                bitclude_client,
+                bitclude_state,
+                deribit_state,
+                yahoo_finance_state,
+            )
+        )
+
+    for hedging_settings in settings.hedging_strategies or ():
+        strategies.append(
+            hedging_strategy_factory(
+                hedging_settings,
+                deribit_client,
+                bitclude_state,
+                deribit_state,
+                yahoo_finance_state,
+            )
+        )
+
+    return strategies

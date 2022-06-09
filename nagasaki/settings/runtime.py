@@ -1,4 +1,4 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from pydantic import BaseModel
 
@@ -18,5 +18,10 @@ class HedgingStrategySettings(BaseModel):
     instrument: str
 
 
+class StrategySettingsList(BaseModel):
+    market_making_strategies: Optional[List[MarketMakingStrategySettings]]
+    hedging_strategies: Optional[List[HedgingStrategySettings]]
+
+
 class RuntimeSettings(BaseModel):
-    market_making_strategies: List[MarketMakingStrategySettings]
+    strategies: StrategySettingsList

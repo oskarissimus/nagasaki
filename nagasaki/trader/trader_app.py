@@ -13,7 +13,7 @@ from nagasaki.state_synchronizer import (
     synchronize_bitclude_state,
     synchronize_yahoo_finance_state,
 )
-from nagasaki.strategy_executor import StrategyExecutor
+from nagasaki.strategy_executor import execute_all_strategies
 
 
 # pylint: disable=too-many-instance-attributes
@@ -28,7 +28,6 @@ class TraderApp:
         yahoo_finance_state: YahooFinanceState,
         event_manager: EventManager,
         scheduler: BackgroundScheduler,
-        strategy_executor: StrategyExecutor,
         usd_pln_quoting_client: UsdPlnQuotingBaseClient,
     ):
         self.bitclude_client = bitclude_client
@@ -38,7 +37,6 @@ class TraderApp:
         self.yahoo_finance_state = yahoo_finance_state
         self.event_manager = event_manager
         self.scheduler = scheduler
-        self.strategy_executor = strategy_executor
         self.usd_pln_quoting_client = usd_pln_quoting_client
 
     def attach_state_synchronizer_handlers_to_events(self):
@@ -50,7 +48,7 @@ class TraderApp:
         logger.info("attach_strategy_handlers_to_events")
         self.event_manager.subscribe(
             "strategy_execution_requested",
-            self.strategy_executor.on_strategy_execution_requested,
+            execute_all_strategies,
         )
 
     def synchronize_state_and_execute_strategy(self):

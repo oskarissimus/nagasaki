@@ -4,17 +4,14 @@ from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
 from nagasaki.settings import Settings
-from nagasaki.settings.factory import (
-    hedging_strategy_factory,
-    market_making_strategy_factory,
-)
+from nagasaki.settings.factory import create_strategies
 from nagasaki.settings.runtime import (
     CalculatorSettings,
     HedgingStrategySettings,
     MarketMakingStrategySettings,
+    StrategySettingsList,
 )
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
-from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
 
 
 class Clients(
@@ -52,12 +49,6 @@ class Strategies(containers.DeclarativeContainer):
     clients = providers.DependenciesContainer()
     states = providers.DependenciesContainer()
 
-    dispatcher = providers.Singleton(
-        StrategyOrderDispatcher,
-        client=clients.bitclude_client_provider,
-        bitclude_state=states.bitclude_state_provider,
-    )
-
     bid_config = MarketMakingStrategySettings(
         side="BID",
         instrument="BTC_PLN",
@@ -67,15 +58,6 @@ class Strategies(containers.DeclarativeContainer):
             )
         ],
     )
-    market_making_strategy_bid = providers.Singleton(
-        market_making_strategy_factory,
-        settings=bid_config,
-        dispatcher=dispatcher,
-        bitclude_state=states.bitclude_state_provider,
-        deribit_state=states.deribit_state_provider,
-        yahoo_finance_state=states.yahoo_finance_state_provider,
-    )
-
     ask_config = MarketMakingStrategySettings(
         side="ASK",
         instrument="BTC_PLN",
@@ -85,20 +67,17 @@ class Strategies(containers.DeclarativeContainer):
             )
         ],
     )
-    market_making_strategy_ask = providers.Singleton(
-        market_making_strategy_factory,
-        settings=ask_config,
-        dispatcher=dispatcher,
-        bitclude_state=states.bitclude_state_provider,
-        deribit_state=states.deribit_state_provider,
-        yahoo_finance_state=states.yahoo_finance_state_provider,
-    )
-
     hedge_config = HedgingStrategySettings(instrument="BTC_PERPETUAL")
-    hedging_strategy = providers.Singleton(
-        hedging_strategy_factory,
-        settings=hedge_config,
-        client=clients.deribit_client_provider,
+
+    strategies_config = StrategySettingsList(
+        market_making_strategies=[ask_config, bid_config],
+        hedging_strategies=[hedge_config],
+    )
+    strategies_provider = providers.Singleton(
+        create_strategies,
+        settings=strategies_config,
+        bitclude_client=clients.bitclude_client_provider,
+        deribit_client=clients.deribit_client_provider,
         bitclude_state=states.bitclude_state_provider,
         deribit_state=states.deribit_state_provider,
         yahoo_finance_state=states.yahoo_finance_state_provider,

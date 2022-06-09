@@ -44,7 +44,7 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
             calculator_type="delta", params={"delta_1": "0.6", "delta_2": "0.9"}
         ),
     ]
-    dispatcher = mock.Mock()
+    bitclude_client = mock.Mock()
     bitclude_state = mock.Mock()
     deribit_state = mock.Mock()
     yahoo_state = mock.Mock()
@@ -57,7 +57,7 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
 
     strategy = market_making_strategy_factory(
         config,
-        dispatcher,
+        bitclude_client,
         bitclude_state,
         deribit_state,
         yahoo_state,
@@ -68,7 +68,8 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
     assert strategy.bitclude_state is bitclude_state
     assert strategy.deribit_state is deribit_state
     assert strategy.yahoo_finance_state is yahoo_state
-    assert strategy.dispatcher is dispatcher
+    assert strategy.dispatcher.client is bitclude_client
+    assert strategy.dispatcher.bitclude_state is bitclude_state
     assert len(strategy.calculators) == 2
 
 
