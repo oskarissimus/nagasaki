@@ -27,15 +27,28 @@ from nagasaki.trader.trader_app import TraderApp
 
 @inject
 def main(
-    bitclude_client: BitcludeClient = Provide[Application.clients.bitclude_client],
-    deribit_client: DeribitClient = Provide[Application.clients.deribit_client],
-    yahoo_finance_client: YahooFinanceClient = Provide[
-        Application.clients.yahoo_finance_client
+    bitclude_client: BitcludeClient = Provide[
+        Application.clients.bitclude_client_provider
     ],
-    bitclude_state: BitcludeState = Provide[Application.states.bitclude_state],
-    deribit_state: DeribitState = Provide[Application.states.deribit_state],
+    deribit_client: DeribitClient = Provide[
+        Application.clients.deribit_client_provider
+    ],
+    yahoo_finance_client: YahooFinanceClient = Provide[
+        Application.clients.yahoo_finance_client_provider
+    ],
+    bitclude_state: BitcludeState = Provide[Application.states.bitclude_state_provider],
+    deribit_state: DeribitState = Provide[Application.states.deribit_state_provider],
     yahoo_finance_state: YahooFinanceState = Provide[
-        Application.states.yahoo_finance_state
+        Application.states.yahoo_finance_state_provider
+    ],
+    market_making_strategy_bid: MarketMakingStrategy = Provide[
+        Application.strategies.market_making_strategy_bid
+    ],
+    market_making_strategy_ask: MarketMakingStrategy = Provide[
+        Application.strategies.market_making_strategy_ask
+    ],
+    hedging_strategy: HedgingStrategy = Provide[
+        Application.strategies.hedging_strategy
     ],
 ):
     filterwarnings("ignore", category=PytzUsageWarning)
@@ -51,40 +64,11 @@ def main(
 
     state_synchronizer = StateSynchronizer()
 
-    runtime_config = RuntimeConfig()
-
-    dispatcher = StrategyOrderDispatcher(
-        client=bitclude_client, bitclude_state=bitclude_state
-    )
-    delta_calculator = DeltaCalculator()
-    calculators = [delta_calculator]
-    delta_strategy_ask = MarketMakingStrategy(
-        dispatcher=dispatcher,
-        side=SideTypeEnum.ASK,
-        instrument=runtime_config.market_making_instrument,
-        bitclude_state=bitclude_state,
-        deribit_state=deribit_state,
-        yahoo_finance_state=yahoo_finance_state,
-        calculators=calculators,
-    )
-    delta_strategy_bid = MarketMakingStrategy(
-        dispatcher=dispatcher,
-        side=SideTypeEnum.BID,
-        instrument=runtime_config.market_making_instrument,
-        bitclude_state=bitclude_state,
-        deribit_state=deribit_state,
-        yahoo_finance_state=yahoo_finance_state,
-        calculators=calculators,
-    )
-
-    hedging_strategy = HedgingStrategy(
-        client=deribit_client,
-        instrument=runtime_config.hedging_instrument,
-        bitclude_state=bitclude_state,
-        deribit_state=deribit_state,
-        yahoo_finance_state=yahoo_finance_state,
-    )
-    strategies = [delta_strategy_ask, delta_strategy_bid, hedging_strategy]
+    strategies = [
+        market_making_strategy_ask,
+        market_making_strategy_bid,
+        hedging_strategy,
+    ]
 
     strategy_executor = StrategyExecutor(
         strategies=strategies,

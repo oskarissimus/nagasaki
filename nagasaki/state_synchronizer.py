@@ -18,8 +18,10 @@ class StateSynchronizer:
 
 @inject
 def synchronize_bitclude_state(
-    bitclude_state: BitcludeState = Provide[Application.states.bitclude_state],
-    bitclude_client: BitcludeClient = Provide[Application.clients.bitclude_client],
+    bitclude_state: BitcludeState = Provide[Application.states.bitclude_state_provider],
+    bitclude_client: BitcludeClient = Provide[
+        Application.clients.bitclude_client_provider
+    ],
 ):
     runtime_config = RuntimeConfig()
     bitclude_state.account_info = bitclude_client.fetch_account_info()
@@ -33,8 +35,10 @@ def synchronize_bitclude_state(
 
 @inject
 def synchronize_deribit_state(
-    deribit_state: DeribitState = Provide[Application.states.deribit_state],
-    deribit_client: DeribitClient = Provide[Application.clients.deribit_client],
+    deribit_state: DeribitState = Provide[Application.states.deribit_state_provider],
+    deribit_client: DeribitClient = Provide[
+        Application.clients.deribit_client_provider
+    ],
 ):
     runtime_config = RuntimeConfig()
     deribit_state.account_summary = deribit_client.fetch_account_summary()
@@ -46,10 +50,10 @@ def synchronize_deribit_state(
 @inject
 def synchronize_yahoo_finance_state(
     yahoo_finance_state: YahooFinanceState = Provide[
-        Application.states.yahoo_finance_state
+        Application.states.yahoo_finance_state_provider
     ],
     yahoo_finance_client: YahooFinanceClient = Provide[
-        Application.clients.yahoo_finance_client
+        Application.clients.yahoo_finance_client_provider
     ],
 ):
     yahoo_finance_state.usd_pln = yahoo_finance_client.fetch_usd_pln_quote()

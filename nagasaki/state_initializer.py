@@ -23,8 +23,8 @@ class StateInitializer:
 
 @inject
 def _log_state(
-    bitclude_state: BitcludeState = Provide[Application.states.bitclude_state],
-    deribit_state: DeribitState = Provide[Application.states.deribit_state],
+    bitclude_state: BitcludeState = Provide[Application.states.bitclude_state_provider],
+    deribit_state: DeribitState = Provide[Application.states.deribit_state_provider],
 ):
     runtime_config = RuntimeConfig()
 

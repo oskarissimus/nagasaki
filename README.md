@@ -133,4 +133,5 @@ flowchart
 - [x] Modify strategy tests to use granular states
 - [x] Modify calculator tests to use granular states
 - [x] Remove state object
-- 
+- [ ] Move strategy creation to containers
+- [ ] Clean up states' init/sync
