@@ -3,14 +3,9 @@ from dependency_injector import containers, providers
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
+from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.settings import Settings
 from nagasaki.settings.factory import create_strategies
-from nagasaki.settings.runtime import (
-    CalculatorSettings,
-    HedgingStrategySettings,
-    MarketMakingStrategySettings,
-    StrategySettingsList,
-)
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 
 
@@ -49,30 +44,9 @@ class Strategies(containers.DeclarativeContainer):
     clients = providers.DependenciesContainer()
     states = providers.DependenciesContainer()
 
-    bid_config = MarketMakingStrategySettings(
-        side="BID",
-        instrument="BTC_PLN",
-        calculator_settings=[
-            CalculatorSettings(
-                calculator_type="delta", params={"delta_1": "0.1", "delta_2": "0.2"}
-            )
-        ],
-    )
-    ask_config = MarketMakingStrategySettings(
-        side="ASK",
-        instrument="BTC_PLN",
-        calculator_settings=[
-            CalculatorSettings(
-                calculator_type="delta", params={"delta_1": "0.1", "delta_2": "0.2"}
-            )
-        ],
-    )
-    hedge_config = HedgingStrategySettings(instrument="BTC_PERPETUAL")
+    runtime_settings = RuntimeConfig().data
+    strategies_config = runtime_settings.strategies
 
-    strategies_config = StrategySettingsList(
-        market_making_strategies=[ask_config, bid_config],
-        hedging_strategies=[hedge_config],
-    )
     strategies_provider = providers.Singleton(
         create_strategies,
         settings=strategies_config,

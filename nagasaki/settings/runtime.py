@@ -1,6 +1,7 @@
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, BaseSettings
+from pydantic_yaml import YamlModel
 
 
 class CalculatorSettings(BaseModel):
@@ -23,5 +24,7 @@ class StrategySettingsList(BaseModel):
     hedging_strategies: Optional[List[HedgingStrategySettings]]
 
 
-class RuntimeSettings(BaseModel):
+class RuntimeSettings(YamlModel):
+    market_making_instrument: str
+    hedging_instrument: str
     strategies: StrategySettingsList

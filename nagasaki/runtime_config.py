@@ -1,32 +1,16 @@
-from decimal import Decimal
 from pathlib import Path
 
-from pydantic_yaml import YamlModel
-
 from nagasaki.enums.common import InstrumentTypeEnum
+from nagasaki.settings.runtime import RuntimeSettings
 
 
 class RuntimeConfig:
-    class Data(YamlModel):
-        delta_when_btc_only: str
-        delta_when_pln_only: str
-        market_making_instrument: str = "BTC_PLN"
-        hedging_instrument: str = "BTC_PERPETUAL"
-
     def __init__(self, path: Path = None):
         self.path = path or Path(__file__).parent.parent / "runtime_config.yml"
 
     @property
     def data(self):
-        return self.Data.parse_raw(self.path.read_text(encoding="utf-8"))
-
-    @property
-    def delta_when_btc_only(self):
-        return Decimal(self.data.delta_when_btc_only)
-
-    @property
-    def delta_when_pln_only(self):
-        return Decimal(self.data.delta_when_pln_only)
+        return RuntimeSettings.parse_raw(self.path.read_text(encoding="utf-8"))
 
     @property
     def market_making_instrument(self):
