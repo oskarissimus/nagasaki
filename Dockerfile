@@ -7,5 +7,5 @@ RUN pip install poetry==1.1.13
 RUN poetry install --no-dev
 
 ADD . /app
-RUN poetry install
+RUN poetry install --no-dev
 CMD ["python", "-u", "nagasaki/trader/main.py"]
