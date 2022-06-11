@@ -104,26 +104,16 @@ class DeribitClient(BaseClient):
 
     def create_order(self, order: OrderTaker):
         order_type = "buy" if order.side == SideTypeEnum.BID else "sell"
-        self.create_order_perpetual(order.amount, order_type)
+        self.create_order_perpetual(order.amount, order_type, order.instrument)
 
-    def create_order_perpetual(self, amount_in_usd, order_type, dry_run=False):
-        if order_type in ("buy", "sell"):
-            rounded_amount_in_usd = round(amount_in_usd, -1)
-            if dry_run:
-                logger.info("DRY RUN: ")
-            logger.info(
-                f"{order_type} at market BTC-PERPETUAL {rounded_amount_in_usd:.2f} USD"
-            )
-            if dry_run:
-                return True
+    def create_order_perpetual(self, amount_in_usd, order_type, instrument):
+        rounded_amount_in_usd = round(amount_in_usd, -1)
 
-        params = (
-            ("amount", rounded_amount_in_usd),
-            ("instrument_name", "BTC-PERPETUAL"),
-            ("time_in_force", "good_til_cancelled"),
-            ("type", "market"),
+        logger.info(
+            f"{order_type} at market {instrument.name}: {rounded_amount_in_usd:.2f} USD"
         )
 
+        params = self.create_order_request_params(rounded_amount_in_usd, instrument)
         response = requests.get(
             f"{self.url_base}/private/{order_type}",
             headers=self.headers_with_token,
@@ -133,21 +123,6 @@ class DeribitClient(BaseClient):
         data = response.json()
 
         return data
-
-    def sell_perpetual(self, amount_in_usd, dry_run=False):
-        return self.create_order_perpetual(amount_in_usd, "sell", dry_run=dry_run)
-
-    def buy_perpetual(self, amount_in_usd, dry_run=False):
-        return self.create_order_perpetual(amount_in_usd, "buy", dry_run=dry_run)
-
-    def fetch_index_price_btc_usd(self) -> Decimal:
-        return self.fetch_index_price_in_usd(InstrumentTypeEnum.BTC_PLN)
-
-    def fetch_index_price_eth_usd(self) -> Decimal:
-        response = requests.get(
-            f"{self.url_base}/public/get_index_price?index_name=eth_usd"
-        )
-        return Decimal(response.json()["result"]["index_price"])
 
     def fetch_index_price_in_usd(self, instrument: InstrumentTypeEnum) -> Decimal:
         response = requests.get(
@@ -161,3 +136,16 @@ class DeribitClient(BaseClient):
 
     def cancel_and_wait(self, order: OrderTaker):
         pass
+
+    @staticmethod
+    def create_order_request_params(
+        amount_in_usd: Decimal, instrument: InstrumentTypeEnum
+    ):
+        instrument_name = "-".join(instrument.value)
+
+        return (
+            ("amount", amount_in_usd),
+            ("instrument_name", instrument_name),
+            ("time_in_force", "good_til_cancelled"),
+            ("type", "market"),
+        )

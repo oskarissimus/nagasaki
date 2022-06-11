@@ -84,11 +84,6 @@ class TraderApp:
         )
         # logger.info(f"{self.state.btc_mark_usd=}")
 
-    def get_eth_mark_usd_from_deribit_and_write_to_state(self):
-        self.deribit_state.mark_price[
-            "ETH"
-        ] = self.deribit_client.fetch_index_price_eth_usd()
-
     def fetch_usd_pln_and_write_to_state(self):
         synchronize_yahoo_finance_state()
         logger.info(f"USD_PLN{self.yahoo_finance_state.usd_pln:.2f}")

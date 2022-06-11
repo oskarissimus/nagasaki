@@ -46,7 +46,7 @@ class HedgingStrategy(AbstractStrategy):
     @inject
     def execute(self):
         delta = self.grand_total_delta()
-        logger.info(f"Grand Total Δ: {delta:.8f}")
+        logger.info(f"Grand Total Δ: {delta:.8f} {self.instrument.market_1}")
 
         btc_mark_usd = self.deribit_state.mark_price[self.instrument.market_1]
 
