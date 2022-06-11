@@ -11,6 +11,7 @@ from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.state_synchronizer import (
     initialize_states,
     synchronize_bitclude_state,
+    synchronize_deribit_state,
     synchronize_yahoo_finance_state,
 )
 from nagasaki.strategy_executor import execute_all_strategies
@@ -40,9 +41,8 @@ class TraderApp:
         self.usd_pln_quoting_client = usd_pln_quoting_client
 
     def attach_state_synchronizer_handlers_to_events(self):
-        self.event_manager.subscribe(
-            "synchronize_bitclude_state", synchronize_bitclude_state
-        )
+        self.event_manager.subscribe("synchronize_state", synchronize_bitclude_state)
+        self.event_manager.subscribe("synchronize_state", synchronize_deribit_state)
 
     def attach_strategy_handlers_to_events(self):
         logger.info("attach_strategy_handlers_to_events")
@@ -52,7 +52,7 @@ class TraderApp:
         )
 
     def synchronize_state_and_execute_strategy(self):
-        self.event_manager.post_event("synchronize_bitclude_state")
+        self.event_manager.post_event("synchronize_state")
         self.event_manager.post_event("strategy_execution_requested")
 
     def attach_jobs_to_scheduler(self):
