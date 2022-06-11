@@ -34,4 +34,5 @@ def update_runtime_config(
         file.write(data.yaml())
     logger.info("Runtime config updated - rebuilding strategies")
     strategy_container.init_resources()
+    strategy_container.strategies_provider.reset()
     return data

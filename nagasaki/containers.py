@@ -44,12 +44,9 @@ class Strategies(containers.DeclarativeContainer):
     clients = providers.DependenciesContainer()
     states = providers.DependenciesContainer()
 
-    runtime_settings = RuntimeConfig().data
-    strategies_config = runtime_settings.strategies
-
     strategies_provider = providers.Singleton(
         create_strategies,
-        settings=strategies_config,
+        settings=RuntimeConfig(),
         bitclude_client=clients.bitclude_client_provider,
         deribit_client=clients.deribit_client_provider,
         bitclude_state=states.bitclude_state_provider,

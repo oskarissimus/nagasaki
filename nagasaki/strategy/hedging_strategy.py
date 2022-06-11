@@ -48,16 +48,16 @@ class HedgingStrategy(AbstractStrategy):
         delta = self.grand_total_delta()
         logger.info(f"Grand Total Δ: {delta:.8f} {self.instrument.market_1}")
 
-        mark_price_uds = self.deribit_state.mark_price[self.instrument.market_1]
+        mark_price_usd = self.deribit_state.mark_price[self.instrument.market_1]
 
         order = None
 
         if delta > self.grand_total_delta_max:
-            btcs_to_short_in_dollars = round(delta * mark_price_uds, -1)
+            btcs_to_short_in_dollars = round(delta * mark_price_usd, -1)
             order = sell_order(btcs_to_short_in_dollars, self.instrument)
 
         if delta < self.grand_total_delta_min:
-            btcs_to_long_in_dollars = round(-1 * delta * mark_price_uds, -1)
+            btcs_to_long_in_dollars = round(-1 * delta * mark_price_usd, -1)
             order = buy_order(btcs_to_long_in_dollars, self.instrument)
 
         if order:
