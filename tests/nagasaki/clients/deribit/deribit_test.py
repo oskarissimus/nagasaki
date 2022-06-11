@@ -24,7 +24,7 @@ def test_should_create_params():
     params = DeribitClient.create_order_request_params(amount, instrument)
 
     expected_params = (
-        ("amount", Decimal("20")),
+        ("amount", 20.0),
         ("instrument_name", "ETH-PERPETUAL"),
         ("time_in_force", "good_til_cancelled"),
         ("type", "market"),
@@ -44,7 +44,7 @@ def test_should_send_sell_btc_perpetual_request(client):
         client.create_order(order)
 
     expected_params = (
-        ("amount", Decimal("20")),
+        ("amount", 20.0),
         ("instrument_name", "BTC-PERPETUAL"),
         ("time_in_force", "good_til_cancelled"),
         ("type", "market"),
@@ -67,7 +67,7 @@ def test_should_send_buy_eth_perpetual_request(client):
         client.create_order(order)
 
     expected_params = (
-        ("amount", Decimal("20")),
+        ("amount", 20.0),
         ("instrument_name", "ETH-PERPETUAL"),
         ("time_in_force", "good_til_cancelled"),
         ("type", "market"),

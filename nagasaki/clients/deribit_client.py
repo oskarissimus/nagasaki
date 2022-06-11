@@ -144,7 +144,7 @@ class DeribitClient(BaseClient):
         instrument_name = "-".join(instrument.value)
 
         return (
-            ("amount", amount_in_usd),
+            ("amount", float(amount_in_usd)),
             ("instrument_name", instrument_name),
             ("time_in_force", "good_til_cancelled"),
             ("type", "market"),

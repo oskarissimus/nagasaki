@@ -1,7 +1,5 @@
 from decimal import Decimal
 
-from dependency_injector.wiring import inject
-
 from nagasaki.clients import BaseClient
 from nagasaki.clients.base_client import OrderTaker
 from nagasaki.database.utils import write_order_taker_to_db
@@ -43,7 +41,6 @@ class HedgingStrategy(AbstractStrategy):
         self.deribit_state = deribit_state
         self.yahoo_finance_state = yahoo_finance_state
 
-    @inject
     def execute(self):
         delta = self.grand_total_delta()
         logger.info(f"Grand Total Δ: {delta:.8f} {self.instrument.market_1}")
