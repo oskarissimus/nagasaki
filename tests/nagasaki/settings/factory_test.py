@@ -18,14 +18,15 @@ from nagasaki.strategy.calculators import EpsilonCalculator
 
 def test_should_create_delta_calculator():
     config = CalculatorSettings(
-        calculator_type="delta", params={"delta_1": "0.6", "delta_2": "0.9"}
+        calculator_type="delta",
+        params={"delta_inv_param_min": "0.6", "delta_inv_param_max": "0.9"},
     )
 
     calculator = calculator_factory(config)
 
     assert isinstance(calculator, calculators.DeltaCalculator)
-    assert calculator.delta_1 == Decimal("0.6")
-    assert calculator.delta_2 == Decimal("0.9")
+    assert calculator.delta_inv_param_min == Decimal("0.6")
+    assert calculator.delta_inv_param_max == Decimal("0.9")
 
 
 def test_should_create_epsilon_calculator():
@@ -41,7 +42,8 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
     calculator_configs = [
         CalculatorSettings(calculator_type="epsilon", params={"epsilon": "0.69"}),
         CalculatorSettings(
-            calculator_type="delta", params={"delta_1": "0.6", "delta_2": "0.9"}
+            calculator_type="delta",
+            params={"delta_inv_param_min": "0.6", "delta_inv_param_max": "0.9"},
         ),
     ]
     bitclude_client = mock.Mock()

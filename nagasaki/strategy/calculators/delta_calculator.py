@@ -7,11 +7,13 @@ from nagasaki.strategy.calculators.price_calculator import PriceCalculator
 
 
 class DeltaCalculator(PriceCalculator):
-    def __init__(self, delta_1: str = None, delta_2: str = None):
-        self.delta_1 = Decimal(delta_1 or "0.1")
-        self.delta_2 = Decimal(delta_2 or "0.2")
-        assert self.delta_1 >= 0
-        assert self.delta_2 >= 0
+    def __init__(
+        self, delta_inv_param_min: str = None, delta_inv_param_max: str = None
+    ):
+        self.delta_inv_param_min = Decimal(delta_inv_param_min or "0.1")
+        self.delta_inv_param_max = Decimal(delta_inv_param_max or "0.2")
+        assert self.delta_inv_param_min >= 0
+        assert self.delta_inv_param_max >= 0
 
     def calculate(
         self,
@@ -43,22 +45,22 @@ class DeltaCalculator(PriceCalculator):
     def inventory_adjusted_delta(self, inventory_parameter):
         """
         delta(inventory_parameter) is a linear function with two
-        known points: (-1, delta_1) and (1, delta_2)
+        known points: (-1, delta_inv_param_min) and (1, delta_inv_param_max)
 
         as inv_param goes from -1 to 1 (changes by 2), delta changes by
-        delta_x - delta_1:
-        (inv_param - (-1)/(1-(-1)) = (delta_x - delta_1)/(delta_2 - delta_1)
-        (inv_param + 1)/2 = (delta_x - delta_1)/(delta_2 - delta_1)
+        delta_x - delta_inv_param_min:
+        (inv_param - (-1)/(1-(-1)) = (delta_x - delta_inv_param_min)/(delta_inv_param_max - delta_inv_param_min)
+        (inv_param + 1)/2 = (delta_x - delta_inv_param_min)/(delta_inv_param_max - delta_inv_param_min)
 
         solving for delta_x:
-        delta_x = delta_1 + (delta_2 - delta_1) * (inv_param + 1)/2
+        delta_x = delta_inv_param_min + (delta_inv_param_max - delta_inv_param_min) * (inv_param + 1)/2
 
         """
         assert inventory_parameter >= -1
         assert inventory_parameter <= 1
 
-        return self.delta_1 + ((inventory_parameter + 1) / 2) * (
-            self.delta_2 - self.delta_1
+        return self.delta_inv_param_min + ((inventory_parameter + 1) / 2) * (
+            self.delta_inv_param_max - self.delta_inv_param_min
         )
 
     def inventory_parameter(

@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, BaseSettings
+from pydantic import BaseModel
 from pydantic_yaml import YamlModel
 
 

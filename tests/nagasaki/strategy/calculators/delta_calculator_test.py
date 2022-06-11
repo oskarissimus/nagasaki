@@ -12,7 +12,7 @@ from nagasaki.strategy.calculators.delta_calculator import (
 
 
 @pytest.mark.parametrize(
-    "delta_1, delta_2, side, price, inventory_parameter, expected_price",
+    "delta_inv_param_min, delta_inv_param_max, side, price, inventory_parameter, expected_price",
     [
         (
             Decimal("0.009"),
@@ -49,14 +49,19 @@ from nagasaki.strategy.calculators.delta_calculator import (
     ],
 )
 def test_should_calculate(
-    delta_1, delta_2, side, price, inventory_parameter, expected_price
+    delta_inv_param_min,
+    delta_inv_param_max,
+    side,
+    price,
+    inventory_parameter,
+    expected_price,
 ):
     deribit = mock.Mock()
     deribit.mark_price = defaultdict()
     deribit.mark_price["BTC"] = price
     yahoo = mock.Mock()
     yahoo.usd_pln = 1
-    calculator = DeltaCalculator(delta_1, delta_2)
+    calculator = DeltaCalculator(delta_inv_param_min, delta_inv_param_max)
 
     with mock.patch(
         "nagasaki.strategy.calculators.delta_calculator"
@@ -71,16 +76,16 @@ def test_should_calculate(
 
 
 @pytest.mark.parametrize(
-    "delta_1, delta_2",
+    "delta_inv_param_min, delta_inv_param_max",
     [
         (Decimal("-0.01"), Decimal("0.01")),
         (Decimal("0.01"), Decimal("-0.01")),
         (Decimal("-0.01"), Decimal("-0.01")),
     ],
 )
-def test_should_raise_for_negative_delta(delta_1, delta_2):
+def test_should_raise_for_negative_delta(delta_inv_param_min, delta_inv_param_max):
     with pytest.raises(AssertionError):
-        DeltaCalculator(delta_1, delta_2)
+        DeltaCalculator(delta_inv_param_min, delta_inv_param_max)
 
 
 @pytest.mark.parametrize(
@@ -107,7 +112,7 @@ def test_should_raise_for_incorrect_inventory_param(inventory_parameter):
     ],
 )
 def test_should_adjust_for_inventory(inventory_parameter, delta):
-    calculator = DeltaCalculator(Decimal("0.009"), Decimal("0.002"))
+    calculator = DeltaCalculator("0.009", "0.002")
     assert calculator.inventory_adjusted_delta(inventory_parameter) == delta
 
 
@@ -122,6 +127,8 @@ def test_should_adjust_for_inventory(inventory_parameter, delta):
 )
 def test_inventory_parameter(total_pln, total_btc_value_in_pln, inventory_parameter):
     assert (
-        calculate_inventory_parameter(total_pln, total_btc_value_in_pln)
+        calculate_inventory_parameter(
+            Decimal(total_pln), Decimal(total_btc_value_in_pln)
+        )
         == inventory_parameter
     )
