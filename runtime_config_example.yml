@@ -1,20 +1,22 @@
-market_making_instrument: BTC_PLN
-hedging_instrument: BTC_PERPETUAL
+market_making_instrument: ETH_PLN
+hedging_instrument: ETH_PERPETUAL
 strategies:
   market_making_strategies:
     - side: ASK
-      instrument: BTC_PLN
+      instrument: ETH_PLN
       calculator_settings:
         - calculator_type: delta
           params:
-            delta_1: 0.1
-            delta_2: 0.2
+            delta_1: 0.005
+            delta_2: 0.009
     - side: BID
-      instrument: BTC_PLN
+      instrument: ETH_PLN
       calculator_settings:
         - calculator_type: delta
           params:
-            delta_1: 0.1
-            delta_2: 0.2
+            delta_1: 0.005
+            delta_2: 0.009
   hedging_strategies:
-    - instrument: BTC_PERPETUAL
+    - instrument: ETH_PERPETUAL
+      grand_total_delta_max: 0.1
+      grand_total_delta_min: -0.1

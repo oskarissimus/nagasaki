@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from nagasaki.clients import BaseClient
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
@@ -58,6 +60,8 @@ def hedging_strategy_factory(
     return HedgingStrategy(
         client=client,
         instrument=InstrumentTypeEnum.from_str(settings.instrument),
+        grand_total_delta_max=Decimal(settings.grand_total_delta_max),
+        grand_total_delta_min=Decimal(settings.grand_total_delta_min),
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,

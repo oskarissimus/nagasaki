@@ -17,6 +17,8 @@ class MarketMakingStrategySettings(BaseModel):
 
 class HedgingStrategySettings(BaseModel):
     instrument: str
+    grand_total_delta_max: str
+    grand_total_delta_min: str
 
 
 class StrategySettingsList(BaseModel):
