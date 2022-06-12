@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from nagasaki.clients import BaseClient
 from nagasaki.clients.base_client import OrderTaker
-from nagasaki.database.utils import write_order_taker_to_db
+from nagasaki.database import Database
 from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
 from nagasaki.logger import logger
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
@@ -35,6 +35,7 @@ class HedgingStrategy(AbstractStrategy):
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
+        database: Database,
     ):
         self.client = client
         self.instrument = instrument
@@ -43,6 +44,7 @@ class HedgingStrategy(AbstractStrategy):
         self.bitclude_state = bitclude_state
         self.deribit_state = deribit_state
         self.yahoo_finance_state = yahoo_finance_state
+        self.database = database
 
     def execute(self):
         delta = self.grand_total_delta()
@@ -62,7 +64,7 @@ class HedgingStrategy(AbstractStrategy):
 
         if order:
             self.client.create_order(order)
-            write_order_taker_to_db(order)
+            self.database.save_order(order)
 
     def grand_total_delta(self) -> Decimal:
         currency = MarketEnum(self.instrument.market_1)

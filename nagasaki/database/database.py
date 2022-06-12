@@ -1,20 +1,28 @@
-from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import StaticPool
 
-from nagasaki.settings import Settings
+from nagasaki.clients.base_client import Order, OrderMaker, OrderTaker
+from nagasaki.database.models import Base, OrderMakerDB, OrderTakerDB
 
-settings = Settings()
-Base = declarative_base()
 
-if settings.memory_db:
-    engine = create_engine(
-        "sqlite://",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
-else:
-    engine = create_engine(settings.connection_string)
+class Database:
+    def __init__(self, session_maker: sessionmaker, engine: Engine):
+        self.session_maker = session_maker
 
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        Base.metadata.create_all(bind=engine)
+
+    def save_order(self, order: Order):
+        if isinstance(order, OrderMaker):
+            self.write_order_maker_to_db(order)
+        if isinstance(order, OrderTaker):
+            self.write_order_taker_to_db(order)
+
+    def write_order_taker_to_db(self, order: OrderTaker):
+        with self.session_maker() as session:
+            session.add(OrderTakerDB.from_order_taker(order))
+            session.commit()
+
+    def write_order_maker_to_db(self, order: OrderMaker):
+        with self.session_maker() as session:
+            session.add(OrderMakerDB.from_order_maker(order))
+            session.commit()

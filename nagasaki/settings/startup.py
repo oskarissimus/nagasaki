@@ -8,7 +8,7 @@ class StartupSettings(BaseSettings):
     yahoo_finance_api_email: str = "papaj"
     yahoo_finance_api_password: str = "papaj"
     yahoo_finance_api_url_base: str = "https://yfapi.net"
-    memory_db: bool = False
+    db_type: str = "postgres"  # or "memory"
     db_host: str = "localhost"
     db_port: int = 5432
     db_user: str = "postgres"

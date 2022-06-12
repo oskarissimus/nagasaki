@@ -7,7 +7,12 @@ from .utils import make_order_maker_bid, make_orderbook_with_bid
 
 
 def test_bid_bidding_over_epsilon(
-    dispatcher, strategy_bid, epsilon_calculator, bitclude_state, deribit_state
+    dispatcher,
+    strategy_bid,
+    epsilon_calculator,
+    bitclude_state,
+    deribit_state,
+    database,
 ):
     btc_mark_usd = 50_000
     top_bid_price = 170_000
@@ -26,8 +31,7 @@ def test_bid_bidding_over_epsilon(
     )
     epsilon_calculator.epsilon = epsilon
 
-    with mock.patch("nagasaki.strategy.market_making_strategy.write_order_maker_to_db"):
-        strategy_bid.execute()
+    strategy_bid.execute()
 
     expected_create_order = make_order_maker_bid(expected_price, expected_amount)
     dispatcher.dispatch.assert_called_once_with(expected_create_order)

@@ -1,8 +1,12 @@
 from dependency_injector import containers, providers
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
+from nagasaki.database import Database
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.settings import Settings
 from nagasaki.settings.factory import create_strategies
@@ -43,6 +47,7 @@ class States(containers.DeclarativeContainer):
 class Strategies(containers.DeclarativeContainer):
     clients = providers.DependenciesContainer()
     states = providers.DependenciesContainer()
+    databases = providers.DependenciesContainer()
 
     strategies_provider = providers.Singleton(
         create_strategies,
@@ -52,6 +57,35 @@ class Strategies(containers.DeclarativeContainer):
         bitclude_state=states.bitclude_state_provider,
         deribit_state=states.deribit_state_provider,
         yahoo_finance_state=states.yahoo_finance_state_provider,
+        database=databases.database_provider,
+    )
+
+
+class Databases(containers.DeclarativeContainer):
+    config = providers.Configuration()
+
+    engine_provider = providers.Selector(
+        config.db_type,
+        memory=providers.Singleton(
+            create_engine,
+            url="sqlite:///:memory:",
+            connect_args={"check_same_thread": False},
+            poolclass=StaticPool,
+        ),
+        postgres=providers.Singleton(
+            create_engine,
+            providers.Singleton(
+                lambda config: f"postgresql://{config['db_user']}:{config['db_password']}@{config['db_host']}:{config['db_port']}/{config['db_name']}",
+                config=config,
+            ),
+        ),
+    )
+
+    session_maker_provider = providers.Singleton(
+        sessionmaker, autocommit=False, autoflush=False, bind=engine_provider
+    )
+    database_provider = providers.Singleton(
+        Database, session_maker=session_maker_provider, engine=engine_provider
     )
 
 
@@ -60,4 +94,7 @@ class Application(containers.DeclarativeContainer):
 
     clients = providers.Container(Clients, config=config)
     states = providers.Container(States)
-    strategies = providers.Container(Strategies, clients=clients, states=states)
+    databases = providers.Container(Databases, config=config)
+    strategies = providers.Container(
+        Strategies, clients=clients, states=states, databases=databases
+    )

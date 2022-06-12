@@ -2,7 +2,7 @@ from decimal import Decimal
 from typing import List
 
 from nagasaki.clients.base_client import OrderMaker
-from nagasaki.database.utils import write_order_maker_to_db
+from nagasaki.database.database import Database
 from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
 from nagasaki.logger import logger
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
@@ -31,6 +31,7 @@ class MarketMakingStrategy(AbstractStrategy):
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
+        database: Database,
         calculators: List[PriceCalculator] = None,
     ):
         self.dispatcher = dispatcher
@@ -40,6 +41,7 @@ class MarketMakingStrategy(AbstractStrategy):
         self.deribit_state = deribit_state
         self.yahoo_finance_state = yahoo_finance_state
         self.calculators = calculators or []
+        self.database = database
         self.best_price = None
 
     def execute(self):
@@ -48,7 +50,7 @@ class MarketMakingStrategy(AbstractStrategy):
         order = make_order(self.best_price, self.amount, self.side, self.instrument)
 
         self.dispatcher.dispatch(order)
-        write_order_maker_to_db(order)
+        self.database.save_order(order)
 
     def calculate_best_price(self):
         all_prices = [

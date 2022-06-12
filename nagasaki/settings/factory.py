@@ -3,13 +3,13 @@ from decimal import Decimal
 from nagasaki.clients import BaseClient
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
+from nagasaki.database import Database
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.settings.runtime import (
     CalculatorSettings,
     HedgingStrategySettings,
     MarketMakingStrategySettings,
-    StrategySettingsList,
 )
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy import calculators
@@ -34,6 +34,7 @@ def market_making_strategy_factory(
     bitclude_state: BitcludeState,
     deribit_state: DeribitState,
     yahoo_finance_state: YahooFinanceState,
+    database: Database,
 ):
     calculators = [
         calculator_factory(calculator_settings)
@@ -48,6 +49,7 @@ def market_making_strategy_factory(
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
         calculators=calculators,
+        database=database,
     )
 
 
@@ -57,6 +59,7 @@ def hedging_strategy_factory(
     bitclude_state: BitcludeState,
     deribit_state: DeribitState,
     yahoo_finance_state: YahooFinanceState,
+    database: Database,
 ):
     return HedgingStrategy(
         client=client,
@@ -66,6 +69,7 @@ def hedging_strategy_factory(
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
+        database=database,
     )
 
 
@@ -76,6 +80,7 @@ def create_strategies(
     bitclude_state: BitcludeState,
     deribit_state: DeribitState,
     yahoo_finance_state: YahooFinanceState,
+    database: Database,
 ):
     strategy_settings = settings.data.strategies
     strategies = []
@@ -88,6 +93,7 @@ def create_strategies(
                 bitclude_state,
                 deribit_state,
                 yahoo_finance_state,
+                database,
             )
         )
 
@@ -99,6 +105,7 @@ def create_strategies(
                 bitclude_state,
                 deribit_state,
                 yahoo_finance_state,
+                database,
             )
         )
 

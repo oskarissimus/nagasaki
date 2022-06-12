@@ -9,7 +9,6 @@ from nagasaki.clients import YahooFinanceClient
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.containers import Application
-from nagasaki.database import database
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
@@ -35,8 +34,6 @@ def main(
 ):
     filterwarnings("ignore", category=PytzUsageWarning)
     logger.info("start")
-
-    database.Base.metadata.create_all(bind=database.engine)
 
     event_manager = EventManager()
 

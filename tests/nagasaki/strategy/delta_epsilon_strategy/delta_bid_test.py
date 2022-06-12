@@ -11,7 +11,7 @@ from .utils import (
 
 
 def test_bid_bidding_over_delta(
-    dispatcher, strategy_bid, bitclude_state, deribit_state
+    dispatcher, strategy_bid, bitclude_state, deribit_state, database
 ):
     """
     Total PLN : Total BTC = 1:0 => inventory_parameter = 1 => delta = 0.002
@@ -30,8 +30,8 @@ def test_bid_bidding_over_delta(
     deribit_state.mark_price["BTC"] = Decimal(btc_mark_usd)
     bitclude_state.account_info = make_account_info_with_delta_0_009()
 
-    with mock.patch("nagasaki.strategy.market_making_strategy.write_order_maker_to_db"):
-        strategy_bid.execute()
+    strategy_bid.execute()
 
     expected_create_order = make_order_maker_bid(expected_price, expected_amount)
     dispatcher.dispatch.assert_called_once_with(expected_create_order)
+    database.save_order.assert_called_once_with(expected_create_order)
