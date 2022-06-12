@@ -1,7 +1,6 @@
 .vscode
 __pycache__
 .env
-.hypothesis
 sql_app.db
 dist/
 geckodriver.log
