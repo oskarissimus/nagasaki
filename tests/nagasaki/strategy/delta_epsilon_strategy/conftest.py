@@ -59,11 +59,6 @@ def fixture_epsilon_calculator():
     return EpsilonCalculator(Decimal("0.01"))
 
 
-@pytest.fixture(name="database")
-def fixture_database():
-    return mock.Mock()
-
-
 @pytest.fixture(name="strategy_ask")
 def fixture_strategy_ask(
     dispatcher,
@@ -72,7 +67,6 @@ def fixture_strategy_ask(
     bitclude_state,
     deribit_state,
     yahoo_finance_state,
-    database,
 ):
     calculators = [delta_calculator, epsilon_calculator]
     return MarketMakingStrategy(
@@ -83,7 +77,6 @@ def fixture_strategy_ask(
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
         calculators=calculators,
-        database=database,
     )
 
 
@@ -95,7 +88,6 @@ def fixture_strategy_bid(
     bitclude_state,
     deribit_state,
     yahoo_finance_state,
-    database,
 ):
     calculators = [delta_calculator, epsilon_calculator]
     return MarketMakingStrategy(
@@ -106,5 +98,4 @@ def fixture_strategy_bid(
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
         calculators=calculators,
-        database=database,
     )

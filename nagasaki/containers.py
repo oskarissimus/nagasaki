@@ -47,7 +47,6 @@ class States(containers.DeclarativeContainer):
 class Strategies(containers.DeclarativeContainer):
     clients = providers.DependenciesContainer()
     states = providers.DependenciesContainer()
-    databases = providers.DependenciesContainer()
 
     strategies_provider = providers.Singleton(
         create_strategies,
@@ -57,7 +56,6 @@ class Strategies(containers.DeclarativeContainer):
         bitclude_state=states.bitclude_state_provider,
         deribit_state=states.deribit_state_provider,
         yahoo_finance_state=states.yahoo_finance_state_provider,
-        database=databases.database_provider,
     )
 
 
@@ -95,6 +93,4 @@ class Application(containers.DeclarativeContainer):
     clients = providers.Container(Clients, config=config)
     states = providers.Container(States)
     databases = providers.Container(Databases, config=config)
-    strategies = providers.Container(
-        Strategies, clients=clients, states=states, databases=databases
-    )
+    strategies = providers.Container(Strategies, clients=clients, states=states)

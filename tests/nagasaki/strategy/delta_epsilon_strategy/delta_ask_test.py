@@ -1,5 +1,4 @@
 from decimal import Decimal
-from unittest import mock
 
 from nagasaki.enums.common import MarketEnum
 
@@ -11,7 +10,7 @@ from .utils import (
 
 
 def test_ask_bidding_over_delta(
-    bitclude_state, deribit_state, dispatcher, strategy_ask, database
+    bitclude_state, deribit_state, dispatcher, strategy_ask
 ):
     """
     Total PLN : Total BTC = 1:0 => inventory_parameter = 1 => delta = 0.002
@@ -30,8 +29,9 @@ def test_ask_bidding_over_delta(
     )
     bitclude_state.account_info = make_account_info_with_delta_0_002()
 
-    strategy_ask.execute()
+    result_order = strategy_ask.execute()
 
     expected_create_order = make_order_maker_ask(expected_price, expected_amount)
+
+    assert result_order == expected_create_order
     dispatcher.dispatch.assert_called_once_with(expected_create_order)
-    database.save_order.assert_called_once_with(expected_create_order)

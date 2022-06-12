@@ -31,7 +31,6 @@ class MarketMakingStrategy(AbstractStrategy):
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
-        database: Database,
         calculators: List[PriceCalculator] = None,
     ):
         self.dispatcher = dispatcher
@@ -41,16 +40,15 @@ class MarketMakingStrategy(AbstractStrategy):
         self.deribit_state = deribit_state
         self.yahoo_finance_state = yahoo_finance_state
         self.calculators = calculators or []
-        self.database = database
         self.best_price = None
 
-    def execute(self):
+    def execute(self) -> OrderMaker:
         self.calculate_best_price()
 
         order = make_order(self.best_price, self.amount, self.side, self.instrument)
 
         self.dispatcher.dispatch(order)
-        self.database.save_order(order)
+        return order
 
     def calculate_best_price(self):
         all_prices = [

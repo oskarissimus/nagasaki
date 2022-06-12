@@ -68,8 +68,6 @@ def test_should_short_2_btcs(
 ):
     btcs_to_short_in_dollars = 80_000
 
-    database = mock.Mock()
-
     strategy = HedgingStrategy(
         client,
         InstrumentTypeEnum.BTC_PERPETUAL,
@@ -78,13 +76,13 @@ def test_should_short_2_btcs(
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
-        database=database,
     )
 
-    strategy.execute()
+    result_order = strategy.execute()
 
     expected_create_order = make_order_taker_sell(
         amount=Decimal(btcs_to_short_in_dollars)
     )
+
+    assert result_order == expected_create_order
     client.create_order.assert_called_once_with(expected_create_order)
-    database.save_order.assert_called_once_with(expected_create_order)

@@ -35,7 +35,6 @@ class HedgingStrategy(AbstractStrategy):
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
-        database: Database,
     ):
         self.client = client
         self.instrument = instrument
@@ -44,9 +43,8 @@ class HedgingStrategy(AbstractStrategy):
         self.bitclude_state = bitclude_state
         self.deribit_state = deribit_state
         self.yahoo_finance_state = yahoo_finance_state
-        self.database = database
 
-    def execute(self):
+    def execute(self) -> OrderTaker:
         delta = self.grand_total_delta()
         logger.info(f"Grand Total Δ: {delta:.8f} {self.instrument.market_1}")
 
@@ -64,7 +62,8 @@ class HedgingStrategy(AbstractStrategy):
 
         if order:
             self.client.create_order(order)
-            self.database.save_order(order)
+
+        return order
 
     def grand_total_delta(self) -> Decimal:
         currency = MarketEnum(self.instrument.market_1)

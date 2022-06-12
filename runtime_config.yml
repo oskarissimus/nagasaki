@@ -7,15 +7,15 @@ strategies:
       calculator_settings:
         - calculator_type: delta
           params:
-            delta_inv_param_min: 0.005
-            delta_inv_param_max: 0.009
+            delta_inv_param_min: 0.05
+            delta_inv_param_max: 0.05
     - side: BID
       instrument: ETH_PLN
       calculator_settings:
         - calculator_type: delta
           params:
-            delta_inv_param_min: 0.005
-            delta_inv_param_max: 0.009
+            delta_inv_param_min: 0.05
+            delta_inv_param_max: 0.05
   hedging_strategies:
     - instrument: ETH_PERPETUAL
       grand_total_delta_max: 0.1
