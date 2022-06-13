@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 from decimal import Decimal
 
+import ccxt
 import requests
 from pydantic import BaseModel
 
@@ -32,6 +33,9 @@ class DeribitClient(BaseClient):
         self.client_secret = client_secret
         self.token = None
         self.token_expiration = None
+        self.ccxt_connector = ccxt.deribit(
+            {"apiKey": self.client_id, "secret": self.client_secret}
+        )
 
     def get_token(self) -> True:
         """
@@ -85,22 +89,9 @@ class DeribitClient(BaseClient):
             "Content-Type": "application/json",
         }
 
-    def fetch_account_summary(self) -> AccountSummary:
-        runtime_config = RuntimeConfig()
-        params = (
-            ("currency", runtime_config.hedging_instrument.market_1),
-            ("extended", "true"),
-        )
-
-        response = requests.get(
-            f"{self.url_base}/private/get_account_summary",
-            headers=self.headers_with_token,
-            params=params,
-        )
-        response_json = response.json()
-        if "error" in response_json:
-            raise DeribitClientException(response_json["error"])
-        return AccountSummary(**response_json["result"])
+    def fetch_account_summary(self, currency: str) -> AccountSummary:
+        response = self.ccxt_connector.fetch_balance({"currency": currency})
+        return AccountSummary(**response["info"]["result"])
 
     def create_order(self, order: OrderTaker):
         order_type = "buy" if order.side == SideTypeEnum.BID else "sell"

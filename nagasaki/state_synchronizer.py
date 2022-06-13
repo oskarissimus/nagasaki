@@ -42,10 +42,11 @@ def synchronize_deribit_state(
     ],
 ):
     runtime_config = RuntimeConfig()
-    deribit_state.account_summary = deribit_client.fetch_account_summary()
-    deribit_state.mark_price[
-        runtime_config.market_making_instrument.market_1
-    ] = deribit_client.fetch_index_price_in_usd(runtime_config.market_making_instrument)
+    currency = runtime_config.hedging_instrument.market_1
+    deribit_state.account_summary = deribit_client.fetch_account_summary(currency)
+    deribit_state.mark_price[currency] = deribit_client.fetch_index_price_in_usd(
+        runtime_config.market_making_instrument
+    )
 
 
 @inject

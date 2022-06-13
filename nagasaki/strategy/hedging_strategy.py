@@ -2,7 +2,6 @@ from decimal import Decimal
 
 from nagasaki.clients import BaseClient
 from nagasaki.clients.base_client import OrderTaker
-from nagasaki.database import Database
 from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
 from nagasaki.logger import logger
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
