@@ -116,11 +116,9 @@ class DeribitClient(BaseClient):
         return data
 
     def fetch_index_price_in_usd(self, instrument: InstrumentTypeEnum) -> Decimal:
-        response = requests.get(
-            f"{self.url_base}/public/get_index_price?index_name="
-            f"{instrument.market_1.lower()}_usd"
-        )
-        return Decimal(response.json()["result"]["index_price"])
+        symbol = f"{instrument.market_1}/USD:{instrument.market_1}"
+        response = self.ccxt_connector.fetch_ticker(symbol)
+        return Decimal(response["info"]["index_price"])
 
     def cancel_order(self, order: OrderTaker):
         pass
