@@ -2,7 +2,6 @@ from decimal import Decimal
 from typing import List
 
 from nagasaki.clients.base_client import OrderMaker
-from nagasaki.database.database import Database
 from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
 from nagasaki.logger import logger
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
@@ -12,13 +11,18 @@ from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
 
 
 def make_order(
-    price: Decimal, amount: Decimal, side: SideTypeEnum, instrument: InstrumentTypeEnum
+    price: Decimal,
+    amount: Decimal,
+    side: SideTypeEnum,
+    instrument: InstrumentTypeEnum,
+    hidden: bool,
 ) -> OrderMaker:
     return OrderMaker(
         side=side,
         price=price,
         amount=amount,
         instrument=instrument,
+        hidden=hidden,
     )
 
 
@@ -45,7 +49,9 @@ class MarketMakingStrategy(AbstractStrategy):
     def execute(self) -> OrderMaker:
         self.calculate_best_price()
 
-        order = make_order(self.best_price, self.amount, self.side, self.instrument)
+        order = make_order(
+            self.best_price, self.amount, self.side, self.instrument, hidden=True
+        )
 
         self.dispatcher.dispatch(order)
         return order

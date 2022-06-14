@@ -152,6 +152,7 @@ class CreateRequestDTO(BaseModel):
             market2=order.instrument.market_2,
             amount=order.amount,
             rate=order.price,
+            hidden=order.hidden,
         )
 
 
