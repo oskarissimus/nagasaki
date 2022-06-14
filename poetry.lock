@@ -210,6 +210,24 @@ doc = ["Sphinx (==4.0)", "mistune (==0.8.4)", "m2r2 (==0.2.7)", "sphinx-rtd-them
 qa = ["flake8 (==3.7.9)"]
 
 [[package]]
+name = "ccxt-unmerged"
+version = "2.2"
+description = ""
+category = "main"
+optional = false
+python-versions = "*"
+develop = false
+
+[package.dependencies]
+ccxt = "*"
+
+[package.source]
+type = "git"
+url = "https://github.com/adrian-szczepanski/ccxt-unmerged"
+reference = "master"
+resolved_reference = "7c6b45aa1605ba74b74655f8550d83caeb63a30d"
+
+[[package]]
 name = "certifi"
 version = "2022.5.18.1"
 description = "Python package for providing Mozilla's CA Bundle."
@@ -1394,7 +1412,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "758c41efb1b93b70cb48afe58d4a3d7d91695dbfc20c36d89708e3a6beffada8"
+content-hash = "60aadfecfb82f37841b341ecab217fd672c8fa53c395bdf8b1ec689ab22986a5"
 
 [metadata.files]
 aiodns = [
@@ -1562,6 +1580,7 @@ ccxt = [
     {file = "ccxt-1.87.16-py2.py3-none-any.whl", hash = "sha256:e520e34cc122996d125f295da4d9910db3b26df00f10d005236980e987a80deb"},
     {file = "ccxt-1.87.16.tar.gz", hash = "sha256:6b62233fb95730bd61f9755c663a3ae3da4d4d15c4c5399785d521b506aa6c0c"},
 ]
+ccxt-unmerged = []
 certifi = [
     {file = "certifi-2022.5.18.1-py3-none-any.whl", hash = "sha256:f1d53542ee8cbedbe2118b5686372fb33c297fcd6379b050cca0ef13a597382a"},
     {file = "certifi-2022.5.18.1.tar.gz", hash = "sha256:9c5705e395cd70084351dd8ad5c41e65655e08ce46f2ec9cf6c2c08390f71eb7"},

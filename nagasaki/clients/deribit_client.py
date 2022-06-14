@@ -8,7 +8,6 @@ from pydantic import BaseModel
 from nagasaki.clients.base_client import BaseClient, OrderTaker
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
 from nagasaki.logger import logger
-from nagasaki.runtime_config import RuntimeConfig
 
 
 class DeribitClientException(Exception):

@@ -25,6 +25,7 @@ uvicorn = "^0.17.6"
 retry = "^0.9.2"
 dependency-injector = "^4.39.1"
 ccxt = "^1.87.16"
+ccxt-unmerged = {git = "https://github.com/adrian-szczepanski/ccxt-unmerged"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
