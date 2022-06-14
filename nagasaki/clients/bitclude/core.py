@@ -6,6 +6,8 @@ from typing import List
 import ccxt
 import ccxt_unmerged
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3 import Retry
 
 from nagasaki.clients.base_client import BaseClient, OrderMaker
 from nagasaki.clients.bitclude.dto import (
@@ -88,7 +90,13 @@ class BitcludeClient(BaseClient):
         self.client_id = client_id
         self.client_key = client_key
         self.last_500_request_times = RequestTimesRingBuffer(500)
+
         self.ccxt_connector = ccxt.bitclude({"apiKey": client_key, "uid": client_id})
+        adapter = HTTPAdapter(max_retries=Retry())
+        session = requests.Session()
+        session.mount("https://", adapter)
+        self.ccxt_connector.session = session
+
         self._auth_params = {
             "id": self.client_id,
             "key": self.client_key,
