@@ -4,7 +4,7 @@ from unittest import mock
 import pytest
 
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance
-from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
+from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum, Symbol
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
 from nagasaki.strategy.calculators.epsilon_calculator import EpsilonCalculator
@@ -73,6 +73,7 @@ def fixture_strategy_ask(
         dispatcher,
         side=SideTypeEnum.ASK,
         instrument=InstrumentTypeEnum.BTC_PLN,
+        orderbook_symbol=Symbol.BTC_PLN,
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
@@ -94,6 +95,7 @@ def fixture_strategy_bid(
         dispatcher,
         side=SideTypeEnum.BID,
         instrument=InstrumentTypeEnum.BTC_PLN,
+        orderbook_symbol=Symbol.BTC_PLN,
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,

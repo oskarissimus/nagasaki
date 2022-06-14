@@ -19,7 +19,7 @@ from nagasaki.clients.bitclude.dto import (
     Offer,
     OrderbookResponseDTO,
 )
-from nagasaki.enums.common import MarketEnum
+from nagasaki.enums.common import Symbol
 from nagasaki.exceptions import BitcludeClientException, CannotParseResponse
 from nagasaki.logger import logger
 
@@ -122,14 +122,6 @@ class BitcludeClient(BaseClient):
             return dto_class(**response_json)
         raise BitcludeClientException(response_json["message"])
 
-    @staticmethod
-    def _parse_orderbook_response(response: requests.Response) -> OrderbookResponseDTO:
-        try:
-            response_json = response.json()
-        except json.decoder.JSONDecodeError as json_decode_error:
-            raise CannotParseResponse(response.text) from json_decode_error
-        return OrderbookResponseDTO(**response_json)
-
     def create_order(self, order: OrderMaker):
         try:
             self._create_order(CreateRequestDTO.from_order_maker(order))
@@ -182,15 +174,7 @@ class BitcludeClient(BaseClient):
                 return True
             sleep(1)
 
-    def fetch_orderbook(self, asset_symbol: MarketEnum) -> OrderbookResponseDTO:
-        logger.info(f"fetching {asset_symbol} orderbook")
-        # self.last_500_request_times.append(datetime.now())
-        # self.last_500_request_times.log_request_times()
-        asset_url_code = asset_symbol.lower()
-        response = requests.get(
-            f"{self.url_base}/stats/orderbook_{asset_url_code}pln.json"
-        )
-        if response.status_code == 200:
-            parsed_response = BitcludeClient._parse_orderbook_response(response)
-            return parsed_response
-        raise BitcludeClientException(response.text)
+    def fetch_orderbook(self, symbol: Symbol) -> OrderbookResponseDTO:
+        logger.info(f"fetching {symbol} orderbook")
+        response = self.ccxt_connector.fetch_order_book(symbol.value)
+        return OrderbookResponseDTO(**response)

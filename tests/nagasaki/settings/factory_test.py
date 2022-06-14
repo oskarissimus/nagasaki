@@ -1,7 +1,7 @@
 from decimal import Decimal
 from unittest import mock
 
-from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
+from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum, Symbol
 from nagasaki.settings.factory import (
     calculator_factory,
     hedging_strategy_factory,
@@ -54,6 +54,7 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
     config = MarketMakingStrategySettings(
         side="bid",
         instrument="btc_pln",
+        orderbook_symbol="BTC/PLN",
         calculator_settings=calculator_configs,
     )
 
@@ -67,6 +68,7 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
 
     assert strategy.side == SideTypeEnum.BID
     assert strategy.instrument == InstrumentTypeEnum.BTC_PLN
+    assert strategy.orderbook_symbol == Symbol.BTC_PLN
     assert strategy.bitclude_state is bitclude_state
     assert strategy.deribit_state is deribit_state
     assert strategy.yahoo_finance_state is yahoo_state

@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from nagasaki.enums.common import MarketEnum, SideTypeEnum
+from nagasaki.enums.common import Currency, MarketEnum, SideTypeEnum, Symbol
 from nagasaki.logger import logger
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.calculators.price_calculator import PriceCalculator
@@ -18,16 +18,15 @@ class DeltaCalculator(PriceCalculator):
     def calculate(
         self,
         side: SideTypeEnum,
-        asset_symbol: MarketEnum,
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
+        currency: Currency = None,
+        orderbook_symbol: Symbol = None,
     ) -> Decimal:
-        mark_price = (
-            deribit_state.mark_price[asset_symbol] * yahoo_finance_state.usd_pln
-        )
+        mark_price = deribit_state.mark_price[currency] * yahoo_finance_state.usd_pln
         inventory_parameter = self.inventory_parameter(
-            asset_symbol, bitclude_state, deribit_state, yahoo_finance_state
+            currency, bitclude_state, deribit_state, yahoo_finance_state
         )
         if side == SideTypeEnum.ASK:
             delta_price = self.calculate_ask(mark_price, inventory_parameter)

@@ -4,7 +4,7 @@ from unittest import mock
 
 import pytest
 
-from nagasaki.enums.common import MarketEnum, SideTypeEnum
+from nagasaki.enums.common import Currency, SideTypeEnum
 from nagasaki.strategy.calculators.delta_calculator import (
     DeltaCalculator,
     calculate_inventory_parameter,
@@ -69,7 +69,7 @@ def test_should_calculate(
     ) as patched_inv_parameter:
         patched_inv_parameter.return_value = inventory_parameter
         calculated_price = calculator.calculate(
-            side, MarketEnum.BTC, None, deribit, yahoo
+            side, None, deribit, yahoo, currency=Currency.BTC
         )
 
     assert calculated_price == expected_price

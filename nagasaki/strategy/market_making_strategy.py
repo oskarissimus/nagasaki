@@ -2,7 +2,13 @@ from decimal import Decimal
 from typing import List
 
 from nagasaki.clients.base_client import OrderMaker
-from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
+from nagasaki.enums.common import (
+    Currency,
+    InstrumentTypeEnum,
+    MarketEnum,
+    SideTypeEnum,
+    Symbol,
+)
 from nagasaki.logger import logger
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
@@ -32,6 +38,7 @@ class MarketMakingStrategy(AbstractStrategy):
         dispatcher: StrategyOrderDispatcher,
         side: SideTypeEnum,
         instrument: InstrumentTypeEnum,
+        orderbook_symbol: Symbol,
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
@@ -40,6 +47,7 @@ class MarketMakingStrategy(AbstractStrategy):
         self.dispatcher = dispatcher
         self.side = side
         self.instrument = instrument
+        self.orderbook_symbol = orderbook_symbol
         self.bitclude_state = bitclude_state
         self.deribit_state = deribit_state
         self.yahoo_finance_state = yahoo_finance_state
@@ -60,10 +68,11 @@ class MarketMakingStrategy(AbstractStrategy):
         all_prices = [
             calculator.calculate(
                 self.side,
-                self.asset,
                 self.bitclude_state,
                 self.deribit_state,
                 self.yahoo_finance_state,
+                currency=self.currency,
+                orderbook_symbol=self.orderbook_symbol,
             )
             for calculator in self.calculators
         ]
@@ -83,8 +92,8 @@ class MarketMakingStrategy(AbstractStrategy):
     @property
     def total_assets(self):
         return (
-            self.bitclude_state.account_info.balances[self.asset].active
-            + self.bitclude_state.account_info.balances[self.asset].inactive
+            self.bitclude_state.account_info.balances[self.currency].active
+            + self.bitclude_state.account_info.balances[self.currency].inactive
         )
 
     @property
@@ -95,5 +104,5 @@ class MarketMakingStrategy(AbstractStrategy):
         )
 
     @property
-    def asset(self):
-        return MarketEnum(self.instrument.market_1)
+    def currency(self):
+        return Currency(self.instrument.market_1)

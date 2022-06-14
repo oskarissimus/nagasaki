@@ -11,6 +11,7 @@ from nagasaki.enums.common import (
     InstrumentTypeEnum,
     MarketEnum,
     SideTypeEnum,
+    Symbol,
 )
 from nagasaki.models.bitclude import BitcludeOrder, OrderbookRest, OrderbookRestItem
 from nagasaki.utils.common import HashableBaseModel, round_decimals_down
@@ -221,22 +222,17 @@ class CancelResponseDTO(BaseModel):
         return f"success: {self.success}, code: {self.code}, message: {self.message}"
 
 
-class OrderbookResponseDTOData(BaseModel):
-    market1: str
-    market2: str
-    timestamp: int
-
-
 class OrderbookResponseDTO(BaseModel):
-    data: OrderbookResponseDTOData
-    bids: List[List[Decimal]]
     asks: List[List[Decimal]]
+    bids: List[List[Decimal]]
+    symbol: Symbol
+    timestamp: int
 
     def to_orderbook_rest(self) -> OrderbookRest:
         asks = [
-            OrderbookRestItem(price=price, amount=amount) for amount, price in self.asks
+            OrderbookRestItem(price=price, amount=amount) for price, amount in self.asks
         ]
         bids = [
-            OrderbookRestItem(price=price, amount=amount) for amount, price in self.bids
+            OrderbookRestItem(price=price, amount=amount) for price, amount in self.bids
         ]
         return OrderbookRest(asks=asks, bids=bids)

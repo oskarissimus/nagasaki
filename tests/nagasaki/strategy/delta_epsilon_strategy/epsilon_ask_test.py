@@ -1,7 +1,5 @@
 from decimal import Decimal
 
-from nagasaki.enums.common import MarketEnum
-
 from .utils import make_order_maker_ask, make_orderbook_with_ask
 
 
@@ -16,7 +14,7 @@ def test_ask_bidding_over_epsilon(
 
     epsilon = Decimal("0.01")
 
-    bitclude_state.orderbooks[MarketEnum.BTC] = make_orderbook_with_ask(
+    bitclude_state.orderbooks["BTC/PLN"] = make_orderbook_with_ask(
         top_ask_price, top_ask_amount
     )
     epsilon_calculator.epsilon = epsilon

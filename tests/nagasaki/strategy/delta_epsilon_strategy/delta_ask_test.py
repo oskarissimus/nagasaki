@@ -1,7 +1,5 @@
 from decimal import Decimal
 
-from nagasaki.enums.common import MarketEnum
-
 from .utils import (
     make_account_info_with_delta_0_002,
     make_order_maker_ask,
@@ -24,7 +22,7 @@ def test_ask_bidding_over_delta(
     top_ask_amount = 1
 
     deribit_state.mark_price["BTC"] = Decimal(btc_mark_usd)
-    bitclude_state.orderbooks[MarketEnum.BTC] = make_orderbook_with_ask(
+    bitclude_state.orderbooks["BTC/PLN"] = make_orderbook_with_ask(
         top_ask_price, top_ask_amount
     )
     bitclude_state.account_info = make_account_info_with_delta_0_002()

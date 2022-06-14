@@ -1,6 +1,6 @@
 import abc
 
-from nagasaki.enums.common import MarketEnum, SideTypeEnum
+from nagasaki.enums.common import Currency, MarketEnum, SideTypeEnum, Symbol
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 
 
@@ -13,5 +13,7 @@ class PriceCalculator(abc.ABC):
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
+        currency: Currency = None,
+        orderbook_symbol: Symbol = None,
     ):
         pass

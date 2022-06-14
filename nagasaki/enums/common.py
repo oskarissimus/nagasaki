@@ -47,6 +47,11 @@ class Currency(str, Enum):
                 return member
 
 
+class Symbol(str, Enum):
+    BTC_PLN = "BTC/PLN"
+    ETH_PLN = "ETH/PLN"
+
+
 class ActionEnum(str, Enum):
     SELL = "SELL"
     BUY = "BUY"

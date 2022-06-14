@@ -3,7 +3,7 @@ from decimal import Decimal
 from nagasaki.clients import BaseClient
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
-from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
+from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum, Symbol
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.settings.runtime import (
     CalculatorSettings,
@@ -43,6 +43,7 @@ def market_making_strategy_factory(
         dispatcher=dispatcher,
         side=SideTypeEnum(settings.side.upper()),
         instrument=InstrumentTypeEnum.from_str(settings.instrument),
+        orderbook_symbol=Symbol(settings.orderbook_symbol),
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,

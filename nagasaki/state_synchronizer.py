@@ -1,3 +1,5 @@
+from typing import List
+
 from dependency_injector.wiring import Provide, inject
 
 from nagasaki.clients import YahooFinanceClient
@@ -7,6 +9,8 @@ from nagasaki.containers import Application
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
+from nagasaki.strategy.abstract_strategy import AbstractStrategy
+from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
 
 
 def initialize_states():
@@ -23,15 +27,22 @@ def synchronize_bitclude_state(
     bitclude_client: BitcludeClient = Provide[
         Application.clients.bitclude_client_provider
     ],
+    strategies: List[AbstractStrategy] = Provide[
+        Application.strategies.strategies_provider
+    ],
 ):
-    runtime_config = RuntimeConfig()
     bitclude_state.account_info = bitclude_client.fetch_account_info()
     bitclude_state.active_offers = bitclude_client.fetch_active_offers()
-    bitclude_state.orderbooks[
-        runtime_config.market_making_instrument.market_1
-    ] = bitclude_client.fetch_orderbook(
-        runtime_config.market_making_instrument.market_1
-    ).to_orderbook_rest()
+
+    orderbook_symbols = [
+        strategy.orderbook_symbol
+        for strategy in strategies
+        if isinstance(strategy, MarketMakingStrategy)
+    ]
+    for symbol in orderbook_symbols:
+        bitclude_state.orderbooks[symbol] = bitclude_client.fetch_orderbook(
+            symbol
+        ).to_orderbook_rest()
 
 
 @inject

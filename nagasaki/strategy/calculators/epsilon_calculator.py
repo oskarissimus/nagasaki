@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from nagasaki.enums.common import MarketEnum, SideTypeEnum
+from nagasaki.enums.common import Currency, MarketEnum, SideTypeEnum, Symbol
 from nagasaki.logger import logger
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.calculators.price_calculator import PriceCalculator
@@ -13,15 +13,20 @@ class EpsilonCalculator(PriceCalculator):
     def calculate(
         self,
         side: SideTypeEnum,
-        asset_symbol: MarketEnum,
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
+        currency: Currency = None,
+        orderbook_symbol: Symbol = None,
     ) -> Decimal:
         if side == SideTypeEnum.ASK:
-            epsilon_price = self.calculate_ask(bitclude_state.top_ask(asset_symbol))
+            epsilon_price = self.calculate_ask(
+                bitclude_state.top_ask(orderbook_symbol.value)
+            )
         else:
-            epsilon_price = self.calculate_bid(bitclude_state.top_bid(asset_symbol))
+            epsilon_price = self.calculate_bid(
+                bitclude_state.top_bid(orderbook_symbol.value)
+            )
         logger.info(f"{epsilon_price=:.0f}")
         return epsilon_price
 

@@ -12,6 +12,7 @@ class CalculatorSettings(BaseModel):
 class MarketMakingStrategySettings(BaseModel):
     side: str
     instrument: str
+    orderbook_symbol: str
     calculator_settings: List[CalculatorSettings]
 
 
