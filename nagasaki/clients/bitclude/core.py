@@ -3,6 +3,8 @@ from datetime import datetime
 from time import sleep
 from typing import List
 
+import ccxt
+import ccxt_unmerged
 import requests
 
 from nagasaki.clients.base_client import BaseClient, OrderMaker
@@ -86,6 +88,7 @@ class BitcludeClient(BaseClient):
         self.client_id = client_id
         self.client_key = client_key
         self.last_500_request_times = RequestTimesRingBuffer(500)
+        self.ccxt_connector = ccxt.bitclude({"apiKey": client_key, "uid": client_id})
         self._auth_params = {
             "id": self.client_id,
             "key": self.client_key,
@@ -93,25 +96,8 @@ class BitcludeClient(BaseClient):
 
     def fetch_account_info(self) -> AccountInfo:
         logger.info("fetching account info")
-        self.last_500_request_times.append(datetime.now())
-        self.last_500_request_times.log_request_times()
-        response = requests.get(
-            self.url_base,
-            params={
-                "method": "account",
-                "action": "info",
-                "id": self.client_id,
-                "key": self.client_key,
-            },
-        )
-        try:
-            response_json = response.json()
-        except json.decoder.JSONDecodeError as json_decode_error:
-            logger.info(response.text)
-            raise CannotParseResponse() from json_decode_error
-        if response_json["success"] is True:
-            return AccountInfo(**response_json)
-        raise BitcludeClientException(response_json)
+        response = self.ccxt_connector.fetch_balance()
+        return AccountInfo(**response["info"])
 
     def fetch_active_offers(self) -> List[Offer]:
         logger.info("fetching active offers")
