@@ -136,3 +136,7 @@ flowchart
 - [x] Move strategy creation to containers
 - [x] Clean up states' init/sync
 
+
+```crontab
+0 0 * * * docker image prune -a --force --filter "until=240h" > /root/crontab.log
+```
