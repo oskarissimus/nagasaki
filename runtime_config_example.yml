@@ -4,18 +4,20 @@ strategies:
   market_making_strategies:
     - side: ASK
       instrument: ETH_PLN
+      orderbook_symbol: ETH/PLN
       calculator_settings:
         - calculator_type: delta
           params:
-            delta_inv_param_min: 0.005
-            delta_inv_param_max: 0.009
+            delta_inv_param_min: 0.5
+            delta_inv_param_max: 0.5
     - side: BID
       instrument: ETH_PLN
+      orderbook_symbol: ETH/PLN
       calculator_settings:
         - calculator_type: delta
           params:
-            delta_inv_param_min: 0.005
-            delta_inv_param_max: 0.009
+            delta_inv_param_min: 0.5
+            delta_inv_param_max: 0.5
   hedging_strategies:
     - instrument: ETH_PERPETUAL
       grand_total_delta_max: 0.1

@@ -21,7 +21,6 @@ class Clients(
         BitcludeClient,
         client_id=config.bitclude_id,
         client_key=config.bitclude_key,
-        url_base=config.bitclude_url_base,
     )
     deribit_client_provider = providers.Singleton(
         DeribitClient,

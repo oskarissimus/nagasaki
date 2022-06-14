@@ -14,7 +14,6 @@ class StartupSettings(BaseSettings):
     db_user: str = "postgres"
     db_password: str = "example"
     db_name: str = "postgres"
-    bitclude_url_base: str = "https://api.bitclude.com"
     bitclude_id: str = ""
     bitclude_key: str = ""
     deribit_url_base: str = "https://www.deribit.com/api/v2"
