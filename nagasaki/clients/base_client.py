@@ -11,6 +11,7 @@ class Order(HashableBaseModel):
     side: SideTypeEnum
     amount: Decimal
     instrument: InstrumentTypeEnum
+    hidden: Optional[bool]
 
 
 class OrderTaker(Order):
