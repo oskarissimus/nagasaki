@@ -7,9 +7,9 @@ from pydantic import BaseModel, validator
 from nagasaki.clients.base_client import OrderMaker
 from nagasaki.enums.common import (
     ActionEnum,
+    Currency,
     InstrumentTypeEnum,
     MarketEnum,
-    OfferCurrencyEnum,
     SideTypeEnum,
 )
 from nagasaki.models.bitclude import BitcludeOrder, OrderbookRest, OrderbookRestItem
@@ -79,8 +79,8 @@ class AccountHistory(BaseModel):
 
 class Offer(BaseModel):
     nr: str
-    currency1: OfferCurrencyEnum
-    currency2: OfferCurrencyEnum
+    currency1: Currency
+    currency2: Currency
     amount: Decimal
     price: Decimal
     id_user_open: str

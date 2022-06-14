@@ -1,4 +1,4 @@
-from enum import Enum
+from aenum import Enum
 
 
 class OrderActionEnum(str, Enum):
@@ -33,10 +33,18 @@ class SideTypeEnum(str, Enum):
     BID = "BID"
 
 
-class OfferCurrencyEnum(str, Enum):
-    btc = "btc"
-    eth = "eth"
-    pln = "pln"
+class Currency(str, Enum):
+    BTC = "BTC"
+    ETH = "ETH"
+    PLN = "PLN"
+    USD = "USD"
+
+    @classmethod
+    def _missing_(cls, name):
+        """https://stackoverflow.com/a/42659222/"""
+        for member in cls:
+            if member.name.lower() == name.lower():
+                return member
 
 
 class ActionEnum(str, Enum):
