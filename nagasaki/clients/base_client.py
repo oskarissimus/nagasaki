@@ -17,11 +17,12 @@ class Order(HashableBaseModel):
 
 class OrderTaker(Order):
     price_limit: Optional[Decimal]
+    type: Type = Type.MARKET
 
     def __repr__(self):
         return (
             f"ORDER - TAKER <{self.side} {self.amount} {self.instrument} "
-            f"{self.price_limit}>"
+            f"{self.price_limit} {self.type}>"
         )
 
 
@@ -31,7 +32,8 @@ class OrderMaker(Order):
 
     def __repr__(self):
         return (
-            f"ORDER - MAKER <{self.side} {self.amount} {self.instrument} {self.price}>"
+            f"ORDER - MAKER <{self.side} {self.amount} {self.instrument} "
+            f"{self.price} {self.type}>"
         )
 
 

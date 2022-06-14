@@ -26,7 +26,6 @@ class Clients(
         DeribitClient,
         client_id=config.deribit_client_id,
         client_secret=config.deribit_client_secret,
-        url_base=config.deribit_url_base,
     )
     yahoo_finance_client_provider = providers.Singleton(
         YahooFinanceClient,

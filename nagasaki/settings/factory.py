@@ -43,7 +43,7 @@ def market_making_strategy_factory(
         dispatcher=dispatcher,
         side=SideTypeEnum(settings.side.upper()),
         instrument=InstrumentTypeEnum.from_str(settings.instrument),
-        orderbook_symbol=Symbol(settings.orderbook_symbol),
+        symbol=Symbol(settings.symbol),
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
@@ -61,6 +61,7 @@ def hedging_strategy_factory(
     return HedgingStrategy(
         client=client,
         instrument=InstrumentTypeEnum.from_str(settings.instrument),
+        symbol=Symbol(settings.symbol),
         grand_total_delta_max=Decimal(settings.grand_total_delta_max),
         grand_total_delta_min=Decimal(settings.grand_total_delta_min),
         bitclude_state=bitclude_state,

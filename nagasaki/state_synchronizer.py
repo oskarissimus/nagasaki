@@ -35,7 +35,7 @@ def synchronize_bitclude_state(
     bitclude_state.active_offers = bitclude_client.fetch_active_offers()
 
     orderbook_symbols = [
-        strategy.orderbook_symbol
+        strategy.symbol
         for strategy in strategies
         if isinstance(strategy, MarketMakingStrategy)
     ]

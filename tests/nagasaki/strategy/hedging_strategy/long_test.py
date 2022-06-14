@@ -5,7 +5,7 @@ import pytest
 
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance
 from nagasaki.clients.deribit_client import AccountSummary
-from nagasaki.enums.common import InstrumentTypeEnum
+from nagasaki.enums.common import InstrumentTypeEnum, Symbol
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.hedging_strategy import HedgingStrategy
 
@@ -72,6 +72,7 @@ def test_should_long_2_btcs(
     strategy = HedgingStrategy(
         client,
         InstrumentTypeEnum.BTC_PERPETUAL,
+        Symbol.BTC_USD_BTC,
         grand_total_delta_max=Decimal("0.001"),
         grand_total_delta_min=Decimal("-0.001"),
         bitclude_state=bitclude_state,

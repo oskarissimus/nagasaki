@@ -1,10 +1,10 @@
 import datetime
 from decimal import Decimal
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 from pydantic import BaseModel, validator
 
-from nagasaki.clients.base_client import OrderMaker
+from nagasaki.clients.base_client import OrderMaker, OrderTaker
 from nagasaki.enums.common import (
     Currency,
     InstrumentTypeEnum,
@@ -108,7 +108,7 @@ class Offer(BaseModel):
 
 
 class CreateRequestDTO(BaseModel):
-    price: Decimal
+    price: Optional[Decimal]
     symbol: Symbol
     type: Type
     side: Side
@@ -133,7 +133,7 @@ class CreateRequestDTO(BaseModel):
         )
 
     @classmethod
-    def from_order_maker(cls, order: OrderMaker):
+    def from_order_maker(cls, order: OrderMaker) -> "CreateRequestDTO":
         side = Side.BUY if order.side == SideTypeEnum.BID else Side.SELL
         return cls(
             price=order.price,
@@ -147,9 +147,20 @@ class CreateRequestDTO(BaseModel):
             },
         )
 
+    @classmethod
+    def from_order_taker(cls, order: OrderTaker) -> "CreateRequestDTO":
+        side = Side.BUY if order.side == SideTypeEnum.BID else Side.SELL
+        return cls(
+            symbol=order.symbol,
+            type=order.type,
+            side=side,
+            amount=order.amount,
+            params={"hidden": order.hidden},
+        )
+
     def to_method_params(self) -> Dict[str, Union[str, Dict[str, int]]]:
         return {
-            "price": str(self.price),
+            "price": str(self.price) if self.price else None,
             "symbol": self.symbol.value,
             "amount": str(self.amount),
             "type": self.type.value.lower(),

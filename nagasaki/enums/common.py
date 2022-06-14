@@ -50,6 +50,8 @@ class Currency(str, Enum):
 class Symbol(str, Enum):
     BTC_PLN = "BTC/PLN"
     ETH_PLN = "ETH/PLN"
+    BTC_USD_BTC = "BTC/USD:BTC"
+    ETH_USD_ETH = "ETH/USD:ETH"
 
 
 class Side(str, Enum):

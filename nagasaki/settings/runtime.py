@@ -12,12 +12,13 @@ class CalculatorSettings(BaseModel):
 class MarketMakingStrategySettings(BaseModel):
     side: str
     instrument: str
-    orderbook_symbol: str
+    symbol: str
     calculator_settings: List[CalculatorSettings]
 
 
 class HedgingStrategySettings(BaseModel):
     instrument: str
+    symbol: str
     grand_total_delta_max: str
     grand_total_delta_min: str
 

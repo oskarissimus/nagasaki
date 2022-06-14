@@ -41,7 +41,7 @@ class MarketMakingStrategy(AbstractStrategy):
         dispatcher: StrategyOrderDispatcher,
         side: SideTypeEnum,
         instrument: InstrumentTypeEnum,
-        orderbook_symbol: Symbol,
+        symbol: Symbol,
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
@@ -50,7 +50,7 @@ class MarketMakingStrategy(AbstractStrategy):
         self.dispatcher = dispatcher
         self.side = side
         self.instrument = instrument
-        self.orderbook_symbol = orderbook_symbol
+        self.symbol = symbol
         self.bitclude_state = bitclude_state
         self.deribit_state = deribit_state
         self.yahoo_finance_state = yahoo_finance_state
@@ -69,7 +69,7 @@ class MarketMakingStrategy(AbstractStrategy):
             self.side,
             self.instrument,
             hidden=True,
-            symbol=self.orderbook_symbol,
+            symbol=self.symbol,
         )
 
         self.dispatcher.dispatch(order)
@@ -83,7 +83,7 @@ class MarketMakingStrategy(AbstractStrategy):
                 self.deribit_state,
                 self.yahoo_finance_state,
                 currency=self.currency,
-                orderbook_symbol=self.orderbook_symbol,
+                orderbook_symbol=self.symbol,
             )
             for calculator in self.calculators
         ]

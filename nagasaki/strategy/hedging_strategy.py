@@ -2,25 +2,27 @@ from decimal import Decimal
 
 from nagasaki.clients import BaseClient
 from nagasaki.clients.base_client import OrderTaker
-from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum
+from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum, Symbol
 from nagasaki.logger import logger
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 
 
-def sell_order(amount: Decimal, instrument: InstrumentTypeEnum):
+def sell_order(amount: Decimal, instrument: InstrumentTypeEnum, symbol: Symbol):
     return OrderTaker(
         side=SideTypeEnum.ASK,
         amount=amount,
         instrument=instrument,
+        symbol=symbol,
     )
 
 
-def buy_order(amount: Decimal, instrument: InstrumentTypeEnum):
+def buy_order(amount: Decimal, instrument: InstrumentTypeEnum, symbol: Symbol):
     return OrderTaker(
         side=SideTypeEnum.BID,
         amount=amount,
         instrument=instrument,
+        symbol=symbol,
     )
 
 
@@ -29,6 +31,7 @@ class HedgingStrategy(AbstractStrategy):
         self,
         client: BaseClient,
         instrument: InstrumentTypeEnum,
+        symbol: Symbol,
         grand_total_delta_max: Decimal,
         grand_total_delta_min: Decimal,
         bitclude_state: BitcludeState,
@@ -37,6 +40,7 @@ class HedgingStrategy(AbstractStrategy):
     ):
         self.client = client
         self.instrument = instrument
+        self.symbol = symbol
         self.grand_total_delta_max = grand_total_delta_max
         self.grand_total_delta_min = grand_total_delta_min
         self.bitclude_state = bitclude_state
@@ -53,11 +57,11 @@ class HedgingStrategy(AbstractStrategy):
 
         if delta > self.grand_total_delta_max:
             btcs_to_short_in_dollars = Decimal(round(delta * mark_price_usd, -1))
-            order = sell_order(btcs_to_short_in_dollars, self.instrument)
+            order = sell_order(btcs_to_short_in_dollars, self.instrument, self.symbol)
 
         if delta < self.grand_total_delta_min:
             btcs_to_long_in_dollars = Decimal(round(-1 * delta * mark_price_usd, -1))
-            order = buy_order(btcs_to_long_in_dollars, self.instrument)
+            order = buy_order(btcs_to_long_in_dollars, self.instrument, self.symbol)
 
         if order:
             self.client.create_order(order)

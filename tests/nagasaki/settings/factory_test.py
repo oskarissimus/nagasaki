@@ -54,7 +54,7 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
     config = MarketMakingStrategySettings(
         side="bid",
         instrument="btc_pln",
-        orderbook_symbol="BTC/PLN",
+        symbol="BTC/PLN",
         calculator_settings=calculator_configs,
     )
 
@@ -68,7 +68,7 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
 
     assert strategy.side == SideTypeEnum.BID
     assert strategy.instrument == InstrumentTypeEnum.BTC_PLN
-    assert strategy.orderbook_symbol == Symbol.BTC_PLN
+    assert strategy.symbol == Symbol.BTC_PLN
     assert strategy.bitclude_state is bitclude_state
     assert strategy.deribit_state is deribit_state
     assert strategy.yahoo_finance_state is yahoo_state
@@ -87,6 +87,7 @@ def test_should_create_hedging_strategy_eth():
 
     config = HedgingStrategySettings(
         instrument="eth_perpetual",
+        symbol="ETH/USD:ETH",
         grand_total_delta_max=grand_total_delta_max,
         grand_total_delta_min=grand_total_delta_min,
     )
