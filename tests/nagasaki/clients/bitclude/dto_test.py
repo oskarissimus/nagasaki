@@ -20,6 +20,7 @@ def fixture_order_maker():
         amount=Decimal("69"),
         instrument=InstrumentTypeEnum.BTC_PLN,
         side=SideTypeEnum.ASK,
+        hidden=True,
     )
 
 
@@ -32,6 +33,7 @@ def test_create_request_dto_from_order_maker(order_maker):
         market2=MarketEnum.PLN,
         amount=Decimal("69"),
         rate=Decimal("420"),
+        hidden=True,
     )
 
     assert dto == expected_dto
