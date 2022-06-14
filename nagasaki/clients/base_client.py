@@ -43,7 +43,3 @@ class BaseClient(abc.ABC):
     @abc.abstractmethod
     def cancel_order(self, order: Order):
         pass
-
-    @abc.abstractmethod
-    def cancel_and_wait(self, order: Order):
-        pass
