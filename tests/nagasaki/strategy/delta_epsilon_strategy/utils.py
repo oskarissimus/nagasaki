@@ -2,7 +2,7 @@ from decimal import Decimal
 
 from nagasaki.clients.base_client import OrderMaker
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance, Offer
-from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
+from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum, Symbol
 from nagasaki.models.bitclude import OrderbookRest, OrderbookRestItem, OrderbookRestList
 
 
@@ -51,6 +51,7 @@ def make_order_maker_ask(price, amount):
         instrument=InstrumentTypeEnum.BTC_PLN,
         side=SideTypeEnum.ASK,
         hidden=True,
+        symbol=Symbol.BTC_PLN,
     )
 
 
@@ -61,6 +62,7 @@ def make_order_maker_bid(price, amount):
         instrument=InstrumentTypeEnum.BTC_PLN,
         side=SideTypeEnum.BID,
         hidden=True,
+        symbol=Symbol.BTC_PLN,
     )
 
 

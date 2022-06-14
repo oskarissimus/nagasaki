@@ -52,7 +52,7 @@ class StrategyOrderDispatcher:
         logger.debug(self.active_offers)
         for offer in self.active_offers:
             if offer.offertype == desirable_order.side:
-                self.client.cancel_and_wait(offer.to_order_maker())
+                self.client.cancel_order(offer.to_order_maker())
 
         self.client.create_order(desirable_order)
 

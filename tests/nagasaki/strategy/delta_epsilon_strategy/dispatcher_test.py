@@ -45,7 +45,7 @@ def test_should_cancel_and_create_for_1_own_offer_outside_tolerance(
     dispatcher.dispatch(desirable_order)
 
     expected_cancel_order = dispatcher.active_offers[0].to_order_maker()
-    client.cancel_and_wait.assert_called_once_with(expected_cancel_order)
+    client.cancel_order.assert_called_once_with(expected_cancel_order)
 
     client.create_order.assert_called_once_with(desirable_order)
 
@@ -77,11 +77,11 @@ def should_cancel_all_and_create_for_multiple_offers(
 
     dispatcher.dispatch(desirable_order)
 
-    assert client.cancel_and_wait.call_count == 2
+    assert client.cancel_order.call_count == 2
     expected_cancel_orders = [
         offer.to_order_maker() for offer in bitclude_state.active_offers
     ]
     expected_calls = [call(order) for order in expected_cancel_orders]
-    client.cancel_and_wait.assert_has_calls(expected_calls, any_order=True)
+    client.cancel_order.assert_has_calls(expected_calls, any_order=True)
 
     client.create_order.assert_called_once_with(desirable_order)

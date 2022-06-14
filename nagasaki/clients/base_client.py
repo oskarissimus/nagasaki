@@ -7,7 +7,7 @@ from nagasaki.utils.common import HashableBaseModel
 
 
 class Order(HashableBaseModel):
-    order_id: Optional[int]
+    order_id: Optional[str]
     side: SideTypeEnum
     amount: Decimal
     instrument: InstrumentTypeEnum
@@ -31,8 +31,7 @@ class OrderMaker(Order):
 
     def __repr__(self):
         return (
-            f"ORDER - MAKER <{self.side} {self.amount} {self.instrument} "
-            f"{self.price}>"
+            f"ORDER - MAKER <{self.side} {self.amount} {self.instrument} {self.price}>"
         )
 
 

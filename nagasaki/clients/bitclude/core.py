@@ -1,6 +1,4 @@
-import json
 from datetime import datetime
-from time import sleep
 from typing import List
 
 import ccxt
@@ -20,7 +18,6 @@ from nagasaki.clients.bitclude.dto import (
     OrderbookResponseDTO,
 )
 from nagasaki.enums.common import Symbol
-from nagasaki.exceptions import BitcludeClientException, CannotParseResponse
 from nagasaki.logger import logger
 
 
@@ -112,51 +109,19 @@ class BitcludeClient(BaseClient):
         response = self.ccxt_connector.fetch_open_orders()
         return [Offer(**offer["info"]) for offer in response]
 
-    @staticmethod
-    def _parse_response_as_dto(response: requests.Response, dto_class: type):
-        try:
-            response_json = response.json()
-        except json.decoder.JSONDecodeError as json_decode_error:
-            raise CannotParseResponse(response.text) from json_decode_error
-        if "success" in response_json and response_json["success"] is True:
-            return dto_class(**response_json)
-        raise BitcludeClientException(response_json["message"])
-
-    def create_order(self, order: OrderMaker):
-        self.ccxt_connector.create_order(
+    def create_order(self, order: OrderMaker) -> CreateResponseDTO:
+        logger.info(f"creating {order}")
+        response = self.ccxt_connector.create_order(
             **CreateRequestDTO.from_order_maker(order).to_method_params()
         )
+        return CreateResponseDTO(**response["info"])
 
-    def cancel_order(self, order: OrderMaker):
-        self._cancel_order(CancelRequestDTO.from_order_maker(order))
-
-    def _cancel_order(self, order: CancelRequestDTO) -> CancelResponseDTO:
+    def cancel_order(self, order: OrderMaker) -> CancelResponseDTO:
         logger.info(f"cancelling {order}")
-        order_params = order.get_request_params()
-        auth_params = self._auth_params
-        params = {**order_params, **auth_params}
-        self.last_500_request_times.append(datetime.now())
-        self.last_500_request_times.log_request_times()
-        response = requests.get(self.url_base, params=params)
-        if response.status_code == 200:
-            parsed_response = BitcludeClient._parse_response_as_dto(
-                response, CancelResponseDTO
-            )
-            return parsed_response
-        raise BitcludeClientException(response.text)
-
-    def cancel_and_wait(self, order: OrderMaker):
-        self.cancel_order(order)
-        self.wait_for_offer_cancellation(order.order_id)
-
-    def wait_for_offer_cancellation(self, offer_id: int):
-        while True:
-            logger.info("waiting for offer cancellation")
-            offers = self.fetch_active_offers()
-            offer_numbers = [o.nr for o in offers]
-            if offer_id not in offer_numbers:
-                return True
-            sleep(1)
+        response = self.ccxt_connector.cancel_order(
+            **CancelRequestDTO.from_order_maker(order).to_method_params()
+        )
+        return CancelResponseDTO(**response)
 
     def fetch_orderbook(self, symbol: Symbol) -> OrderbookResponseDTO:
         logger.info(f"fetching {symbol} orderbook")

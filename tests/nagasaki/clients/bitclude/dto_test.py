@@ -62,6 +62,6 @@ def test_create_request_dto_to_method_params():
 def test_cancel_request_dto_from_order_maker(order_maker):
     dto = CancelRequestDTO.from_order_maker(order_maker)
 
-    expected_dto = CancelRequestDTO(order_id="2137", type=SideTypeEnum.ASK)
+    expected_dto = CancelRequestDTO(order_id="2137", side=Side.SELL)
 
     assert dto == expected_dto

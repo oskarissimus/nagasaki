@@ -173,48 +173,27 @@ class CreateResponseDTO(BaseModel):
     success: bool
     code: str
     message: str
-    actions: ActionDTO
-
-    @validator("actions", pre=True)
-    # pylint: disable=no-self-argument,no-self-use
-    def fix_actions_structure(cls, v):
-        if isinstance(v, dict):
-            if "sell" in v:
-                return {"action": "SELL", "order_id": v["order"]}
-            if "buy" in v:
-                return {"action": "BUY", "order_id": v["order"]}
-            raise ValueError("Unknown actions structure")
-        raise ValueError("actions must be dict")
 
     def __str__(self):
         return (
-            f"success: {self.success}, code: {self.code}, "
-            f"message: '{self.message}', actions: ({self.actions})"
+            f"success: {self.success}, code: {self.code}, " f"message: '{self.message}'"
         )
 
 
 class CancelRequestDTO(BaseModel):
     order_id: str
-    type: SideTypeEnum
-
-    def get_request_params(self) -> Dict[str, str]:
-        return {
-            "method": "transactions",
-            "action": "cancel",
-            "order": self.order_id,
-            "typ": self.type.value.lower(),
-        }
+    side: Side
 
     def __str__(self):
-        return f"order_id: {self.order_id}, type: {self.type}"
-
-    @classmethod
-    def from_bitclude_order(cls, order: BitcludeOrder):
-        return cls(order_id=order.order_id, type=order.side)
+        return f"order_id: {self.order_id}, side: {self.side}"
 
     @classmethod
     def from_order_maker(cls, order: OrderMaker):
-        return cls(order_id=order.order_id, type=order.side)
+        side = Side.BUY if order.side == SideTypeEnum.BID else Side.SELL
+        return cls(order_id=str(order.order_id), side=side)
+
+    def to_method_params(self) -> Dict[str, str]:
+        return {"id": self.order_id, "params": {"side": self.side.lower()}}
 
 
 class CancelResponseDTO(BaseModel):
