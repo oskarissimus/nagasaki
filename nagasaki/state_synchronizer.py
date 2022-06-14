@@ -39,7 +39,7 @@ def synchronize_bitclude_state(
         for strategy in strategies
         if isinstance(strategy, MarketMakingStrategy)
     ]
-    for symbol in orderbook_symbols:
+    for symbol in set(orderbook_symbols):
         bitclude_state.orderbooks[symbol] = bitclude_client.fetch_orderbook(
             symbol
         ).to_orderbook_rest()
@@ -83,7 +83,7 @@ def log_states(
     runtime_config = RuntimeConfig()
 
     logger.info(bitclude_state.account_info)
-    for orderbook in set(bitclude_state.orderbooks.values()):
+    for orderbook in bitclude_state.orderbooks.values():
         logger.info(orderbook)
     logger.info(f"{bitclude_state.active_offers=}")
 
