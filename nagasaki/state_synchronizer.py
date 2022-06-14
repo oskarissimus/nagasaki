@@ -83,7 +83,7 @@ def log_states(
     runtime_config = RuntimeConfig()
 
     logger.info(bitclude_state.account_info)
-    for orderbook in bitclude_state.orderbooks.values():
+    for orderbook in set(bitclude_state.orderbooks.values()):
         logger.info(orderbook)
     logger.info(f"{bitclude_state.active_offers=}")
 

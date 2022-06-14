@@ -52,7 +52,7 @@ class Symbol(str, Enum):
     ETH_PLN = "ETH/PLN"
 
 
-class ActionEnum(str, Enum):
+class Side(str, Enum):
     SELL = "SELL"
     BUY = "BUY"
 
@@ -61,3 +61,8 @@ class MarketEnum(str, Enum):
     BTC = "BTC"
     ETH = "ETH"
     PLN = "PLN"
+
+
+class Type(str, Enum):
+    LIMIT = "LIMIT"
+    MARKET = "MARKET"

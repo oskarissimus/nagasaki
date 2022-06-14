@@ -123,25 +123,9 @@ class BitcludeClient(BaseClient):
         raise BitcludeClientException(response_json["message"])
 
     def create_order(self, order: OrderMaker):
-        try:
-            self._create_order(CreateRequestDTO.from_order_maker(order))
-        except ValueError as value_error:
-            logger.warning(f"create_order interrupted, reason: {value_error}")
-
-    def _create_order(self, order: CreateRequestDTO) -> CreateResponseDTO:
-        logger.info(f"creating {order}")
-        order_params = order.get_request_params()
-        auth_params = self._auth_params
-        params = {**order_params, **auth_params}
-        self.last_500_request_times.append(datetime.now())
-        self.last_500_request_times.log_request_times()
-        response = requests.get(self.url_base, params=params)
-        if response.status_code == 200:
-            parsed_response = BitcludeClient._parse_response_as_dto(
-                response, CreateResponseDTO
-            )
-            return parsed_response
-        raise BitcludeClientException(response.text)
+        self.ccxt_connector.create_order(
+            **CreateRequestDTO.from_order_maker(order).to_method_params()
+        )
 
     def cancel_order(self, order: OrderMaker):
         self._cancel_order(CancelRequestDTO.from_order_maker(order))

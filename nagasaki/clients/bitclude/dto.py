@@ -1,17 +1,18 @@
 import datetime
 from decimal import Decimal
-from typing import Dict, List
+from typing import Dict, List, Union
 
 from pydantic import BaseModel, validator
 
 from nagasaki.clients.base_client import OrderMaker
 from nagasaki.enums.common import (
-    ActionEnum,
     Currency,
     InstrumentTypeEnum,
     MarketEnum,
+    Side,
     SideTypeEnum,
     Symbol,
+    Type,
 )
 from nagasaki.models.bitclude import BitcludeOrder, OrderbookRest, OrderbookRestItem
 from nagasaki.utils.common import HashableBaseModel, round_decimals_down
@@ -107,25 +108,12 @@ class Offer(BaseModel):
 
 
 class CreateRequestDTO(BaseModel):
-    action: ActionEnum
-    market1: MarketEnum
-    market2: MarketEnum
+    price: Decimal
+    symbol: Symbol
+    type: Type
+    side: Side
     amount: Decimal
-    rate: Decimal
-    post_only: bool = True
-    hidden: bool = False
-
-    def get_request_params(self) -> Dict[str, str]:
-        return {
-            "method": "transactions",
-            "action": self.action.value.lower(),
-            "market1": self.market1.value.lower(),
-            "market2": self.market2.value.lower(),
-            "amount": str(self.amount),
-            "rate": str(self.rate),
-            "post_only": int(self.post_only),
-            "hidden": int(self.hidden),
-        }
+    params: Dict[str, bool]
 
     @validator("amount")
     # pylint: disable=no-self-argument,no-self-use
@@ -139,26 +127,42 @@ class CreateRequestDTO(BaseModel):
 
     def __str__(self):
         return (
-            f"{self.action.value} {self.market1.value}/{self.market2.value}, "
-            f"amount: {self.amount:.10f}, rate: {self.rate:.2f}, "
-            f"post_only: {self.post_only}, hidden: {self.hidden}"
+            f"{self.side.value} {self.symbol}, "
+            f"amount: {self.amount:.10f}, price: {self.price:.2f}, "
+            f"params: {self.params}"
         )
 
     @classmethod
     def from_order_maker(cls, order: OrderMaker):
-        action = ActionEnum.BUY if order.side == SideTypeEnum.BID else ActionEnum.SELL
+        side = Side.BUY if order.side == SideTypeEnum.BID else Side.SELL
         return cls(
-            action=action,
-            market1=order.instrument.market_1,
-            market2=order.instrument.market_2,
+            price=order.price,
+            symbol=order.symbol,
+            type=order.type,
+            side=side,
             amount=order.amount,
-            rate=order.price,
-            hidden=order.hidden,
+            params={
+                "hidden": order.hidden,
+                "post_only": True,
+            },
         )
+
+    def to_method_params(self) -> Dict[str, Union[str, Dict[str, int]]]:
+        return {
+            "price": str(self.price),
+            "symbol": self.symbol.value,
+            "amount": str(self.amount),
+            "type": self.type.value.lower(),
+            "side": self.side.value.lower(),
+            "params": {
+                "hidden": int(self.params["hidden"]),
+                "post_only": int(self.params["post_only"]),
+            },
+        }
 
 
 class ActionDTO(BaseModel):
-    action: ActionEnum
+    action: Side
     order_id: str
 
     def __str__(self):

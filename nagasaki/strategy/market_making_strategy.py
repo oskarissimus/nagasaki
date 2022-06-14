@@ -14,6 +14,7 @@ from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.strategy.calculators.price_calculator import PriceCalculator
 from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
+from nagasaki.utils.common import round_decimals_down
 
 
 def make_order(
@@ -22,10 +23,12 @@ def make_order(
     side: SideTypeEnum,
     instrument: InstrumentTypeEnum,
     hidden: bool,
+    symbol: Symbol,
 ) -> OrderMaker:
     return OrderMaker(
         side=side,
         price=price,
+        symbol=symbol,
         amount=amount,
         instrument=instrument,
         hidden=hidden,
@@ -57,8 +60,16 @@ class MarketMakingStrategy(AbstractStrategy):
     def execute(self) -> OrderMaker:
         self.calculate_best_price()
 
+        if self.amount == 0:
+            return None
+
         order = make_order(
-            self.best_price, self.amount, self.side, self.instrument, hidden=True
+            self.best_price,
+            self.amount,
+            self.side,
+            self.instrument,
+            hidden=True,
+            symbol=self.orderbook_symbol,
         )
 
         self.dispatcher.dispatch(order)
@@ -87,7 +98,7 @@ class MarketMakingStrategy(AbstractStrategy):
     def amount(self):
         if self.side == SideTypeEnum.ASK:
             return self.total_assets
-        return self.total_pln / self.best_price
+        return round_decimals_down(self.total_pln / self.best_price, 4)
 
     @property
     def total_assets(self):
