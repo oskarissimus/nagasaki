@@ -101,24 +101,8 @@ class BitcludeClient(BaseClient):
 
     def fetch_active_offers(self) -> List[Offer]:
         logger.info("fetching active offers")
-        self.last_500_request_times.append(datetime.now())
-        self.last_500_request_times.log_request_times()
-        response = requests.get(
-            self.url_base,
-            params={
-                "method": "account",
-                "action": "activeoffers",
-                "id": self.client_id,
-                "key": self.client_key,
-            },
-        )
-        try:
-            response_json = response.json()
-        except json.decoder.JSONDecodeError as json_decode_error:
-            raise CannotParseResponse(response.text) from json_decode_error
-        if "success" in response_json and response_json["success"] is True:
-            return [Offer(**offer) for offer in response_json["offers"]]
-        raise BitcludeClientException(response_json)
+        response = self.ccxt_connector.fetch_open_orders()
+        return [Offer(**offer["info"]) for offer in response]
 
     @staticmethod
     def _parse_response_as_dto(response: requests.Response, dto_class: type):

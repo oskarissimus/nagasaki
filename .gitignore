@@ -4,4 +4,4 @@ __pycache__
 sql_app.db
 dist/
 geckodriver.log
-!/runtime_config.yml
+runtime_config.yml
