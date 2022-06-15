@@ -3,8 +3,8 @@ from datetime import datetime
 from sqlalchemy import Column, DateTime, Enum, Integer, Numeric
 from sqlalchemy.orm import declarative_base
 
-from nagasaki.clients.base_client import OrderMaker, OrderTaker
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
+from nagasaki.models.bitclude import OrderMaker, OrderTaker
 
 Base = declarative_base()
 

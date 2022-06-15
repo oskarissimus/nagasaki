@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from nagasaki.clients.base_client import Order
+from nagasaki.models.bitclude import Order
 
 
 class AbstractStrategy(ABC):

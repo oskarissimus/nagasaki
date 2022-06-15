@@ -5,8 +5,7 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel
 
 from nagasaki.clients.bitclude.dto import AccountInfo, Offer
-from nagasaki.clients.deribit_client import AccountSummary
-from nagasaki.models.bitclude import OrderbookRest
+from nagasaki.models.bitclude import AccountSummary, OrderbookRest
 
 
 class BitcludeState(BaseModel):

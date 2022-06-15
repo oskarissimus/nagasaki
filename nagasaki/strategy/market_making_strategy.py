@@ -1,7 +1,6 @@
 from decimal import Decimal
 from typing import List
 
-from nagasaki.clients.base_client import OrderMaker
 from nagasaki.enums.common import (
     Currency,
     InstrumentTypeEnum,
@@ -10,6 +9,7 @@ from nagasaki.enums.common import (
     Symbol,
 )
 from nagasaki.logger import logger
+from nagasaki.models.bitclude import OrderMaker
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.strategy.calculators.price_calculator import PriceCalculator

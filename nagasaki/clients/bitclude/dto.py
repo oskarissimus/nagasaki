@@ -4,7 +4,6 @@ from typing import Dict, List, Optional, Union
 
 from pydantic import BaseModel, validator
 
-from nagasaki.clients.base_client import OrderMaker, OrderTaker
 from nagasaki.enums.common import (
     Currency,
     InstrumentTypeEnum,
@@ -14,7 +13,12 @@ from nagasaki.enums.common import (
     Symbol,
     Type,
 )
-from nagasaki.models.bitclude import OrderbookRest, OrderbookRestItem
+from nagasaki.models.bitclude import (
+    OrderbookRest,
+    OrderbookRestItem,
+    OrderMaker,
+    OrderTaker,
+)
 from nagasaki.utils.common import HashableBaseModel, round_decimals_down
 
 

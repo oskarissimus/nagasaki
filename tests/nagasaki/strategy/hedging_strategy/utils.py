@@ -1,7 +1,7 @@
 from decimal import Decimal
 
-from nagasaki.clients.base_client import OrderTaker
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum, Symbol
+from nagasaki.models.bitclude import OrderTaker
 
 
 def make_order_taker_sell(amount: Decimal):

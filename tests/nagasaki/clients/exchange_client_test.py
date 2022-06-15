@@ -1,9 +1,9 @@
 from unittest import mock
 
-from nagasaki.clients.base_client import OrderMaker, OrderTaker
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.enums.common import InstrumentTypeEnum, Side, SideTypeEnum, Symbol
+from nagasaki.models.bitclude import OrderMaker, OrderTaker
 
 
 def test_should_create_order_from_order_maker():

@@ -4,10 +4,10 @@ from typing import List
 from pydantic import BaseModel
 
 from nagasaki.clients import BaseClient
-from nagasaki.clients.base_client import Order, OrderMaker
 from nagasaki.clients.bitclude.dto import Offer
 from nagasaki.enums.common import SideTypeEnum
 from nagasaki.logger import logger
+from nagasaki.models.bitclude import Order, OrderMaker
 from nagasaki.state import BitcludeState
 
 

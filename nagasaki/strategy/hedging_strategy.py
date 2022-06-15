@@ -1,9 +1,9 @@
 from decimal import Decimal
 
 from nagasaki.clients import BaseClient
-from nagasaki.clients.base_client import OrderTaker
 from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum, Symbol
 from nagasaki.logger import logger
+from nagasaki.models.bitclude import OrderTaker
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 

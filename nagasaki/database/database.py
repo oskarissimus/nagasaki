@@ -1,8 +1,8 @@
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
-from nagasaki.clients.base_client import Order, OrderMaker, OrderTaker
 from nagasaki.database.models import Base, OrderMakerDB, OrderTakerDB
+from nagasaki.models.bitclude import Order, OrderMaker, OrderTaker
 
 
 class Database:

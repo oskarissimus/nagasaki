@@ -3,7 +3,15 @@ from typing import List, Optional
 
 from pydantic import BaseModel, root_validator, validator
 
-from nagasaki.enums.common import ActionTypeEnum, OrderActionEnum, SideTypeEnum
+from nagasaki.enums.common import (
+    ActionTypeEnum,
+    InstrumentTypeEnum,
+    OrderActionEnum,
+    SideTypeEnum,
+    Symbol,
+    Type,
+)
+from nagasaki.utils.common import HashableBaseModel
 
 
 class BitcludeOrder(BaseModel):
@@ -114,3 +122,40 @@ class OrderbookWebsocket(BaseModel):
 class OrderbookRest(BaseModel):
     asks: Optional[OrderbookRestList]
     bids: Optional[OrderbookRestList]
+
+
+class AccountSummary(BaseModel):
+    equity: Decimal
+    delta_total: Decimal
+    margin_balance: Decimal
+
+
+class Order(HashableBaseModel):
+    order_id: Optional[str]
+    side: SideTypeEnum
+    amount: Decimal
+    instrument: InstrumentTypeEnum
+    hidden: Optional[bool]
+    symbol: Optional[Symbol]
+
+
+class OrderTaker(Order):
+    price_limit: Optional[Decimal]
+    type: Type = Type.MARKET
+
+    def __repr__(self):
+        return (
+            f"ORDER - TAKER <{self.side} {self.amount} {self.instrument} "
+            f"{self.price_limit} {self.type}>"
+        )
+
+
+class OrderMaker(Order):
+    price: Decimal
+    type: Type = Type.LIMIT
+
+    def __repr__(self):
+        return (
+            f"ORDER - MAKER <{self.side} {self.amount} {self.instrument} "
+            f"{self.price} {self.type}>"
+        )

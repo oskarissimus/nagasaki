@@ -4,8 +4,8 @@ from unittest import mock
 import pytest
 
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance
-from nagasaki.clients.deribit_client import AccountSummary
 from nagasaki.enums.common import InstrumentTypeEnum, Symbol
+from nagasaki.models.bitclude import AccountSummary
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.hedging_strategy import HedgingStrategy
 

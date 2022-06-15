@@ -2,9 +2,9 @@ from decimal import Decimal
 
 import pytest
 
-from nagasaki.clients.base_client import OrderMaker
 from nagasaki.clients.bitclude.dto import CancelRequestDTO, CreateRequestDTO
 from nagasaki.enums.common import InstrumentTypeEnum, Side, SideTypeEnum, Symbol, Type
+from nagasaki.models.bitclude import OrderMaker
 
 
 @pytest.fixture(name="order_maker")

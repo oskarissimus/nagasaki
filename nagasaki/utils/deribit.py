@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from nagasaki.clients.deribit_client import AccountSummary
+from nagasaki.models.bitclude import AccountSummary
 
 
 class DeribitUtils:

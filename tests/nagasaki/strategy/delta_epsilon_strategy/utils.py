@@ -1,9 +1,13 @@
 from decimal import Decimal
 
-from nagasaki.clients.base_client import OrderMaker
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance, Offer
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum, Symbol
-from nagasaki.models.bitclude import OrderbookRest, OrderbookRestItem, OrderbookRestList
+from nagasaki.models.bitclude import (
+    OrderbookRest,
+    OrderbookRestItem,
+    OrderbookRestList,
+    OrderMaker,
+)
 
 
 def make_offer(price, amount):
