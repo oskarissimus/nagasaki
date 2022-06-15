@@ -46,12 +46,12 @@ class BitcludeClient(BaseClient):
         response = self.ccxt_connector.fetch_open_orders()
         return [Offer(**offer["info"]) for offer in response]
 
-    def create_order(self, order: OrderMaker) -> CreateResponseDTO:
+    def create_order(self, order: OrderMaker):
         logger.info(f"creating {order}")
         response = self.ccxt_connector.create_order(
             **CreateRequestDTO.from_order_maker(order).to_method_params()
         )
-        return CreateResponseDTO(**response["info"])
+        return response
 
     def cancel_order(self, order: OrderMaker) -> CancelResponseDTO:
         logger.info(f"cancelling {order}")
@@ -64,3 +64,6 @@ class BitcludeClient(BaseClient):
         logger.info(f"fetching {symbol} orderbook")
         response = self.ccxt_connector.fetch_order_book(symbol.value)
         return OrderbookResponseDTO(**response)
+
+
+

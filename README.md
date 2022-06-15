@@ -144,3 +144,8 @@ flowchart
 
 # TODO 15.06.2022
 - [ ] make adapter class for `ccxt_exchange` client
+
+# reinstall ccxt-unmerged after pushing to fork
+```
+pip uninstall ccxt-unmerged && poetry update ccxt-unmerged && poetry install
+```
