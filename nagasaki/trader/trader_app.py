@@ -56,33 +56,16 @@ class TraderApp:
         self.event_manager.post_event("strategy_execution_requested")
 
     def attach_jobs_to_scheduler(self):
-        # self.scheduler.add_job(tick, "interval", seconds=3)
-        self.scheduler.add_job(
-            self.get_mark_price_in_usd_from_deribit_and_write_to_state,
-            "interval",
-            seconds=10,
-        )
         self.scheduler.add_job(
             self.fetch_usd_pln_and_write_to_state,
             "interval",
             minutes=20,
         )
-        # TODO post event orderbook_changed
         self.scheduler.add_job(
             self.synchronize_state_and_execute_strategy,
             "interval",
             seconds=10,
         )
-
-    def get_mark_price_in_usd_from_deribit_and_write_to_state(self):
-        runtime_config = RuntimeConfig()
-
-        self.deribit_state.mark_price[
-            runtime_config.market_making_instrument.market_1
-        ] = self.deribit_client.fetch_index_price_in_usd(
-            runtime_config.market_making_instrument
-        )
-        # logger.info(f"{self.state.btc_mark_usd=}")
 
     def fetch_usd_pln_and_write_to_state(self):
         synchronize_yahoo_finance_state()
