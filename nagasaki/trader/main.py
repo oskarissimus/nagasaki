@@ -39,7 +39,7 @@ def main(
 
     usd_pln_quoting_client = yahoo_finance_client
 
-    scheduler = BackgroundScheduler(job_defaults={"max_instances": 2})
+    scheduler = BackgroundScheduler(job_defaults={"max_instances": 1})
 
     app = TraderApp(
         bitclude_client=bitclude_client,
