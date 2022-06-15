@@ -183,17 +183,6 @@ class ActionDTO(BaseModel):
         return f"{self.action.value} order_id: {self.order_id}"
 
 
-class CreateResponseDTO(BaseModel):
-    success: bool
-    code: str
-    message: str
-
-    def __str__(self):
-        return (
-            f"success: {self.success}, code: {self.code}, " f"message: '{self.message}'"
-        )
-
-
 class CancelRequestDTO(BaseModel):
     order_id: str
     side: Side
@@ -208,15 +197,6 @@ class CancelRequestDTO(BaseModel):
 
     def to_method_params(self) -> Dict[str, str]:
         return {"id": self.order_id, "params": {"side": self.side.lower()}}
-
-
-class CancelResponseDTO(BaseModel):
-    success: bool
-    code: str
-    message: str
-
-    def __str__(self):
-        return f"success: {self.success}, code: {self.code}, message: {self.message}"
 
 
 class OrderbookResponseDTO(BaseModel):

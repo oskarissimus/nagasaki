@@ -10,9 +10,7 @@ from nagasaki.clients.base_client import BaseClient, OrderMaker
 from nagasaki.clients.bitclude.dto import (
     AccountInfo,
     CancelRequestDTO,
-    CancelResponseDTO,
     CreateRequestDTO,
-    CreateResponseDTO,
     Offer,
     OrderbookResponseDTO,
 )
@@ -48,17 +46,15 @@ class BitcludeClient(BaseClient):
 
     def create_order(self, order: OrderMaker):
         logger.info(f"creating {order}")
-        response = self.ccxt_connector.create_order(
+        self.ccxt_connector.create_order(
             **CreateRequestDTO.from_order_maker(order).to_method_params()
         )
-        return response
 
-    def cancel_order(self, order: OrderMaker) -> CancelResponseDTO:
+    def cancel_order(self, order: OrderMaker):
         logger.info(f"cancelling {order}")
-        response = self.ccxt_connector.cancel_order(
+        self.ccxt_connector.cancel_order(
             **CancelRequestDTO.from_order_maker(order).to_method_params()
         )
-        return CancelResponseDTO(**response)
 
     def fetch_orderbook(self, symbol: Symbol) -> OrderbookResponseDTO:
         logger.info(f"fetching {symbol} orderbook")
