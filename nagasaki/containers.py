@@ -24,7 +24,7 @@ class Clients(
     )
     deribit_client_provider = providers.Singleton(
         DeribitClient,
-        client_id=config.deribit_client_id,
+        client_key=config.deribit_client_id,
         client_secret=config.deribit_client_secret,
     )
     yahoo_finance_client_provider = providers.Singleton(

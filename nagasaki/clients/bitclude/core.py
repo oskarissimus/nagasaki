@@ -1,5 +1,4 @@
 from nagasaki.clients.base_client import BaseClient
-from nagasaki.logger import logger
 
 
 class BitcludeClient(BaseClient):

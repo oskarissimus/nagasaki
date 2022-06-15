@@ -14,6 +14,7 @@ def sell_order(amount: Decimal, instrument: InstrumentTypeEnum, symbol: Symbol):
         amount=amount,
         instrument=instrument,
         symbol=symbol,
+        hidden=False,
     )
 
 
@@ -23,6 +24,7 @@ def buy_order(amount: Decimal, instrument: InstrumentTypeEnum, symbol: Symbol):
         amount=amount,
         instrument=instrument,
         symbol=symbol,
+        hidden=False,
     )
 
 

@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import List, Optional
 
 import ccxt
-import ccxt_unmerged
+import ccxt_unmerged  # pylint: disable=unused-import
 import requests
 from requests.adapters import HTTPAdapter, Retry
 

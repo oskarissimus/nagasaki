@@ -5,11 +5,11 @@ from nagasaki.clients.bitclude.dto import CreateRequestDTO
 class DeribitClient(BaseClient):
     def __init__(
         self,
-        client_id: str,
+        client_key: str,
         client_secret: str,
     ):
         super(DeribitClient, self).__init__(
-            "deribit", client_id=client_id, client_secret=client_secret
+            "deribit", client_key=client_key, client_secret=client_secret
         )
 
     def create_order(self, order) -> None:
