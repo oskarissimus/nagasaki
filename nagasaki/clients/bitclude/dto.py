@@ -14,7 +14,7 @@ from nagasaki.enums.common import (
     Symbol,
     Type,
 )
-from nagasaki.models.bitclude import BitcludeOrder, OrderbookRest, OrderbookRestItem
+from nagasaki.models.bitclude import OrderbookRest, OrderbookRestItem
 from nagasaki.utils.common import HashableBaseModel, round_decimals_down
 
 
@@ -155,10 +155,13 @@ class CreateRequestDTO(BaseModel):
             type=order.type,
             side=side,
             amount=order.amount,
-            params={"hidden": order.hidden},
+            params={
+                "hidden": order.hidden,
+                "post_only": False,
+            },
         )
 
-    def to_method_params(self) -> Dict[str, Union[str, Dict[str, int]]]:
+    def to_method_params(self) -> Dict[str, Union[str, Dict[str, bool]]]:
         return {
             "price": str(self.price) if self.price else None,
             "symbol": self.symbol.value,
@@ -166,8 +169,8 @@ class CreateRequestDTO(BaseModel):
             "type": self.type.value.lower(),
             "side": self.side.value.lower(),
             "params": {
-                "hidden": int(self.params["hidden"]),
-                "post_only": int(self.params["post_only"]),
+                "hidden": self.params["hidden"],
+                "post_only": self.params["post_only"],
             },
         }
 

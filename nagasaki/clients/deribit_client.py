@@ -4,7 +4,7 @@ import ccxt
 from pydantic import BaseModel
 
 from nagasaki.clients.base_client import BaseClient, OrderTaker
-from nagasaki.clients.bitclude.dto import CreateRequestDTO, CreateResponseDTO
+from nagasaki.clients.bitclude.dto import CreateRequestDTO
 from nagasaki.enums.common import InstrumentTypeEnum
 
 
@@ -30,11 +30,10 @@ class DeribitClient(BaseClient):
         response = self.ccxt_connector.fetch_balance({"currency": currency})
         return AccountSummary(**response["info"]["result"])
 
-    def create_order(self, order: OrderTaker) -> CreateResponseDTO:
-        response = self.ccxt_connector.create_order(
+    def create_order(self, order: OrderTaker) -> None:
+        self.ccxt_connector.create_order(
             **CreateRequestDTO.from_order_taker(order).to_method_params()
         )
-        return CreateResponseDTO(**response["info"])
 
     def fetch_index_price_in_usd(self, instrument: InstrumentTypeEnum) -> Decimal:
         symbol = f"{instrument.market_1}/USD:{instrument.market_1}"

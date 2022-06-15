@@ -137,6 +137,10 @@ flowchart
 - [x] Clean up states' init/sync
 
 
+# kimsufi housekeeping
 ```crontab
 0 0 * * * docker image prune -a --force --filter "until=240h" > /root/crontab.log
 ```
+
+# TODO 15.06.2022
+- [ ] make adapter class for `ccxt_exchange` client
