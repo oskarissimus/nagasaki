@@ -143,7 +143,7 @@ flowchart
 ```
 
 # TODO 15.06.2022
-- [ ] make adapter class for `ccxt_exchange` client
+- [x] make adapter class for `ccxt_exchange` client
 
 # reinstall ccxt-unmerged after pushing to fork
 ```
