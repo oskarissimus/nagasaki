@@ -60,6 +60,3 @@ class BitcludeClient(BaseClient):
         logger.info(f"fetching {symbol} orderbook")
         response = self.ccxt_connector.fetch_order_book(symbol.value)
         return OrderbookResponseDTO(**response)
-
-
-
