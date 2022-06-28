@@ -68,7 +68,7 @@ class MarketMakingStrategy(AbstractStrategy):
             self.amount,
             self.side,
             self.instrument,
-            hidden=True,
+            hidden=False,
             symbol=self.symbol,
         )
 
