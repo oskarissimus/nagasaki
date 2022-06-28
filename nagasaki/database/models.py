@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Enum, Integer, Numeric
+from sqlalchemy import Column, DateTime, Enum, Integer, Numeric, String
 from sqlalchemy.orm import declarative_base
 
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
@@ -47,3 +47,13 @@ class OrderTakerDB(Base):
             amount=order.amount,
             instrument=order.instrument,
         )
+
+
+class BalanceDB(Base):
+    __tablename__ = "balance"
+
+    id = Column(Integer, primary_key=True, index=True)
+    currency = Column(String)
+    amount_active = Column(Numeric(precision=20, scale=10))
+    amount_inactive = Column(Numeric(precision=20, scale=10))
+    time = Column(DateTime, default=datetime.now)

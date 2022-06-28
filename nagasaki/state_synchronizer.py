@@ -6,6 +6,7 @@ from nagasaki.clients import YahooFinanceClient
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.containers import Application
+from nagasaki.database.database import Database
 from nagasaki.logger import logger
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
@@ -30,8 +31,10 @@ def synchronize_bitclude_state(
     strategies: List[AbstractStrategy] = Provide[
         Application.strategies.strategies_provider
     ],
+    database: Database = Provide[Application.databases.database_provider],
 ):
     bitclude_state.account_info = bitclude_client.fetch_account_info()
+    database.write_account_info_to_db(account_info=bitclude_state.account_info)
     bitclude_state.active_offers = bitclude_client.fetch_active_offers()
 
     orderbook_symbols = [
