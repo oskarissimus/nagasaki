@@ -4,7 +4,7 @@ RUN set -x \
     && apt update \
     && apt upgrade -y \
     && apt install -y \
-    firefox-esr
+    firefox-esr git
 
 ENV POETRY_VIRTUALENVS_CREATE=false
 ADD ./pyproject.toml ./poetry.lock /app/
