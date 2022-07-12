@@ -38,34 +38,6 @@ class AccountInfo(BaseModel):
     def assets_total(self, currency: MarketEnum) -> Decimal:
         return self.balances[currency].active + self.balances[currency].inactive
 
-    @property
-    def btcs(self) -> Decimal:
-        return self.btcs_active + self.btcs_inactive
-
-    @property
-    def btcs_inactive(self) -> Decimal:
-        """w zleceniach"""
-        return self.balances["BTC"].inactive
-
-    @property
-    def btcs_active(self) -> Decimal:
-        """nie są w zleceniach"""
-        return self.balances["BTC"].active
-
-    @property
-    def plns_inactive(self) -> Decimal:
-        """w zleceniach"""
-        return self.balances["PLN"].inactive
-
-    @property
-    def plns_active(self) -> Decimal:
-        """nie są w zleceniach"""
-        return self.balances["PLN"].active
-
-    @property
-    def plns(self) -> Decimal:
-        return self.plns_active + self.plns_inactive
-
 
 class AccountHistoryItem(HashableBaseModel):
     currency1: str
