@@ -54,7 +54,7 @@ def make_order_maker_ask(price, amount):
         amount=amount,
         instrument=InstrumentTypeEnum.BTC_PLN,
         side=SideTypeEnum.ASK,
-        hidden=True,
+        hidden=False,
         symbol=Symbol.BTC_PLN,
     )
 
@@ -65,7 +65,7 @@ def make_order_maker_bid(price, amount):
         amount=amount,
         instrument=InstrumentTypeEnum.BTC_PLN,
         side=SideTypeEnum.BID,
-        hidden=True,
+        hidden=False,
         symbol=Symbol.BTC_PLN,
     )
 

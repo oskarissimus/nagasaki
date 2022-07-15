@@ -10,6 +10,7 @@ def make_order_taker_sell(amount: Decimal):
         amount=amount,
         instrument=InstrumentTypeEnum.BTC_PERPETUAL,
         symbol=Symbol.BTC_USD_BTC,
+        hidden=False,
     )
 
 
@@ -19,4 +20,5 @@ def make_order_taker_buy(amount: Decimal):
         amount=amount,
         instrument=InstrumentTypeEnum.BTC_PERPETUAL,
         symbol=Symbol.BTC_USD_BTC,
+        hidden=False,
     )
