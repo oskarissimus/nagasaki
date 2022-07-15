@@ -3,7 +3,6 @@ from typing import List
 
 from pydantic import ValidationError
 
-from nagasaki.clients.bitclude.dto import AmmountTooLowError
 from nagasaki.enums.common import (
     Currency,
     InstrumentTypeEnum,
