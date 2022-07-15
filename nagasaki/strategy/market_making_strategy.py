@@ -1,6 +1,8 @@
 from decimal import Decimal
 from typing import List
 
+from pydantic import ValidationError
+
 from nagasaki.clients.bitclude.dto import AmmountTooLowError
 from nagasaki.enums.common import (
     Currency,
@@ -76,7 +78,7 @@ class MarketMakingStrategy(AbstractStrategy):
 
         try:
             self.dispatcher.dispatch(order)
-        except AmmountTooLowError as error:
+        except ValidationError as error:
             raise SkippableStrategyException from error
         return order
 
