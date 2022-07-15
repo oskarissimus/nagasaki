@@ -1,6 +1,7 @@
 import datetime
 from decimal import Decimal
 from typing import Dict, List, Optional, Union
+from xml.dom import ValidationErr
 
 from pydantic import BaseModel, validator
 
@@ -82,6 +83,8 @@ class Offer(BaseModel):
             instrument=instrument,
         )
 
+class AmmountTooLowError(ValueError):
+    pass
 
 class CreateRequestDTO(BaseModel):
     price: Optional[Decimal]
@@ -96,7 +99,7 @@ class CreateRequestDTO(BaseModel):
     def validate_amount(cls, v):
         rounded_v = round_decimals_down(v, 4)
         if rounded_v <= 0:
-            raise ValueError(
+            raise AmmountTooLowError(
                 f"Amount rounded down to 4 decimals must be greater than 0. got {v:.10f}"
             )
         return rounded_v

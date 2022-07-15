@@ -4,3 +4,7 @@ class BitcludeClientException(Exception):
 
 class CannotParseResponse(Exception):
     pass
+
+
+class SkippableStrategyException(Exception):
+    pass

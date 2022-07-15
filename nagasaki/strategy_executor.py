@@ -4,6 +4,7 @@ from dependency_injector.wiring import Provide, inject
 
 from nagasaki.containers import Application
 from nagasaki.database import Database
+from nagasaki.exceptions import SkippableStrategyException
 from nagasaki.logger import logger
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 
@@ -17,6 +18,9 @@ def execute_all_strategies(
 ):
     logger.debug("strategy execution requested")
     for strategy in strategies:
-        order = strategy.execute()
-        if order:
-            database.save_order(order)
+        try:
+            order = strategy.execute()
+            if order:
+                database.save_order(order)
+        except SkippableStrategyException:
+            logger.info(f"skipping strategy {strategy}")

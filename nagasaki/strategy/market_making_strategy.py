@@ -1,6 +1,7 @@
 from decimal import Decimal
 from typing import List
 
+from nagasaki.clients.bitclude.dto import AmmountTooLowError
 from nagasaki.enums.common import (
     Currency,
     InstrumentTypeEnum,
@@ -8,6 +9,7 @@ from nagasaki.enums.common import (
     SideTypeEnum,
     Symbol,
 )
+from nagasaki.exceptions import SkippableStrategyException
 from nagasaki.logger import logger
 from nagasaki.models.bitclude import OrderMaker
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
@@ -72,7 +74,10 @@ class MarketMakingStrategy(AbstractStrategy):
             symbol=self.symbol,
         )
 
-        self.dispatcher.dispatch(order)
+        try:
+            self.dispatcher.dispatch(order)
+        except AmmountTooLowError as error:
+            raise SkippableStrategyException from error
         return order
 
     def calculate_best_price(self):
