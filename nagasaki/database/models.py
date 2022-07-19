@@ -59,10 +59,12 @@ class BalanceDB(Base):
     time = Column(DateTime, default=datetime.now)
 
 
-class Snapshot(Base):
-    __tablename__ = "snapshot"
-
-    id = Column(Integer, primary_key=True, index=True)
-    balances = Column(Balances)
-    mark_prices = Column(MarkPrices)
-    time = Column(DateTime, default=datetime.now)
+#
+#
+# class Snapshot(Base):
+#     __tablename__ = "snapshot"
+#
+#     id = Column(Integer, primary_key=True, index=True)
+#     balances = Column(Balances)
+#     mark_prices = Column(MarkPrices)
+#     time = Column(DateTime, default=datetime.now)

@@ -50,6 +50,7 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
     bitclude_state = mock.Mock()
     deribit_state = mock.Mock()
     yahoo_state = mock.Mock()
+    state = mock.Mock()
 
     config = MarketMakingStrategySettings(
         side="bid",
@@ -61,6 +62,7 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
     strategy = market_making_strategy_factory(
         config,
         bitclude_client,
+        state,
         bitclude_state,
         deribit_state,
         yahoo_state,
@@ -69,6 +71,7 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
     assert strategy.side == SideTypeEnum.BID
     assert strategy.instrument == InstrumentTypeEnum.BTC_PLN
     assert strategy.symbol == Symbol.BTC_PLN
+    assert strategy.state is state
     assert strategy.bitclude_state is bitclude_state
     assert strategy.deribit_state is deribit_state
     assert strategy.yahoo_finance_state is yahoo_state
@@ -82,6 +85,7 @@ def test_should_create_hedging_strategy_eth():
     bitclude_state = mock.Mock()
     deribit_state = mock.Mock()
     yahoo_state = mock.Mock()
+    state = mock.Mock()
     grand_total_delta_max = "0.001"
     grand_total_delta_min = "-0.001"
 
@@ -93,13 +97,14 @@ def test_should_create_hedging_strategy_eth():
     )
 
     strategy = hedging_strategy_factory(
-        config, client, bitclude_state, deribit_state, yahoo_state
+        config, client, state, bitclude_state, deribit_state, yahoo_state
     )
 
     assert strategy.instrument == InstrumentTypeEnum.ETH_PERPETUAL
     assert strategy.client is client
     assert strategy.grand_total_delta_max == Decimal(grand_total_delta_max)
     assert strategy.grand_total_delta_min == Decimal(grand_total_delta_min)
+    assert strategy.state is state
     assert strategy.bitclude_state is bitclude_state
     assert strategy.deribit_state is deribit_state
     assert strategy.yahoo_finance_state is yahoo_state

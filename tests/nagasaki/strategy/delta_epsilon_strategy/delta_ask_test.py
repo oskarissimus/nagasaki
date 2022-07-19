@@ -8,7 +8,7 @@ from .utils import (
 
 
 def test_ask_bidding_over_delta(
-    bitclude_state, deribit_state, dispatcher, strategy_ask
+    state, bitclude_state, deribit_state, dispatcher, strategy_ask
 ):
     """
     Total PLN : Total BTC = 1:0 => inventory_parameter = 1 => delta = 0.002

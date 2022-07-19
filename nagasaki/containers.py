@@ -10,7 +10,7 @@ from nagasaki.database import Database
 from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.settings import Settings
 from nagasaki.settings.factory import create_strategies
-from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
+from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
 
 
 class Clients(
@@ -41,6 +41,8 @@ class States(containers.DeclarativeContainer):
     deribit_state_provider = providers.Singleton(DeribitState)
     yahoo_finance_state_provider = providers.Singleton(YahooFinanceState)
 
+    state_provider = providers.Singleton(State)
+
 
 class Strategies(containers.DeclarativeContainer):
     clients = providers.DependenciesContainer()
@@ -49,6 +51,7 @@ class Strategies(containers.DeclarativeContainer):
     strategies_provider = providers.Singleton(
         create_strategies,
         settings=RuntimeConfig(),
+        state=states.state_provider,
         bitclude_client=clients.bitclude_client_provider,
         deribit_client=clients.deribit_client_provider,
         bitclude_state=states.bitclude_state_provider,

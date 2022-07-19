@@ -5,7 +5,7 @@ import pytest
 
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum, Symbol
-from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
+from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
 from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
 from nagasaki.strategy.calculators.epsilon_calculator import EpsilonCalculator
 from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
@@ -44,6 +44,17 @@ def fixture_yahoo_finance_state():
     return yahoo
 
 
+@pytest.fixture(name="state")
+def fixture_state(bitclude_state, deribit_state, yahoo_finance_state):
+    return State(
+        exchange_states={
+            "bitclude": bitclude_state,
+            "deribit": deribit_state,
+            "yahoo_finance": yahoo_finance_state,
+        }
+    )
+
+
 @pytest.fixture(name="dispatcher")
 def fixture_dispatcher():
     return mock.Mock()
@@ -64,6 +75,7 @@ def fixture_strategy_ask(
     dispatcher,
     delta_calculator,
     epsilon_calculator,
+    state,
     bitclude_state,
     deribit_state,
     yahoo_finance_state,
@@ -74,6 +86,7 @@ def fixture_strategy_ask(
         side=SideTypeEnum.ASK,
         instrument=InstrumentTypeEnum.BTC_PLN,
         symbol=Symbol.BTC_PLN,
+        state=state,
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
@@ -86,6 +99,7 @@ def fixture_strategy_bid(
     dispatcher,
     delta_calculator,
     epsilon_calculator,
+    state,
     bitclude_state,
     deribit_state,
     yahoo_finance_state,
@@ -96,6 +110,7 @@ def fixture_strategy_bid(
         side=SideTypeEnum.BID,
         instrument=InstrumentTypeEnum.BTC_PLN,
         symbol=Symbol.BTC_PLN,
+        state=state,
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,

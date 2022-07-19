@@ -14,6 +14,10 @@ class ExchangeState(BaseModel):
     mark_price: Dict[str, Optional[Decimal]] = defaultdict(lambda: None)
 
 
+class State(BaseModel):
+    exchange_states: Dict[str, ExchangeState] = defaultdict(lambda: None)
+
+
 class BitcludeState(ExchangeState):
     account_info: Optional[AccountInfo]
     active_offers: Optional[List[Offer]]

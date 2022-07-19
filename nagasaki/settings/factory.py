@@ -10,7 +10,7 @@ from nagasaki.settings.runtime import (
     HedgingStrategySettings,
     MarketMakingStrategySettings,
 )
-from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
+from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
 from nagasaki.strategy import calculators
 from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
 from nagasaki.strategy.hedging_strategy import HedgingStrategy
@@ -30,6 +30,7 @@ def calculator_factory(settings: CalculatorSettings) -> calculators.PriceCalcula
 def market_making_strategy_factory(
     settings: MarketMakingStrategySettings,
     client: BaseClient,
+    state: State,
     bitclude_state: BitcludeState,
     deribit_state: DeribitState,
     yahoo_finance_state: YahooFinanceState,
@@ -44,6 +45,7 @@ def market_making_strategy_factory(
         side=SideTypeEnum(settings.side.upper()),
         instrument=InstrumentTypeEnum.from_str(settings.instrument),
         symbol=Symbol(settings.symbol),
+        state=state,
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
@@ -54,6 +56,7 @@ def market_making_strategy_factory(
 def hedging_strategy_factory(
     settings: HedgingStrategySettings,
     client: BaseClient,
+    state: State,
     bitclude_state: BitcludeState,
     deribit_state: DeribitState,
     yahoo_finance_state: YahooFinanceState,
@@ -64,6 +67,7 @@ def hedging_strategy_factory(
         symbol=Symbol(settings.symbol),
         grand_total_delta_max=Decimal(settings.grand_total_delta_max),
         grand_total_delta_min=Decimal(settings.grand_total_delta_min),
+        state=state,
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
@@ -74,6 +78,7 @@ def create_strategies(
     settings: RuntimeConfig,
     bitclude_client: BitcludeClient,
     deribit_client: DeribitClient,
+    state: State,
     bitclude_state: BitcludeState,
     deribit_state: DeribitState,
     yahoo_finance_state: YahooFinanceState,
@@ -86,6 +91,7 @@ def create_strategies(
             market_making_strategy_factory(
                 mm_settings,
                 bitclude_client,
+                state,
                 bitclude_state,
                 deribit_state,
                 yahoo_finance_state,
@@ -97,6 +103,7 @@ def create_strategies(
             hedging_strategy_factory(
                 hedging_settings,
                 deribit_client,
+                state,
                 bitclude_state,
                 deribit_state,
                 yahoo_finance_state,

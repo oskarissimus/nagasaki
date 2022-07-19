@@ -13,7 +13,7 @@ from nagasaki.enums.common import (
 from nagasaki.exceptions import SkippableStrategyException
 from nagasaki.logger import logger
 from nagasaki.models.bitclude import OrderMaker
-from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
+from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.strategy.calculators.price_calculator import PriceCalculator
 from nagasaki.strategy.dispatcher import StrategyOrderDispatcher
@@ -45,6 +45,7 @@ class MarketMakingStrategy(AbstractStrategy):
         side: SideTypeEnum,
         instrument: InstrumentTypeEnum,
         symbol: Symbol,
+        state: State,
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
@@ -54,6 +55,7 @@ class MarketMakingStrategy(AbstractStrategy):
         self.side = side
         self.instrument = instrument
         self.symbol = symbol
+        self.state = state
         self.bitclude_state = bitclude_state
         self.deribit_state = deribit_state
         self.yahoo_finance_state = yahoo_finance_state

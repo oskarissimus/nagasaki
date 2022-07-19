@@ -4,7 +4,7 @@ from nagasaki.clients import BaseClient
 from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum, Symbol
 from nagasaki.logger import logger
 from nagasaki.models.bitclude import OrderTaker
-from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
+from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 
 
@@ -36,6 +36,7 @@ class HedgingStrategy(AbstractStrategy):
         symbol: Symbol,
         grand_total_delta_max: Decimal,
         grand_total_delta_min: Decimal,
+        state: State,
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
@@ -45,6 +46,7 @@ class HedgingStrategy(AbstractStrategy):
         self.symbol = symbol
         self.grand_total_delta_max = grand_total_delta_max
         self.grand_total_delta_min = grand_total_delta_min
+        self.state = state
         self.bitclude_state = bitclude_state
         self.deribit_state = deribit_state
         self.yahoo_finance_state = yahoo_finance_state

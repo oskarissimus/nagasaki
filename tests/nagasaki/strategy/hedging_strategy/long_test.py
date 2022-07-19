@@ -65,7 +65,7 @@ def fixture_yahoo_finanace_state():
 
 
 def test_should_long_2_btcs(
-    client: mock.Mock, bitclude_state, deribit_state, yahoo_finance_state
+    client: mock.Mock, state, bitclude_state, deribit_state, yahoo_finance_state
 ):
     btcs_to_long_in_dollars = 80_000
 
@@ -75,6 +75,7 @@ def test_should_long_2_btcs(
         Symbol.BTC_USD_BTC,
         grand_total_delta_max=Decimal("0.001"),
         grand_total_delta_min=Decimal("-0.001"),
+        state=state,
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
