@@ -1,9 +1,17 @@
 from sqlalchemy.engine import Engine
+from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import sessionmaker
 
 from nagasaki.clients.bitclude.dto import AccountInfo
-from nagasaki.database.models import BalanceDB, Base, OrderMakerDB, OrderTakerDB
+from nagasaki.database.models import (
+    BalanceDB,
+    Base,
+    OrderMakerDB,
+    OrderTakerDB,
+    Snapshot,
+)
 from nagasaki.models.bitclude import Order, OrderMaker, OrderTaker
+from nagasaki.state import State
 
 
 class Database:
@@ -11,6 +19,8 @@ class Database:
         self.session_maker = session_maker
 
         Base.metadata.create_all(bind=engine)
+        # auto_base = automap_base(metadata=Base.metadata)
+        # auto_base.prepare(engine, reflect=True)
 
     def save_order(self, order: Order):
         if isinstance(order, OrderMaker):
@@ -39,4 +49,10 @@ class Database:
                             amount_inactive=balance.inactive,
                         )
                     )
+            session.commit()
+
+    def write_state_to_db(self, state: State):
+        snapshot = Snapshot(state=state.json())
+        with self.session_maker() as session:
+            session.add(snapshot)
             session.commit()

@@ -11,7 +11,7 @@ from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.containers import Application
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
-from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
+from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
 from nagasaki.trader.trader_app import TraderApp
 
 
@@ -26,6 +26,7 @@ def main(
     yahoo_finance_client: YahooFinanceClient = Provide[
         Application.clients.yahoo_finance_client_provider
     ],
+    state: State = Provide[Application.states.state_provider],
     bitclude_state: BitcludeState = Provide[Application.states.bitclude_state_provider],
     deribit_state: DeribitState = Provide[Application.states.deribit_state_provider],
     yahoo_finance_state: YahooFinanceState = Provide[
@@ -44,6 +45,7 @@ def main(
     app = TraderApp(
         bitclude_client=bitclude_client,
         deribit_client=deribit_client,
+        state=state,
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,

@@ -35,6 +35,7 @@ def synchronize_bitclude_state(
     database: Database = Provide[Application.databases.database_provider],
 ):
     bitclude_state.account_info = bitclude_client.fetch_account_info()
+    bitclude_state.exchange_balance = bitclude_client.fetch_exchange_balance()
     database.write_account_info_to_db(account_info=bitclude_state.account_info)
     bitclude_state.active_offers = bitclude_client.fetch_active_offers()
 
@@ -62,6 +63,7 @@ def synchronize_deribit_state(
     runtime_config = RuntimeConfig()
     currency = runtime_config.hedging_instrument.market_1
     deribit_state.account_summary = deribit_client.fetch_account_summary(currency)
+    deribit_state.exchange_balance = deribit_client.fetch_exchange_balance()
     deribit_state.mark_price[currency] = deribit_client.fetch_index_price_in_usd(
         runtime_config.market_making_instrument
     )

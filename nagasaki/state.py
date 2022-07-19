@@ -13,6 +13,12 @@ class ExchangeState(BaseModel):
     exchange_balance: Optional[ExchangeBalance]
     mark_price: Dict[str, Optional[Decimal]] = defaultdict(lambda: None)
 
+    class Config:
+        fields = {
+            "exchange_balance": {"include": True},
+            "mark_price": {"include": True},
+        }
+
 
 class State(BaseModel):
     exchange_states: Dict[str, ExchangeState] = defaultdict(lambda: None)

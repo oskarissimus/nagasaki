@@ -1,12 +1,17 @@
+import datetime
+
 import uvicorn
 from apscheduler.schedulers.background import BackgroundScheduler
+from dependency_injector.wiring import Provide
 
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
+from nagasaki.containers import Application
+from nagasaki.database import Database
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
-from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
+from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
 from nagasaki.state_synchronizer import (
     initialize_states,
     synchronize_bitclude_state,
@@ -23,6 +28,7 @@ class TraderApp:
         self,
         bitclude_client: BitcludeClient,
         deribit_client: DeribitClient,
+        state: State,
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
@@ -32,6 +38,7 @@ class TraderApp:
     ):
         self.bitclude_client = bitclude_client
         self.deribit_client = deribit_client
+        self.state = state
         self.bitclude_state = bitclude_state
         self.deribit_state = deribit_state
         self.yahoo_finance_state = yahoo_finance_state
@@ -65,10 +72,21 @@ class TraderApp:
             "interval",
             seconds=10,
         )
+        self.scheduler.add_job(
+            self.save_state_to_database,
+            "interval",
+            minutes=5,
+            next_run_time=datetime.datetime.now(),
+        )
 
     def fetch_usd_pln_and_write_to_state(self):
         synchronize_yahoo_finance_state()
         logger.info(f"USD/PLN: {self.yahoo_finance_state.mark_price['USD/PLN']:.2f}")
+
+    def save_state_to_database(
+        self, database: Database = Provide[Application.databases.database_provider]
+    ):
+        database.write_state_to_db(self.state)
 
     def run(self):
         initialize_states()

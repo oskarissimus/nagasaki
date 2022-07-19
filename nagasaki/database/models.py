@@ -1,6 +1,7 @@
+import json
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Enum, Integer, Numeric, String
+from sqlalchemy import Column, DateTime, Enum, Integer, Numeric, PickleType, String
 from sqlalchemy.orm import declarative_base
 
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
@@ -59,12 +60,9 @@ class BalanceDB(Base):
     time = Column(DateTime, default=datetime.now)
 
 
-#
-#
-# class Snapshot(Base):
-#     __tablename__ = "snapshot"
-#
-#     id = Column(Integer, primary_key=True, index=True)
-#     balances = Column(Balances)
-#     mark_prices = Column(MarkPrices)
-#     time = Column(DateTime, default=datetime.now)
+class Snapshot(Base):
+    __tablename__ = "snapshot"
+
+    id = Column(Integer, primary_key=True, index=True)
+    state = Column(String)
+    time = Column(DateTime, default=datetime.now)

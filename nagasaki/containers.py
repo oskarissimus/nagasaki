@@ -70,6 +70,7 @@ class Databases(containers.DeclarativeContainer):
             url="sqlite:///:memory:",
             connect_args={"check_same_thread": False},
             poolclass=StaticPool,
+            echo=True,
         ),
         postgres=providers.Singleton(
             create_engine,
