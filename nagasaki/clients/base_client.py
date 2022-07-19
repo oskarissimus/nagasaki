@@ -14,6 +14,7 @@ from nagasaki.clients.bitclude.dto import (
     Offer,
     OrderbookResponseDTO,
 )
+from nagasaki.clients.dto import ExchangeBalance
 from nagasaki.enums.common import InstrumentTypeEnum, Symbol
 from nagasaki.logger import logger
 from nagasaki.models.bitclude import AccountSummary, OrderMaker
@@ -44,6 +45,11 @@ class BaseClient(abc.ABC):
         logger.info("fetching account info")
         response = self.ccxt_connector.fetch_balance()
         return AccountInfo(**response["info"])
+
+    def fetch_exchange_balance(self) -> ExchangeBalance:
+        logger.info("fetching exchange balance")
+        response = self.ccxt_connector.fetch_balance()
+        return ExchangeBalance(**response)
 
     def fetch_active_offers(self) -> List[Offer]:
         logger.info("fetching active offers")

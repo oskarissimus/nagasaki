@@ -6,7 +6,6 @@ from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
-from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.state_synchronizer import (
     initialize_states,
@@ -69,7 +68,7 @@ class TraderApp:
 
     def fetch_usd_pln_and_write_to_state(self):
         synchronize_yahoo_finance_state()
-        logger.info(f"USD_PLN{self.yahoo_finance_state.usd_pln:.2f}")
+        logger.info(f"USD/PLN: {self.yahoo_finance_state.mark_price['USD/PLN']:.2f}")
 
     def run(self):
         initialize_states()

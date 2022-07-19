@@ -24,7 +24,10 @@ class DeltaCalculator(PriceCalculator):
         currency: Currency = None,
         orderbook_symbol: Symbol = None,
     ) -> Decimal:
-        mark_price = deribit_state.mark_price[currency] * yahoo_finance_state.usd_pln
+        mark_price = (
+            deribit_state.mark_price[currency]
+            * yahoo_finance_state.mark_price["USD/PLN"]
+        )
         inventory_parameter = self.inventory_parameter(
             currency, bitclude_state, deribit_state, yahoo_finance_state
         )
@@ -33,7 +36,7 @@ class DeltaCalculator(PriceCalculator):
         else:
             delta_price = self.calculate_bid(mark_price, inventory_parameter)
         logger.info(f"{delta_price=:.0f}")
-        return delta_price
+        return Decimal(delta_price)
 
     def calculate_ask(self, mark_price, inventory_parameter):
         return mark_price * (1 + self.inventory_adjusted_delta(inventory_parameter))
@@ -70,7 +73,8 @@ class DeltaCalculator(PriceCalculator):
         yahoo_finance_state: YahooFinanceState,
     ):
         mark_price = (
-            deribit_state.mark_price[asset_symbol] * yahoo_finance_state.usd_pln
+            deribit_state.mark_price[asset_symbol]
+            * yahoo_finance_state.mark_price["USD/PLN"]
         )
         balances = bitclude_state.account_info.balances
         total_pln = balances["PLN"].active + balances["PLN"].inactive

@@ -60,7 +60,8 @@ def test_should_calculate(
     deribit.mark_price = defaultdict()
     deribit.mark_price["BTC"] = price
     yahoo = mock.Mock()
-    yahoo.usd_pln = 1
+    yahoo.mark_price = defaultdict()
+    yahoo.mark_price["USD/PLN"] = 1
     calculator = DeltaCalculator(delta_inv_param_min, delta_inv_param_max)
 
     with mock.patch(

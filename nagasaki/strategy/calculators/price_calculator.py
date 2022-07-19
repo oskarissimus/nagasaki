@@ -1,4 +1,6 @@
 import abc
+from decimal import Decimal
+from typing import Optional
 
 from nagasaki.enums.common import Currency, MarketEnum, SideTypeEnum, Symbol
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
@@ -9,11 +11,10 @@ class PriceCalculator(abc.ABC):
     def calculate(
         self,
         side: SideTypeEnum,
-        asset_symbol: MarketEnum,
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
-        currency: Currency = None,
-        orderbook_symbol: Symbol = None,
-    ):
+        currency: Optional[Currency],
+        orderbook_symbol: Optional[Symbol],
+    ) -> Decimal:
         pass

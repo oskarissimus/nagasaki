@@ -57,3 +57,12 @@ class BalanceDB(Base):
     amount_active = Column(Numeric(precision=20, scale=10))
     amount_inactive = Column(Numeric(precision=20, scale=10))
     time = Column(DateTime, default=datetime.now)
+
+
+class Snapshot(Base):
+    __tablename__ = "snapshot"
+
+    id = Column(Integer, primary_key=True, index=True)
+    balances = Column(Balances)
+    mark_prices = Column(MarkPrices)
+    time = Column(DateTime, default=datetime.now)

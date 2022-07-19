@@ -146,7 +146,7 @@ class OrderTaker(Order):
     def __repr__(self):
         return (
             f"ORDER - TAKER <{self.side} {self.amount} {self.instrument} "
-            f"{self.price_limit} {self.type}>"
+            f"{self.price_limit} {self.type} {self.hidden}>"
         )
 
 
@@ -157,5 +157,5 @@ class OrderMaker(Order):
     def __repr__(self):
         return (
             f"ORDER - MAKER <{self.side} {self.amount} {self.instrument} "
-            f"{self.price} {self.type}>"
+            f"{self.price} {self.type} {self.hidden}>"
         )

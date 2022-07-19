@@ -28,7 +28,7 @@ class EpsilonCalculator(PriceCalculator):
                 bitclude_state.top_bid(orderbook_symbol.value)
             )
         logger.info(f"{epsilon_price=:.0f}")
-        return epsilon_price
+        return Decimal(epsilon_price)
 
     def calculate_ask(self, price):
         return price - self.epsilon

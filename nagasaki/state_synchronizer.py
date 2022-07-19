@@ -72,7 +72,9 @@ def synchronize_yahoo_finance_state(
         Application.clients.yahoo_finance_client_provider
     ],
 ):
-    yahoo_finance_state.usd_pln = yahoo_finance_client.fetch_usd_pln_quote()
+    yahoo_finance_state.mark_price[
+        "USD/PLN"
+    ] = yahoo_finance_client.fetch_usd_pln_quote()
 
 
 @inject
@@ -93,4 +95,4 @@ def log_states(
     currency = runtime_config.market_making_instrument.market_1
     logger.info(f"{currency}/USD: {deribit_state.mark_price[currency]}")
 
-    logger.info(f"USD/PLN: {yahoo_finance_state.usd_pln}")
+    logger.info(f"USD/PLN: {yahoo_finance_state.mark_price['USD/PLN']:.2f}")

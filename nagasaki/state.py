@@ -5,10 +5,16 @@ from typing import Dict, List, Optional
 from pydantic import BaseModel
 
 from nagasaki.clients.bitclude.dto import AccountInfo, Offer
+from nagasaki.clients.dto import ExchangeBalance
 from nagasaki.models.bitclude import AccountSummary, OrderbookRest
 
 
-class BitcludeState(BaseModel):
+class ExchangeState(BaseModel):
+    exchange_balance: Optional[ExchangeBalance]
+    mark_price: Dict[str, Optional[Decimal]] = defaultdict(lambda: None)
+
+
+class BitcludeState(ExchangeState):
     account_info: Optional[AccountInfo]
     active_offers: Optional[List[Offer]]
     orderbooks: Optional[Dict[str, OrderbookRest]] = defaultdict(lambda: None)
@@ -20,10 +26,9 @@ class BitcludeState(BaseModel):
         return max(self.orderbooks[asset_symbol].bids, key=lambda x: x.price).price
 
 
-class DeribitState(BaseModel):
-    mark_price: Dict[str, Optional[Decimal]] = defaultdict(lambda: None)
+class DeribitState(ExchangeState):
     account_summary: Optional[AccountSummary]
 
 
-class YahooFinanceState(BaseModel):
-    usd_pln: Optional[Decimal]
+class YahooFinanceState(ExchangeState):
+    pass

@@ -59,7 +59,7 @@ def fixture_yahoo_finanace_state():
     usd_pln = 4
 
     yahoo = YahooFinanceState()
-    yahoo.usd_pln = Decimal(usd_pln)
+    yahoo.mark_price["USD/PLN"] = Decimal(usd_pln)
 
     return yahoo
 
