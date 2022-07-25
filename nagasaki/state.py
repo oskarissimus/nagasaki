@@ -39,6 +39,11 @@ class BitcludeState(ExchangeState):
 class DeribitState(ExchangeState):
     account_summary: Optional[AccountSummary]
 
+    class Config:
+        fields = {
+            "account_summary": {"include": True},
+        }
+
 
 class YahooFinanceState(ExchangeState):
     pass
