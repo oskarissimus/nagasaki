@@ -66,3 +66,11 @@ class Snapshot(Base):
     id = Column(Integer, primary_key=True, index=True)
     state = Column(String)
     time = Column(DateTime, default=datetime.now)
+
+
+class Settings(Base):
+    __tablename__ = "settings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    settings = Column(String)
+    time = Column(DateTime, default=datetime.now)

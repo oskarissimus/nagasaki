@@ -8,6 +8,8 @@ from selenium.webdriver.firefox.service import Service as FirefoxService
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+from nagasaki.logger import logger
+
 
 class element_inner_html_len_is_greater_than(object):
     """An expectation for checking that length of inner html of element is greater than the given length.
@@ -29,13 +31,14 @@ class element_inner_html_len_is_greater_than(object):
 
 
 def scrape_api_key(email, password):
+    logger.info("Scraping Yahoo Finance API key")
     email_input_xpath = "/html/body/div/div/main/div[1]/div/div/div/div[2]/div/div/form/div/fieldset/div[1]/div/div/input"
     password_input_xpath = "/html/body/div/div/main/div[1]/div/div/div/div[2]/div/div/form/div/fieldset/div[2]/div/div[1]/input"
     login_button_xpath = (
         "/html/body/div/div/main/div[1]/div/div/div/div[2]/div/div/form/div/button"
     )
     api_key_element_xpath = "/html/body/div/div/main/div[1]/div[1]/div[1]"
-    yahoo_finance_api_url = "https://www.yahoofinanceapi.com/dashboard"
+    yahoo_finance_api_url = "https://financeapi.net/dashboard"
     options = Options()
     options.headless = True
 

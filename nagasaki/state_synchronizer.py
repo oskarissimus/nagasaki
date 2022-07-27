@@ -7,8 +7,8 @@ from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.containers import Application
 from nagasaki.database.database import Database
+from nagasaki.enums.common import InstrumentTypeEnum
 from nagasaki.logger import logger
-from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
@@ -59,13 +59,15 @@ def synchronize_deribit_state(
     deribit_client: DeribitClient = Provide[
         Application.clients.deribit_client_provider
     ],
+    database: Database = Provide[Application.databases.database_provider],
 ):
-    runtime_config = RuntimeConfig()
-    currency = runtime_config.hedging_instrument.market_1
+
+    runtime_config = database.get_newest_settings()
+    currency = InstrumentTypeEnum.from_str(runtime_config.hedging_instrument).market_1
     deribit_state.account_summary = deribit_client.fetch_account_summary(currency)
     deribit_state.exchange_balance = deribit_client.fetch_exchange_balance()
     deribit_state.mark_price[currency] = deribit_client.fetch_index_price_in_usd(
-        runtime_config.market_making_instrument
+        InstrumentTypeEnum.from_str(runtime_config.market_making_instrument)
     )
 
     state.exchange_states["deribit"] = deribit_state
@@ -91,8 +93,9 @@ def synchronize_yahoo_finance_state(
 @inject
 def log_states(
     state: State = Provide[Application.states.state_provider],
+    database: Database = Provide[Application.databases.database_provider],
 ):
-    runtime_config = RuntimeConfig()
+    runtime_config = database.get_newest_settings()
 
     bitclude_state = state.exchange_states["bitclude"]
     logger.info(bitclude_state.account_info)
@@ -101,7 +104,9 @@ def log_states(
     logger.info(f"{bitclude_state.active_offers=}")
 
     deribit_state = state.exchange_states["deribit"]
-    currency = runtime_config.market_making_instrument.market_1
+    currency = InstrumentTypeEnum.from_str(
+        runtime_config.market_making_instrument
+    ).market_1
     logger.info(f"{currency}/USD: {deribit_state.mark_price[currency]}")
 
     yahoo_finance_state = state.exchange_states["yahoo_finance"]

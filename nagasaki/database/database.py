@@ -1,5 +1,4 @@
 from sqlalchemy.engine import Engine
-from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import sessionmaker
 
 from nagasaki.clients.bitclude.dto import AccountInfo
@@ -8,9 +7,11 @@ from nagasaki.database.models import (
     Base,
     OrderMakerDB,
     OrderTakerDB,
+    Settings,
     Snapshot,
 )
 from nagasaki.models.bitclude import Order, OrderMaker, OrderTaker
+from nagasaki.settings.runtime import RuntimeSettings, StrategySettingsList
 from nagasaki.state import State
 
 
@@ -56,3 +57,20 @@ class Database:
         with self.session_maker() as session:
             session.add(snapshot)
             session.commit()
+
+    def write_settings_to_db(self, runtime_settings: RuntimeSettings):
+        settings = Settings(settings=runtime_settings.json())
+        with self.session_maker() as session:
+            session.add(settings)
+            session.commit()
+
+    def get_newest_settings(self) -> RuntimeSettings:
+        with self.session_maker() as session:
+            settings_db = session.query(Settings).order_by(Settings.time.desc()).first()
+            if settings_db is None:
+                return RuntimeSettings(
+                    market_making_instrument="ETH_PLN",
+                    hedging_instrument="ETH_PERPETUAL",
+                    strategies=StrategySettingsList(),
+                )
+            return RuntimeSettings.parse_raw(settings_db.settings)

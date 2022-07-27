@@ -3,11 +3,10 @@ from fastapi import Depends, FastAPI
 
 from nagasaki.api.auth import validate_basic_auth
 from nagasaki.containers import Application, Strategies
+from nagasaki.database.database import Database
 from nagasaki.logger import logger
-from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.settings.runtime import RuntimeSettings
 
-runtime_config = RuntimeConfig()
 app = FastAPI()
 
 
@@ -16,8 +15,11 @@ app = FastAPI()
     response_model=RuntimeSettings,
     dependencies=[Depends(validate_basic_auth)],
 )
-def read_runtime_config():
-    return runtime_config.data
+@inject
+def read_runtime_config(
+    database: Database = Depends(Provide[Application.databases.database_provider]),
+):
+    return database.get_newest_settings()
 
 
 @app.post(
@@ -29,9 +31,9 @@ def read_runtime_config():
 def update_runtime_config(
     data: RuntimeSettings,
     strategy_container: Strategies = Depends(Provide[Application.strategies]),
+    database: Database = Depends(Provide[Application.databases.database_provider]),
 ):
-    with open(runtime_config.path, "w", encoding="utf-8") as file:
-        file.write(data.yaml())
+    database.write_settings_to_db(data)
     logger.info("Runtime config updated - rebuilding strategies")
     strategy_container.init_resources()
     strategy_container.strategies_provider.reset()

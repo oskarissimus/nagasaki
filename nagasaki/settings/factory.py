@@ -3,8 +3,8 @@ from decimal import Decimal
 from nagasaki.clients import BaseClient
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
+from nagasaki.database.database import Database
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum, Symbol
-from nagasaki.runtime_config import RuntimeConfig
 from nagasaki.settings.runtime import (
     CalculatorSettings,
     HedgingStrategySettings,
@@ -75,7 +75,7 @@ def hedging_strategy_factory(
 
 
 def create_strategies(
-    settings: RuntimeConfig,
+    database: Database,
     bitclude_client: BitcludeClient,
     deribit_client: DeribitClient,
     state: State,
@@ -83,7 +83,7 @@ def create_strategies(
     deribit_state: DeribitState,
     yahoo_finance_state: YahooFinanceState,
 ):
-    strategy_settings = settings.data.strategies
+    strategy_settings = database.get_newest_settings().strategies
     strategies = []
 
     for mm_settings in strategy_settings.market_making_strategies or ():
