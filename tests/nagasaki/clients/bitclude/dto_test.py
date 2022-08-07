@@ -53,7 +53,7 @@ def test_create_request_dto_to_method_params():
         "type": "limit",
         "side": "sell",
         "symbol": "BTC/PLN",
-        "params": {"hidden": 1, "post_only": 1},
+        "params": {"hidden": "1", "post_only": "1"},
     }
 
     assert method_params == expected_method_params

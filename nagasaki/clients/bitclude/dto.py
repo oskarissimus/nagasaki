@@ -137,7 +137,7 @@ class CreateRequestDTO(BaseModel):
             },
         )
 
-    def to_method_params(self) -> Dict[str, Union[str, Dict[str, bool]]]:
+    def to_method_params(self) -> Dict[str, Union[str, Dict[str, str]]]:
         return {
             "price": str(self.price) if self.price else None,
             "symbol": self.symbol.value,
@@ -145,8 +145,8 @@ class CreateRequestDTO(BaseModel):
             "type": self.type.value.lower(),
             "side": self.side.value.lower(),
             "params": {
-                "hidden": self.params["hidden"],
-                "post_only": self.params["post_only"],
+                "hidden": str(int(self.params["hidden"])),
+                "post_only": str(int(self.params["post_only"])),
             },
         }
 

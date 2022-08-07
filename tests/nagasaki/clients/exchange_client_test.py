@@ -27,7 +27,7 @@ def test_should_create_order_from_order_maker():
             side=Side.BUY.lower(),
             amount="1.0",
             type="limit",
-            params={"hidden": True, "post_only": True},
+            params={"hidden": "1", "post_only": "1"},
         )
 
 
@@ -51,5 +51,5 @@ def test_should_create_order_from_order_taker():
         symbol=Symbol.BTC_USD_BTC.value,
         amount="100.0",
         type="market",
-        params={"hidden": False, "post_only": False},
+        params={"hidden": "0", "post_only": "0"},
     )
