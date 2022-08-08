@@ -10,7 +10,8 @@ from nagasaki.database.models import (
     Settings,
     Snapshot,
 )
-from nagasaki.models.bitclude import Order, OrderMaker, OrderTaker
+from nagasaki.enums.common import Type
+from nagasaki.models.bitclude import Order
 from nagasaki.settings.runtime import RuntimeSettings, StrategySettingsList
 from nagasaki.state import State
 
@@ -24,17 +25,17 @@ class Database:
         # auto_base.prepare(engine, reflect=True)
 
     def save_order(self, order: Order):
-        if isinstance(order, OrderMaker):
+        if order.type == Type.LIMIT:
             self.write_order_maker_to_db(order)
-        if isinstance(order, OrderTaker):
+        if order.type == Type.MARKET:
             self.write_order_taker_to_db(order)
 
-    def write_order_taker_to_db(self, order: OrderTaker):
+    def write_order_taker_to_db(self, order: Order):
         with self.session_maker() as session:
             session.add(OrderTakerDB.from_order_taker(order))
             session.commit()
 
-    def write_order_maker_to_db(self, order: OrderMaker):
+    def write_order_maker_to_db(self, order: Order):
         with self.session_maker() as session:
             session.add(OrderMakerDB.from_order_maker(order))
             session.commit()

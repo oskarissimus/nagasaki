@@ -1,30 +1,40 @@
 from decimal import Decimal
 
 from nagasaki.clients import BaseClient
-from nagasaki.enums.common import InstrumentTypeEnum, MarketEnum, SideTypeEnum, Symbol
+from nagasaki.enums.common import (
+    InstrumentTypeEnum,
+    MarketEnum,
+    SideTypeEnum,
+    Symbol,
+    Type,
+)
 from nagasaki.logger import logger
-from nagasaki.models.bitclude import OrderTaker
+from nagasaki.models.bitclude import Order
 from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 
 
 def sell_order(amount: Decimal, instrument: InstrumentTypeEnum, symbol: Symbol):
-    return OrderTaker(
+    return Order(
         side=SideTypeEnum.ASK,
         amount=amount,
         instrument=instrument,
         symbol=symbol,
         hidden=False,
+        type=Type.MARKET,
+        post_only=False,
     )
 
 
 def buy_order(amount: Decimal, instrument: InstrumentTypeEnum, symbol: Symbol):
-    return OrderTaker(
+    return Order(
         side=SideTypeEnum.BID,
         amount=amount,
         instrument=instrument,
         symbol=symbol,
         hidden=False,
+        type=Type.MARKET,
+        post_only=False,
     )
 
 
@@ -51,7 +61,7 @@ class HedgingStrategy(AbstractStrategy):
         self.deribit_state = deribit_state
         self.yahoo_finance_state = yahoo_finance_state
 
-    def execute(self) -> OrderTaker:
+    def execute(self) -> Order:
         delta = self.grand_total_delta()
         logger.info(f"Grand Total Δ: {delta:.8f} {self.instrument.market_1}")
 

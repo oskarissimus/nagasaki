@@ -2,18 +2,20 @@ from unittest import mock
 
 from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
-from nagasaki.enums.common import InstrumentTypeEnum, Side, SideTypeEnum, Symbol
-from nagasaki.models.bitclude import OrderMaker, OrderTaker
+from nagasaki.enums.common import InstrumentTypeEnum, Side, SideTypeEnum, Symbol, Type
+from nagasaki.models.bitclude import Order
 
 
 def test_should_create_order_from_order_maker():
-    order_maker = OrderMaker(
+    order_maker = Order(
         side=SideTypeEnum.BID,
         amount=1,
         instrument=InstrumentTypeEnum.BTC_PLN,
         price=1000,
         symbol=Symbol.BTC_PLN,
         hidden=True,
+        post_only=True,
+        type=Type.LIMIT,
     )
 
     client = BitcludeClient("client_id", "client_key")
@@ -32,12 +34,14 @@ def test_should_create_order_from_order_maker():
 
 
 def test_should_create_order_from_order_taker():
-    order_taker = OrderTaker(
+    order_taker = Order(
         side=SideTypeEnum.ASK,
         amount=100,
         instrument=InstrumentTypeEnum.BTC_PERPETUAL,
         symbol=Symbol.BTC_USD_BTC,
         hidden=False,
+        post_only=False,
+        type=Type.MARKET,
     )
 
     client = DeribitClient("client_id", "client_secret")

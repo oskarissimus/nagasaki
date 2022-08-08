@@ -13,12 +13,7 @@ from nagasaki.enums.common import (
     Symbol,
     Type,
 )
-from nagasaki.models.bitclude import (
-    OrderbookRest,
-    OrderbookRestItem,
-    OrderMaker,
-    OrderTaker,
-)
+from nagasaki.models.bitclude import Order, OrderbookRest, OrderbookRestItem
 from nagasaki.utils.common import HashableBaseModel, round_decimals_down
 
 
@@ -70,16 +65,18 @@ class Offer(BaseModel):
     def convert_to_uppercase(cls, v):
         return v.upper()
 
-    def to_order_maker(self) -> OrderMaker:
+    def to_order_maker(self) -> Order:
         instrument = InstrumentTypeEnum(
             (self.currency1.value.upper(), self.currency2.value.upper())
         )
-        return OrderMaker(
+        return Order(
             amount=self.amount,
             price=self.price,
             side=self.offertype,
             order_id=self.nr,
             instrument=instrument,
+            type=Type.LIMIT,
+            post_only=True,
         )
 
 
@@ -109,7 +106,7 @@ class CreateRequestDTO(BaseModel):
         )
 
     @classmethod
-    def from_order_maker(cls, order: OrderMaker) -> "CreateRequestDTO":
+    def from_order(cls, order: Order) -> "CreateRequestDTO":
         side = Side.BUY if order.side == SideTypeEnum.BID else Side.SELL
         return cls(
             price=order.price,
@@ -119,29 +116,12 @@ class CreateRequestDTO(BaseModel):
             amount=order.amount,
             params={
                 "hidden": order.hidden,
-                "post_only": True,
-            },
-        )
-
-    @classmethod
-    def from_order_taker(cls, order: OrderTaker) -> "CreateRequestDTO":
-        side = Side.BUY if order.side == SideTypeEnum.BID else Side.SELL
-        return cls(
-            symbol=order.symbol,
-            type=order.type,
-            side=side,
-            amount=order.amount,
-            params={
-                "hidden": order.hidden,
-                "post_only": False,
+                "post_only": order.post_only,
             },
         )
 
     def to_kwargs(
-        self,
-        params_parser: Callable[
-            [Dict[str, Any]], Dict[str, Any]
-        ]
+        self, params_parser: Callable[[Dict[str, Any]], Dict[str, Any]]
     ) -> Dict[str, Union[str, Dict[str, str]]]:
         return {
             "price": str(self.price) if self.price else None,
@@ -169,7 +149,7 @@ class CancelRequestDTO(BaseModel):
         return f"order_id: {self.order_id}, side: {self.side}"
 
     @classmethod
-    def from_order_maker(cls, order: OrderMaker):
+    def from_order(cls, order: Order):
         side = Side.BUY if order.side == SideTypeEnum.BID else Side.SELL
         return cls(order_id=str(order.order_id), side=side)
 

@@ -137,25 +137,6 @@ class Order(HashableBaseModel):
     instrument: InstrumentTypeEnum
     hidden: Optional[bool]
     symbol: Optional[Symbol]
-
-
-class OrderTaker(Order):
-    price_limit: Optional[Decimal]
-    type: Type = Type.MARKET
-
-    def __repr__(self):
-        return (
-            f"ORDER - TAKER <{self.side} {self.amount} {self.instrument} "
-            f"{self.price_limit} {self.type} {self.hidden}>"
-        )
-
-
-class OrderMaker(Order):
-    price: Decimal
-    type: Type = Type.LIMIT
-
-    def __repr__(self):
-        return (
-            f"ORDER - MAKER <{self.side} {self.amount} {self.instrument} "
-            f"{self.price} {self.type} {self.hidden}>"
-        )
+    post_only: Optional[bool]
+    type: Type
+    price: Optional[Decimal]

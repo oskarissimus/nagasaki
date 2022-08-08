@@ -7,7 +7,7 @@ from nagasaki.clients import BaseClient
 from nagasaki.clients.bitclude.dto import Offer
 from nagasaki.enums.common import SideTypeEnum
 from nagasaki.logger import logger
-from nagasaki.models.bitclude import Order, OrderMaker
+from nagasaki.models.bitclude import Order
 from nagasaki.state import BitcludeState
 
 
@@ -18,7 +18,7 @@ class Tolerance(BaseModel):
 
 def offer_is_within_tolerance(
     offer: Offer,
-    desirable_order: OrderMaker,
+    desirable_order: Order,
     tolerance: Tolerance,
 ):
     return (

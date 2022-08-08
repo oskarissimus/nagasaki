@@ -2,18 +2,15 @@ from decimal import Decimal
 
 import pytest
 
-from nagasaki.clients.bitclude.dto import (
-    CancelRequestDTO,
-    CreateRequestDTO,
-)
-from nagasaki.clients.base_client import deribit_params_parser, bitclude_params_parser
+from nagasaki.clients.base_client import bitclude_params_parser, deribit_params_parser
+from nagasaki.clients.bitclude.dto import CancelRequestDTO, CreateRequestDTO
 from nagasaki.enums.common import InstrumentTypeEnum, Side, SideTypeEnum, Symbol, Type
-from nagasaki.models.bitclude import OrderMaker
+from nagasaki.models.bitclude import Order
 
 
 @pytest.fixture(name="order_maker")
 def fixture_order_maker():
-    return OrderMaker(
+    return Order(
         order_id=2137,
         price=Decimal("420"),
         amount=Decimal("69"),
@@ -21,11 +18,13 @@ def fixture_order_maker():
         side=SideTypeEnum.ASK,
         hidden=True,
         symbol=Symbol("BTC/PLN"),
+        post_only=True,
+        type=Type.LIMIT,
     )
 
 
 def test_create_request_dto_from_order_maker(order_maker):
-    dto = CreateRequestDTO.from_order_maker(order_maker)
+    dto = CreateRequestDTO.from_order(order_maker)
 
     expected_dto = CreateRequestDTO(
         price=Decimal("420"),
@@ -64,7 +63,7 @@ def test_create_request_dto_to_method_params():
 
 
 def test_cancel_request_dto_from_order_maker(order_maker):
-    dto = CancelRequestDTO.from_order_maker(order_maker)
+    dto = CancelRequestDTO.from_order(order_maker)
 
     expected_dto = CancelRequestDTO(order_id="2137", side=Side.SELL)
 

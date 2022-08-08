@@ -1,12 +1,12 @@
 from decimal import Decimal
 
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance, Offer
-from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum, Symbol
+from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum, Symbol, Type
 from nagasaki.models.bitclude import (
+    Order,
     OrderbookRest,
     OrderbookRestItem,
     OrderbookRestList,
-    OrderMaker,
 )
 
 
@@ -49,24 +49,28 @@ def make_account_info(active_pln, inactive_pln, active_btc, inactive_btc):
 
 
 def make_order_maker_ask(price, amount):
-    return OrderMaker(
+    return Order(
         price=price,
         amount=amount,
         instrument=InstrumentTypeEnum.BTC_PLN,
         side=SideTypeEnum.ASK,
         hidden=False,
         symbol=Symbol.BTC_PLN,
+        type=Type.LIMIT,
+        post_only=True,
     )
 
 
 def make_order_maker_bid(price, amount):
-    return OrderMaker(
+    return Order(
         price=price,
         amount=amount,
         instrument=InstrumentTypeEnum.BTC_PLN,
         side=SideTypeEnum.BID,
         hidden=False,
         symbol=Symbol.BTC_PLN,
+        type=Type.LIMIT,
+        post_only=True,
     )
 
 

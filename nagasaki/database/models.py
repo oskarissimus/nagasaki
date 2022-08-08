@@ -1,11 +1,10 @@
-import json
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Enum, Integer, Numeric, PickleType, String
+from sqlalchemy import Column, DateTime, Enum, Integer, Numeric, String
 from sqlalchemy.orm import declarative_base
 
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
-from nagasaki.models.bitclude import OrderMaker, OrderTaker
+from nagasaki.models.bitclude import Order
 
 Base = declarative_base()
 
@@ -21,7 +20,7 @@ class OrderMakerDB(Base):
     time = Column(DateTime, default=datetime.now)
 
     @classmethod
-    def from_order_maker(cls, order: OrderMaker):
+    def from_order_maker(cls, order: Order):
         return cls(
             side=order.side,
             price=order.price,
@@ -41,10 +40,9 @@ class OrderTakerDB(Base):
     time = Column(DateTime, default=datetime.now)
 
     @classmethod
-    def from_order_taker(cls, order: OrderTaker):
+    def from_order_taker(cls, order: Order):
         return cls(
             side=order.side,
-            price_limit=order.price_limit,
             amount=order.amount,
             instrument=order.instrument,
         )

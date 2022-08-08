@@ -6,13 +6,13 @@ from pydantic import ValidationError
 from nagasaki.enums.common import (
     Currency,
     InstrumentTypeEnum,
-    MarketEnum,
     SideTypeEnum,
     Symbol,
+    Type,
 )
 from nagasaki.exceptions import SkippableStrategyException
 from nagasaki.logger import logger
-from nagasaki.models.bitclude import OrderMaker
+from nagasaki.models.bitclude import Order
 from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
 from nagasaki.strategy.calculators.price_calculator import PriceCalculator
@@ -27,14 +27,16 @@ def make_order(
     instrument: InstrumentTypeEnum,
     hidden: bool,
     symbol: Symbol,
-) -> OrderMaker:
-    return OrderMaker(
+) -> Order:
+    return Order(
         side=side,
         price=price,
         symbol=symbol,
         amount=amount,
         instrument=instrument,
         hidden=hidden,
+        post_only=True,
+        type=Type.LIMIT,
     )
 
 
@@ -62,7 +64,7 @@ class MarketMakingStrategy(AbstractStrategy):
         self.calculators = calculators or []
         self.best_price = None
 
-    def execute(self) -> OrderMaker:
+    def execute(self) -> Order:
         self.calculate_best_price()
 
         if self.amount == 0:

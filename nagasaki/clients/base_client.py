@@ -1,6 +1,6 @@
 import abc
 from decimal import Decimal
-from typing import List, Optional, Dict, Any
+from typing import Any, Dict, List, Optional
 
 import ccxt
 import ccxt_unmerged  # pylint: disable=unused-import
@@ -12,11 +12,12 @@ from nagasaki.clients.bitclude.dto import (
     CancelRequestDTO,
     CreateRequestDTO,
     Offer,
-    OrderbookResponseDTO, )
+    OrderbookResponseDTO,
+)
 from nagasaki.clients.dto import ExchangeBalance
 from nagasaki.enums.common import InstrumentTypeEnum, Symbol
 from nagasaki.logger import logger
-from nagasaki.models.bitclude import AccountSummary, OrderMaker
+from nagasaki.models.bitclude import AccountSummary, Order
 
 
 def bitclude_params_parser(params: Dict[str, Any]) -> Dict[str, Any]:
@@ -35,8 +36,9 @@ def deribit_params_parser(params: Dict[str, Any]) -> Dict[str, Any]:
 
 PARAMS_PARSING_FUNCTIONS = {
     "deribit": deribit_params_parser,
-    "bitclude": bitclude_params_parser
+    "bitclude": bitclude_params_parser,
 }
+
 
 class BaseClient(abc.ABC):
     def __init__(
@@ -75,16 +77,16 @@ class BaseClient(abc.ABC):
         response = self.ccxt_connector.fetch_open_orders()
         return [Offer(**offer["info"]) for offer in response]
 
-    def create_order(self, order: OrderMaker):
+    def create_order(self, order: Order):
         logger.info(f"creating {order}")
         self.ccxt_connector.create_order(
-            **CreateRequestDTO.from_order_maker(order).to_kwargs(self.params_parsing_function)
+            **CreateRequestDTO.from_order(order).to_kwargs(self.params_parsing_function)
         )
 
-    def cancel_order(self, order: OrderMaker):
+    def cancel_order(self, order: Order):
         logger.info(f"cancelling {order}")
         self.ccxt_connector.cancel_order(
-            **CancelRequestDTO.from_order_maker(order).to_method_params()
+            **CancelRequestDTO.from_order(order).to_method_params()
         )
 
     def fetch_orderbook(self, symbol: Symbol) -> OrderbookResponseDTO:
