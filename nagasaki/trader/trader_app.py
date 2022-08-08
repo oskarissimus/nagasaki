@@ -4,7 +4,7 @@ import uvicorn
 from apscheduler.schedulers.background import BackgroundScheduler
 from dependency_injector.wiring import Provide
 
-from nagasaki.clients.bitclude.core import BitcludeClient
+from nagasaki.clients import BaseClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 from nagasaki.containers import Application
@@ -26,7 +26,7 @@ class TraderApp:
     # pylint: disable=too-many-arguments
     def __init__(
         self,
-        bitclude_client: BitcludeClient,
+        bitclude_client: BaseClient,
         deribit_client: DeribitClient,
         state: State,
         bitclude_state: BitcludeState,

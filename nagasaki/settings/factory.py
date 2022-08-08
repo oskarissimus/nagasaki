@@ -1,7 +1,6 @@
 from decimal import Decimal
 
 from nagasaki.clients import BaseClient
-from nagasaki.clients.bitclude.core import BitcludeClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.database.database import Database
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum, Symbol
@@ -76,7 +75,7 @@ def hedging_strategy_factory(
 
 def create_strategies(
     database: Database,
-    bitclude_client: BitcludeClient,
+    bitclude_client: BaseClient,
     deribit_client: DeribitClient,
     state: State,
     bitclude_state: BitcludeState,

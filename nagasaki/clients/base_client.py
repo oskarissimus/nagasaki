@@ -77,13 +77,13 @@ class BaseClient(abc.ABC):
         response = self.ccxt_connector.fetch_open_orders()
         return [Offer(**offer["info"]) for offer in response]
 
-    def create_order(self, order: Order):
+    def create_order(self, order: Order) -> None:
         logger.info(f"creating {order}")
         self.ccxt_connector.create_order(
             **CreateRequestDTO.from_order(order).to_kwargs(self.params_parsing_function)
         )
 
-    def cancel_order(self, order: Order):
+    def cancel_order(self, order: Order) -> None:
         logger.info(f"cancelling {order}")
         self.ccxt_connector.cancel_order(
             **CancelRequestDTO.from_order(order).to_method_params()

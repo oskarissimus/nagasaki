@@ -1,6 +1,6 @@
 from unittest import mock
 
-from nagasaki.clients.bitclude.core import BitcludeClient
+from nagasaki.clients import BaseClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.enums.common import InstrumentTypeEnum, Side, SideTypeEnum, Symbol, Type
 from nagasaki.models.bitclude import Order
@@ -18,7 +18,7 @@ def test_should_create_order_from_order_maker():
         type=Type.LIMIT,
     )
 
-    client = BitcludeClient("client_id", "client_key")
+    client = BaseClient("bitclude", "client_id", "client_key")
 
     with mock.patch.object(client, "ccxt_connector") as mock_ccxt:
         client.create_order(order_maker)

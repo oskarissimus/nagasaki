@@ -2,8 +2,7 @@ from typing import List
 
 from dependency_injector.wiring import Provide, inject
 
-from nagasaki.clients import YahooFinanceClient
-from nagasaki.clients.bitclude.core import BitcludeClient
+from nagasaki.clients import YahooFinanceClient, BaseClient
 from nagasaki.clients.deribit_client import DeribitClient
 from nagasaki.containers import Application
 from nagasaki.database.database import Database
@@ -26,7 +25,7 @@ def initialize_states():
 def synchronize_bitclude_state(
     state: State = Provide[Application.states.state_provider],
     bitclude_state: BitcludeState = Provide[Application.states.bitclude_state_provider],
-    bitclude_client: BitcludeClient = Provide[
+    bitclude_client: BaseClient = Provide[
         Application.clients.bitclude_client_provider
     ],
     strategies: List[AbstractStrategy] = Provide[
