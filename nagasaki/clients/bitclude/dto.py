@@ -1,6 +1,6 @@
 import datetime
 from decimal import Decimal
-from typing import Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Union
 
 from pydantic import BaseModel, validator
 
@@ -137,17 +137,19 @@ class CreateRequestDTO(BaseModel):
             },
         )
 
-    def to_method_params(self) -> Dict[str, Union[str, Dict[str, str]]]:
+    def to_kwargs(
+        self,
+        params_parser: Callable[
+            [Dict[str, Any]], Dict[str, Any]
+        ]
+    ) -> Dict[str, Union[str, Dict[str, str]]]:
         return {
             "price": str(self.price) if self.price else None,
             "symbol": self.symbol.value,
             "amount": str(self.amount),
             "type": self.type.value.lower(),
             "side": self.side.value.lower(),
-            "params": {
-                "hidden": str(int(self.params["hidden"])),
-                "post_only": str(int(self.params["post_only"])),
-            },
+            "params": params_parser(self.params),
         }
 
 

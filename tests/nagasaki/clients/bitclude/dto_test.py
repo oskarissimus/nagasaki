@@ -2,7 +2,11 @@ from decimal import Decimal
 
 import pytest
 
-from nagasaki.clients.bitclude.dto import CancelRequestDTO, CreateRequestDTO
+from nagasaki.clients.bitclude.dto import (
+    CancelRequestDTO,
+    CreateRequestDTO,
+)
+from nagasaki.clients.base_client import deribit_params_parser, bitclude_params_parser
 from nagasaki.enums.common import InstrumentTypeEnum, Side, SideTypeEnum, Symbol, Type
 from nagasaki.models.bitclude import OrderMaker
 
@@ -45,7 +49,7 @@ def test_create_request_dto_to_method_params():
         params={"hidden": True, "post_only": True},
     )
 
-    method_params = dto.to_method_params()
+    method_params = dto.to_kwargs(bitclude_params_parser)
 
     expected_method_params = {
         "price": "420",
@@ -65,3 +69,27 @@ def test_cancel_request_dto_from_order_maker(order_maker):
     expected_dto = CancelRequestDTO(order_id="2137", side=Side.SELL)
 
     assert dto == expected_dto
+
+
+def test_create_request_dto_to_method_params_deribit():
+    dto = CreateRequestDTO(
+        price=Decimal("420"),
+        symbol=Symbol("BTC/PLN"),
+        type=Type.LIMIT,
+        side=Side.SELL,
+        amount=Decimal("69"),
+        params={"hidden": True, "post_only": True},
+    )
+
+    method_params = dto.to_kwargs(deribit_params_parser)
+
+    expected_method_params = {
+        "price": "420",
+        "amount": "69.0",
+        "type": "limit",
+        "side": "sell",
+        "symbol": "BTC/PLN",
+        "params": {"hidden": True, "post_only": True},
+    }
+
+    assert method_params == expected_method_params

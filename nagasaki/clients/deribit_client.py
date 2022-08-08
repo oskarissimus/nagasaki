@@ -14,5 +14,5 @@ class DeribitClient(BaseClient):
 
     def create_order(self, order) -> None:
         self.ccxt_connector.create_order(
-            **CreateRequestDTO.from_order_taker(order).to_method_params()
+            **CreateRequestDTO.from_order_taker(order).to_kwargs(self.params_parsing_function)
         )

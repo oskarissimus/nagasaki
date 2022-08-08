@@ -1,6 +1,6 @@
 import abc
 from decimal import Decimal
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 
 import ccxt
 import ccxt_unmerged  # pylint: disable=unused-import
@@ -12,13 +12,31 @@ from nagasaki.clients.bitclude.dto import (
     CancelRequestDTO,
     CreateRequestDTO,
     Offer,
-    OrderbookResponseDTO,
-)
+    OrderbookResponseDTO, )
 from nagasaki.clients.dto import ExchangeBalance
 from nagasaki.enums.common import InstrumentTypeEnum, Symbol
 from nagasaki.logger import logger
 from nagasaki.models.bitclude import AccountSummary, OrderMaker
 
+
+def bitclude_params_parser(params: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "hidden": str(int(params["hidden"])),
+        "post_only": str(int(params["post_only"])),
+    }
+
+
+def deribit_params_parser(params: Dict[str, Any]) -> Dict[str, Any]:
+    return {
+        "hidden": params["hidden"],
+        "post_only": params["post_only"],
+    }
+
+
+PARAMS_PARSING_FUNCTIONS = {
+    "deribit": deribit_params_parser,
+    "bitclude": bitclude_params_parser
+}
 
 class BaseClient(abc.ABC):
     def __init__(
@@ -36,6 +54,7 @@ class BaseClient(abc.ABC):
         session = requests.Session()
         session.mount("https://", adapter)
         self.ccxt_connector.session = session
+        self.params_parsing_function = PARAMS_PARSING_FUNCTIONS[exchange_id]
 
     def fetch_account_summary(self, currency: str) -> AccountSummary:
         response = self.ccxt_connector.fetch_balance({"currency": currency})
@@ -59,7 +78,7 @@ class BaseClient(abc.ABC):
     def create_order(self, order: OrderMaker):
         logger.info(f"creating {order}")
         self.ccxt_connector.create_order(
-            **CreateRequestDTO.from_order_maker(order).to_method_params()
+            **CreateRequestDTO.from_order_maker(order).to_kwargs(self.params_parsing_function)
         )
 
     def cancel_order(self, order: OrderMaker):

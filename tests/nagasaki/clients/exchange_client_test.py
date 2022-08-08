@@ -51,5 +51,5 @@ def test_should_create_order_from_order_taker():
         symbol=Symbol.BTC_USD_BTC.value,
         amount="100.0",
         type="market",
-        params={"hidden": "0", "post_only": "0"},
+        params={"hidden": False, "post_only": False},
     )
