@@ -2,8 +2,11 @@ from decimal import Decimal
 
 import pytest
 
-from nagasaki.clients.base_client import bitclude_params_parser, deribit_params_parser
 from nagasaki.clients.bitclude.dto import CancelRequestDTO, CreateRequestDTO
+from nagasaki.clients.exchange_client import (
+    bitclude_params_parser,
+    deribit_params_parser,
+)
 from nagasaki.enums.common import InstrumentTypeEnum, Side, SideTypeEnum, Symbol, Type
 from nagasaki.models.bitclude import Order
 

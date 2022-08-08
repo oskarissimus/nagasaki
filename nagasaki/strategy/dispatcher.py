@@ -3,7 +3,7 @@ from typing import List
 
 from pydantic import BaseModel
 
-from nagasaki.clients import BaseClient
+from nagasaki.clients import ExchangeClient
 from nagasaki.clients.bitclude.dto import Offer
 from nagasaki.enums.common import SideTypeEnum
 from nagasaki.logger import logger
@@ -30,7 +30,7 @@ def offer_is_within_tolerance(
 class StrategyOrderDispatcher:
     def __init__(
         self,
-        client: BaseClient,
+        client: ExchangeClient,
         bitclude_state: BitcludeState,
         tolerance: Tolerance = None,
     ):

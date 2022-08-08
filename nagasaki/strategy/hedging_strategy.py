@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from nagasaki.clients import BaseClient
+from nagasaki.clients import ExchangeClient
 from nagasaki.enums.common import (
     InstrumentTypeEnum,
     MarketEnum,
@@ -41,7 +41,7 @@ def buy_order(amount: Decimal, instrument: InstrumentTypeEnum, symbol: Symbol):
 class HedgingStrategy(AbstractStrategy):
     def __init__(
         self,
-        client: BaseClient,
+        client: ExchangeClient,
         instrument: InstrumentTypeEnum,
         symbol: Symbol,
         grand_total_delta_max: Decimal,

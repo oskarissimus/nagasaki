@@ -5,8 +5,7 @@ from dependency_injector.wiring import Provide, inject
 from pytz_deprecation_shim import PytzUsageWarning
 
 import nagasaki
-from nagasaki.clients import YahooFinanceClient, BaseClient
-from nagasaki.clients.deribit_client import DeribitClient
+from nagasaki.clients import ExchangeClient, YahooFinanceClient
 from nagasaki.containers import Application
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
@@ -16,10 +15,10 @@ from nagasaki.trader.trader_app import TraderApp
 
 @inject
 def main(
-    bitclude_client: BaseClient = Provide[
+    bitclude_client: ExchangeClient = Provide[
         Application.clients.bitclude_client_provider
     ],
-    deribit_client: DeribitClient = Provide[
+    deribit_client: ExchangeClient = Provide[
         Application.clients.deribit_client_provider
     ],
     yahoo_finance_client: YahooFinanceClient = Provide[

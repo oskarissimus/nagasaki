@@ -3,7 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import StaticPool
 
-from nagasaki.clients import BaseClient
+from nagasaki.clients import ExchangeClient
 from nagasaki.clients.yahoo_finance.core import YahooFinanceClient
 from nagasaki.database import Database
 from nagasaki.settings import Settings
@@ -16,13 +16,13 @@ class Clients(
 ):  # pylint: disable=(too-few-public-methods, c-extension-no-member)
     config = providers.Configuration()
     bitclude_client_provider = providers.Singleton(
-        BaseClient,
+        ExchangeClient,
         "bitclude",
         client_id=config.bitclude_id,
         client_key=config.bitclude_key,
     )
     deribit_client_provider = providers.Singleton(
-        BaseClient,
+        ExchangeClient,
         "deribit",
         client_key=config.deribit_client_id,
         client_secret=config.deribit_client_secret,

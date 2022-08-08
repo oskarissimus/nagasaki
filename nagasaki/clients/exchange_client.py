@@ -40,7 +40,7 @@ PARAMS_PARSING_FUNCTIONS = {
 }
 
 
-class BaseClient(abc.ABC):
+class ExchangeClient(abc.ABC):
     def __init__(
         self,
         exchange_id: str,

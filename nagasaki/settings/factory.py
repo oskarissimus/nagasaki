@@ -1,7 +1,6 @@
 from decimal import Decimal
 
-from nagasaki.clients import BaseClient
-from nagasaki.clients.deribit_client import DeribitClient
+from nagasaki.clients import ExchangeClient
 from nagasaki.database.database import Database
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum, Symbol
 from nagasaki.settings.runtime import (
@@ -28,7 +27,7 @@ def calculator_factory(settings: CalculatorSettings) -> calculators.PriceCalcula
 
 def market_making_strategy_factory(
     settings: MarketMakingStrategySettings,
-    client: BaseClient,
+    client: ExchangeClient,
     state: State,
     bitclude_state: BitcludeState,
     deribit_state: DeribitState,
@@ -54,7 +53,7 @@ def market_making_strategy_factory(
 
 def hedging_strategy_factory(
     settings: HedgingStrategySettings,
-    client: BaseClient,
+    client: ExchangeClient,
     state: State,
     bitclude_state: BitcludeState,
     deribit_state: DeribitState,
@@ -75,8 +74,8 @@ def hedging_strategy_factory(
 
 def create_strategies(
     database: Database,
-    bitclude_client: BaseClient,
-    deribit_client: DeribitClient,
+    bitclude_client: ExchangeClient,
+    deribit_client: ExchangeClient,
     state: State,
     bitclude_state: BitcludeState,
     deribit_state: DeribitState,
