@@ -1,0 +1,17 @@
+version: '3.1'
+
+services:
+  websocket_logger:
+    build: .
+    restart: always
+    environment:
+      - DB_HOST=$DB_HOST
+      - DB_PORT=$DB_PORT
+      - DB_USER=$DB_USER
+      - DB_PASSWORD=$DB_PASSWORD
+      - DB_NAME=$DB_NAME
+    logging:
+      driver: loki
+      options:
+        loki-url: http://$LOKI_BASIC_AUTH_USERNAME:$LOKI_BASIC_AUTH_PASSWORD@localhost:3100/loki/api/v1/push
+        loki-batch-size: "400"
