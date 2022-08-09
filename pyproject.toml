@@ -17,7 +17,7 @@ datamodel-code-generator = "^0.13.0"
 SQLAlchemy = "^1.4.40"
 psycopg2-binary = "^2.9.3"
 selenium = "^4.4.0"
-webdriver-manager = "^3.7.0"
+webdriver-manager = "^3.8.3"
 PyYAML = "^6.0"
 pydantic-yaml = "^0.6.3"
 fastapi = {extras = ["uvicorn"], version = "^0.78.0"}
