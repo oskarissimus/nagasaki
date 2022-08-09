@@ -340,7 +340,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "datamodel-code-generator"
-version = "0.11.20"
+version = "0.13.0"
 description = "Datamodel Code Generator"
 category = "main"
 optional = false
@@ -1734,7 +1734,7 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "d3343a2150a840f4606781f6a7c4141ff9c4dc6841558d55ff127d6edea76765"
+content-hash = "d39202a9159abab3a0755384588a203824ac30524a04236ce427bd3f6ece90c8"
 
 [metadata.files]
 aenum = [
@@ -2017,8 +2017,8 @@ cycler = [
     {file = "cycler-0.11.0.tar.gz", hash = "sha256:9c87405839a19696e837b3b818fed3f5f69f16f1eec1a1ad77e043dcea9c772f"},
 ]
 datamodel-code-generator = [
-    {file = "datamodel-code-generator-0.11.20.tar.gz", hash = "sha256:aac5a5afa9a3170dbdca0fbdd3cdb5bf372d60f506c624af0699fb8d8c06c8cc"},
-    {file = "datamodel_code_generator-0.11.20-py3-none-any.whl", hash = "sha256:ee2e29cd8be3e15deb6d588f6d1b5bff785a765c72b9d2755bd8ea7affb862b7"},
+    {file = "datamodel-code-generator-0.13.0.tar.gz", hash = "sha256:edb7c116441f1d748bdf4949b6ed1b6806a4655295c16b03a2d62bd8165103f9"},
+    {file = "datamodel_code_generator-0.13.0-py3-none-any.whl", hash = "sha256:4ccfe748b9122653f910d0c97c6c1a1d9cd4be31f392ce80b312b8c8595b66e2"},
 ]
 debugpy = [
     {file = "debugpy-1.6.2-cp310-cp310-macosx_10_15_universal2.whl", hash = "sha256:77a47d596ce8c69673d5f0c9876a80cb5a6cbc964f3b31b2d44683c7c01b6634"},
