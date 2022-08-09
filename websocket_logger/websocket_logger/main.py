@@ -11,7 +11,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 from websocket_logger.settings import Settings
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
 logger.addHandler(logging.StreamHandler())
 Base = declarative_base()
 
