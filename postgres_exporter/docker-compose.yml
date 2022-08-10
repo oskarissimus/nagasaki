@@ -1,0 +1,13 @@
+version: '3.3'
+services:
+  postgres_exporter:
+    ports:
+      - "9187:9187"
+    volumes:
+      - './web-config.yml:/etc/postgres_exporter/web-config.yml'
+
+    environment:
+      - 'DATA_SOURCE_NAME=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}'
+    image: quay.io/prometheuscommunity/postgres-exporter
+    command:
+      - "--web.config.file=/etc/postgres_exporter/web-config.yml"
