@@ -159,3 +159,23 @@ pip uninstall ccxt-unmerged && poetry update ccxt-unmerged && poetry install
 
 1. nagasaki/runtime_config.py zrobić żeby pod spodem była baza a reszta tak samo
 2. change update_runtime_config api/main.py
+
+# zajebiste query
+
+```sql
+select id, time, asks.min_ask, bids.max_bid
+from snapshot
+cross join lateral (
+	select min(price) as min_ask
+	from json_to_recordset
+		( state::json->'exchange_states'->'bitclude'->'orderbooks'->'ETH/PLN'->'asks' )
+	as ask(price decimal,amount decimal)
+) asks
+cross join lateral (
+	select max(price) as max_bid
+	from json_to_recordset
+		( state::json->'exchange_states'->'bitclude'->'orderbooks'->'ETH/PLN'->'bids' )
+	as bid(price decimal,amount decimal)
+) bids
+order by id desc
+```
