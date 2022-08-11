@@ -80,6 +80,10 @@ class Databases(containers.DeclarativeContainer):
                 config=config,
             ),
         ),
+        sqlite_file=providers.Singleton(
+            create_engine,
+            url="sqlite:///nagasaki.db",
+        ),
     )
 
     session_maker_provider = providers.Singleton(

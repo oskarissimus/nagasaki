@@ -58,6 +58,7 @@ class TraderApp:
 
     def synchronize_state_and_execute_strategy(self):
         self.event_manager.post_event("synchronize_state")
+        self.save_state_to_database()
         self.event_manager.post_event("strategy_execution_requested")
 
     def attach_jobs_to_scheduler(self):

@@ -35,6 +35,10 @@ class BitcludeState(ExchangeState):
     def top_bid(self, asset_symbol):
         return max(self.orderbooks[asset_symbol].bids, key=lambda x: x.price).price
 
+    class Config:
+        fields = {
+            "orderbooks": {"include": True},
+        }
 
 class DeribitState(ExchangeState):
     account_summary: Optional[AccountSummary]

@@ -7,3 +7,4 @@ geckodriver.log
 runtime_config.yml
 grafana/data
 .idea
+*.db
