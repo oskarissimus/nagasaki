@@ -8,6 +8,7 @@ import requests
 from requests.adapters import HTTPAdapter, Retry
 
 from nagasaki.clients.bitclude.dto import (
+    AccountHistoryItem,
     AccountInfo,
     CancelRequestDTO,
     CreateRequestDTO,
@@ -98,3 +99,8 @@ class ExchangeClient(abc.ABC):
         symbol = f"{instrument.market_1}/USD:{instrument.market_1}"
         response = self.ccxt_connector.fetch_ticker(symbol)
         return Decimal(response["info"]["index_price"])
+
+    def fetch_my_trades(self, symbol: Symbol) -> List[Dict[str, Any]]:
+        logger.info(f"fetching {symbol} trades")
+        my_trades_list = self.ccxt_connector.fetch_my_trades(symbol.value)
+        return [AccountHistoryItem(**trade["info"]) for trade in my_trades_list]

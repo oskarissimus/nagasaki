@@ -72,3 +72,18 @@ class Settings(Base):
     id = Column(Integer, primary_key=True, index=True)
     settings = Column(String)
     time = Column(DateTime, default=datetime.now)
+
+
+class MyTrades(Base):
+    __tablename__ = "my_trades"
+
+    id = Column(Integer, primary_key=True, index=True)
+    currency1 = Column(String)
+    currency2 = Column(String)
+    amount = Column(Numeric(precision=20, scale=10))
+    price = Column(Numeric(precision=20, scale=10))
+    time_close = Column(DateTime)
+    fee_taker = Column(Integer)
+    fee_maker = Column(Integer)
+    type = Column(String)
+    action = Column(String)

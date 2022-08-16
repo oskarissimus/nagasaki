@@ -75,3 +75,8 @@ class Database:
                     strategies=StrategySettingsList(),
                 )
             return RuntimeSettings.parse_raw(settings_db.settings)
+
+    def write_my_trades_to_db(self, trades):
+        with self.session_maker() as session:
+            session.add_all(trades)
+            session.commit()
