@@ -74,7 +74,7 @@ class TraderApp:
             seconds=10,
         )
         self.scheduler.add_job(
-            self.save_state_to_database,
+            self.save_my_trades_to_database,
             "interval",
             minutes=5,
             next_run_time=datetime.datetime.now(),
