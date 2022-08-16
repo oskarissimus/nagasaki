@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, DateTime, Enum, Integer, Numeric, String
+from sqlalchemy import BigInteger, Column, DateTime, Enum, Integer, Numeric, String
 from sqlalchemy.orm import declarative_base
 
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum
@@ -77,7 +77,7 @@ class Settings(Base):
 class MyTrades(Base):
     __tablename__ = "my_trades"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(BigInteger, primary_key=True, index=True)
     currency1 = Column(String)
     currency2 = Column(String)
     amount = Column(Numeric(precision=20, scale=10))
