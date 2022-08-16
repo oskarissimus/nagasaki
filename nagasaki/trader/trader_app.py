@@ -9,6 +9,7 @@ from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 from nagasaki.containers import Application
 from nagasaki.database import Database
 from nagasaki.database.models import MyTrades
+from nagasaki.enums.common import Symbol
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
 from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
@@ -94,7 +95,8 @@ class TraderApp:
         database: Database = Provide[Application.databases.database_provider],
         client: ExchangeClient = Provide[Application.clients.bitclude_client_provider],
     ):
-        trades = client.fetch_my_trades()
+        symbol = Symbol(database.get_newest_settings().market_making_instrument)
+        trades = client.fetch_my_trades(symbol)
         trades_db = [MyTrades(**trade, id=hash(trade)) for trade in trades]
         database.write_my_trades_to_db(trades_db)
 
