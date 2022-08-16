@@ -95,10 +95,14 @@ class TraderApp:
         database: Database = Provide[Application.databases.database_provider],
         client: ExchangeClient = Provide[Application.clients.bitclude_client_provider],
     ):
-        symbol = Symbol(database.get_newest_settings().market_making_instrument)
-        trades = client.fetch_my_trades(symbol)
-        trades_db = [MyTrades(**trade, id=hash(trade)) for trade in trades]
-        database.write_my_trades_to_db(trades_db)
+        symbols = [
+            Symbol(strategy.symbol)
+            for strategy in database.get_newest_settings().strategies.market_making_strategies
+        ]
+        for symbol in set(symbols):
+            trades = client.fetch_my_trades(symbol)
+            trades_db = [MyTrades(**trade, id=hash(trade)) for trade in trades]
+            database.write_my_trades_to_db(trades_db)
 
     def run(self):
         initialize_states()
