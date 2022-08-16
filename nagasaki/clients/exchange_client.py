@@ -100,7 +100,7 @@ class ExchangeClient(abc.ABC):
         response = self.ccxt_connector.fetch_ticker(symbol)
         return Decimal(response["info"]["index_price"])
 
-    def fetch_my_trades(self, symbol: Symbol) -> List[Dict[str, Any]]:
+    def fetch_my_trades(self, symbol: Symbol) -> List[AccountHistoryItem]:
         logger.info(f"fetching {symbol} trades")
         my_trades_list = self.ccxt_connector.fetch_my_trades(symbol.value)
         return [AccountHistoryItem(**trade["info"]) for trade in my_trades_list]

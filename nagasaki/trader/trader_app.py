@@ -101,7 +101,7 @@ class TraderApp:
         ]
         for symbol in set(symbols):
             trades = client.fetch_my_trades(symbol)
-            trades_db = [MyTrades(**trade, id=hash(trade)) for trade in trades]
+            trades_db = [MyTrades(**trade.dict(), id=hash(trade)) for trade in trades]
             database.write_my_trades_to_db(trades_db)
 
     def run(self):
