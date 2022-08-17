@@ -53,9 +53,10 @@ disable = [
   "missing-module-docstring",
   "missing-class-docstring",
   "missing-function-docstring",
+  "invalid-name",
 ]
 extension-pkg-whitelist = "pydantic"
 ignore-patterns = "playground"
 
 [tool.pylint.typecheck]
-generated-members = "alembic.context.*"
+generated-members = ["context.*", "op.*"]

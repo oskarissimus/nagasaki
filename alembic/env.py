@@ -2,13 +2,13 @@ from logging.config import fileConfig
 
 from sqlalchemy import create_engine
 
-import alembic.context
+from alembic import context
 from nagasaki.settings.startup import StartupSettings
 
 settings = StartupSettings()
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
-config = alembic.context.config
+config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -39,15 +39,15 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    alembic.context.configure(
+    context.configure(
         url=settings.connection_string,
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
     )
 
-    with alembic.context.begin_transaction():
-        alembic.context.run_migrations()
+    with context.begin_transaction():
+        context.run_migrations()
 
 
 def run_migrations_online() -> None:
@@ -60,15 +60,13 @@ def run_migrations_online() -> None:
     connectable = create_engine(settings.connection_string)
 
     with connectable.connect() as connection:
-        alembic.context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
-        with alembic.context.begin_transaction():
-            alembic.context.run_migrations()
+        with context.begin_transaction():
+            context.run_migrations()
 
 
-if alembic.context.is_offline_mode():
+if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
