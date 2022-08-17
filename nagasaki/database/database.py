@@ -5,6 +5,7 @@ from nagasaki.clients.bitclude.dto import AccountInfo
 from nagasaki.database.models import (
     BalanceDB,
     Base,
+    MyTrades,
     OrderMakerDB,
     OrderTakerDB,
     Settings,
@@ -78,5 +79,7 @@ class Database:
 
     def write_my_trades_to_db(self, trades):
         with self.session_maker() as session:
-            session.add_all(trades)
+            old_trades = session.query(MyTrades, MyTrades.id).all()
+            new_trades = [trade for trade in trades if trade not in old_trades]
+            session.add_all(new_trades)
             session.commit()
