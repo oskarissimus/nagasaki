@@ -27,6 +27,7 @@ dependency-injector = "^4.39.1"
 ccxt = "^1.87.16"
 ccxt-unmerged = {git = "https://github.com/adrian-szczepanski/ccxt-unmerged"}
 aenum = "^3.1.11"
+alembic = "^1.8.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
