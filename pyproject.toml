@@ -1,50 +1,61 @@
 [tool.poetry]
+authors = ["Oskar Korczak <oskar.korczak@protonmail.com>", "Kacper Wikieł <k.wikiel@gmail.com>", "Szczepan Adriański <kontakt@aszczepanski.pl>"]
+description = ""
 name = "nagasaki"
 version = "0.1.0"
-description = ""
-authors = ["Oskar Korczak <oskar.korczak@protonmail.com>", "Kacper Wikieł <k.wikiel@gmail.com>", "Szczepan Adriański <kontakt@aszczepanski.pl>"]
- 
 
 [tool.poetry.dependencies]
-python = "^3.8"
-pylint = "^2.14.5"
-pydantic = "^1.8.2"
-python-dotenv = "^0.20.0"
-responses = "^0.15.0"
 APScheduler = "^3.8.1"
-loguru = "^0.6.0"
-datamodel-code-generator = "^0.13.0"
-SQLAlchemy = "^1.4.40"
-psycopg2-binary = "^2.9.3"
-selenium = "^4.4.0"
-webdriver-manager = "^3.8.3"
 PyYAML = "^6.0"
-pydantic-yaml = "^0.6.3"
-fastapi = {extras = ["uvicorn"], version = "^0.78.0"}
-uvicorn = "^0.18.2"
-retry = "^0.9.2"
-dependency-injector = "^4.39.1"
-ccxt = "^1.87.16"
-ccxt-unmerged = {git = "https://github.com/adrian-szczepanski/ccxt-unmerged"}
+SQLAlchemy = "^1.4.40"
 aenum = "^3.1.11"
 alembic = "^1.8.1"
+ccxt = "^1.87.16"
+ccxt-unmerged = {git = "https://github.com/adrian-szczepanski/ccxt-unmerged"}
+datamodel-code-generator = "^0.13.0"
+dependency-injector = "^4.39.1"
+fastapi = {extras = ["uvicorn"], version = "^0.78.0"}
+loguru = "^0.6.0"
+psycopg2-binary = "^2.9.3"
+pydantic = "^1.8.2"
+pydantic-yaml = "^0.6.3"
+pylint = "^2.14.5"
+python = "^3.8"
+python-dotenv = "^0.20.0"
+responses = "^0.15.0"
+retry = "^0.9.2"
+selenium = "^4.4.0"
+uvicorn = "^0.18.2"
+webdriver-manager = "^3.8.3"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.2.5"
 black = {version = "^22.1.0", allow-prereleases = true}
-pandas = "^1.4.3"
-matplotlib = "^3.5.2"
 ipykernel = "^6.15.1"
+matplotlib = "^3.5.2"
+mypy = "^0.971"
+pandas = "^1.4.3"
+pytest = "^6.2.5"
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]
 
 [tool.isort]
 known_first_party = ["nagasaki"]
-profile="black"
-line_length=88
+line_length = 88
+profile = "black"
 
 [tool.black]
-line_length=88
+line_length = 88
 
+[tool.pylint.MASTER]
+disable = [
+  "missing-module-docstring",
+  "missing-class-docstring",
+  "missing-function-docstring",
+]
+extension-pkg-whitelist = "pydantic"
+ignore-patterns = "playground"
+
+[tool.pylint.typecheck]
+generated-members = "alembic.context.*"
