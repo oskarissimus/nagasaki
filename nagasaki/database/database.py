@@ -58,7 +58,10 @@ class Database:
             session.commit()
 
     def write_state_to_db(self, state: State):
-        snapshot = Snapshot(state=json.loads(state.json()))
+        snapshot = Snapshot(
+            state=json.loads(state.json())
+        )  # I cannot use state.dict() because it is not JSON serializable (it contains Decimal)
+        # TODO: find more elegant solution
         with self.session_maker() as session:
             session.add(snapshot)
             session.commit()
