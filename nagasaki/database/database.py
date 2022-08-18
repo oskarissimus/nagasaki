@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 from sqlalchemy.engine import Engine
@@ -57,7 +58,7 @@ class Database:
             session.commit()
 
     def write_state_to_db(self, state: State):
-        snapshot = Snapshot(state=state.dict())
+        snapshot = Snapshot(state=json.loads(state.json()))
         with self.session_maker() as session:
             session.add(snapshot)
             session.commit()
