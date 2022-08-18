@@ -21,8 +21,7 @@ services:
         "./wait-for-it.sh",
         "db:${DB_PORT}",
         "--",
-        "alembic upgrade head && python",
-        "nagasaki/trader/main.py"
+        "./run.sh"
       ]
     environment:
       - DERIBIT_URL_BASE=$DERIBIT_URL_BASE
