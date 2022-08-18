@@ -57,9 +57,7 @@ class Database:
             session.commit()
 
     def write_state_to_db(self, state: State):
-        snapshot = Snapshot(
-            state=state.json()
-        )  # maybe here it should be a dict() instead of a json()
+        snapshot = Snapshot(state=state.dict())
         with self.session_maker() as session:
             session.add(snapshot)
             session.commit()
