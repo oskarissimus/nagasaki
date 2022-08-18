@@ -179,3 +179,9 @@ cross join lateral (
 ) bids
 order by id desc
 ```
+
+# one-liner to make tag and trigger deployment in actions
+
+```
+TAG=0.7.1; git tag $TAG && git push origin $TAG
+```
