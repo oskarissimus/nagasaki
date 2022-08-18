@@ -1,3 +1,5 @@
+from typing import List
+
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import sessionmaker
 
@@ -79,9 +81,9 @@ class Database:
                 )
             return RuntimeSettings.parse_raw(settings_db.settings)
 
-    def write_my_trades_to_db(self, trades):
+    def write_my_trades_to_db(self, trades: List[MyTrades]):
         with self.session_maker() as session:
-            old_trades = session.query(MyTrades, MyTrades.id).all()
-            new_trades = [trade for trade in trades if trade not in old_trades]
+            old_trades_ids = [trade[0] for trade in session.query(MyTrades.id).all()]
+            new_trades = [trade for trade in trades if trade.id not in old_trades_ids]
             session.add_all(new_trades)
             session.commit()
