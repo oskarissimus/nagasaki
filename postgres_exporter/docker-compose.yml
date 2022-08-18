@@ -9,6 +9,6 @@ services:
     environment:
       - 'DATA_SOURCE_NAME=postgresql://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}?sslmode=disable'
       - 'PG_EXPORTER_AUTO_DISCOVER_DATABASES=true'
-    image: quay.io/prometheuscommunity/postgres-exporter
+    image: quay.io/prometheuscommunity/postgres-exporter:v0.11.0
     command:
       - "--web.config.file=/etc/postgres_exporter/web-config.yml"
