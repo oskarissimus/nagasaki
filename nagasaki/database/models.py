@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import sqlalchemy.dialects.postgresql as pg
 from sqlalchemy import BigInteger, Column, DateTime, Enum, Integer, Numeric, String
 from sqlalchemy.orm import declarative_base
 
@@ -62,7 +63,7 @@ class Snapshot(Base):
     __tablename__ = "snapshot"
 
     id = Column(Integer, primary_key=True, index=True)
-    state = Column(String)
+    state = Column(pg.JSONB)
     time = Column(DateTime, default=datetime.now)
 
 

@@ -21,7 +21,7 @@ services:
         "./wait-for-it.sh",
         "db:${DB_PORT}",
         "--",
-        "python",
+        "alembic upgrade head && python",
         "nagasaki/trader/main.py"
       ]
     environment:
