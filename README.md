@@ -185,3 +185,19 @@ order by id desc
 ```
 TAG=0.7.1; git tag $TAG && git push origin $TAG
 ```
+
+# backup postgres
+
+https://stackoverflow.com/questions/24718706/backup-restore-a-dockerized-postgresql-database
+
+## Backup your databases
+
+```
+docker exec -t your-db-container pg_dumpall -c -U postgres > dump_`date +%d-%m-%Y"_"%H_%M_%S`.sql
+```
+
+## Restore your databases
+
+```
+cat your_dump.sql | docker exec -i your-db-container psql -U postgres
+```
