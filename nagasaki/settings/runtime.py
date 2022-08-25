@@ -13,6 +13,7 @@ class MarketMakingStrategySettings(BaseModel):
     side: str
     instrument: str
     symbol: str
+    hidden: bool
     calculator_settings: List[CalculatorSettings]
 
 

@@ -56,6 +56,7 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
         side="bid",
         instrument="btc_pln",
         symbol="BTC/PLN",
+        hidden=True,
         calculator_settings=calculator_configs,
     )
 
@@ -71,6 +72,7 @@ def test_should_create_delta_epsilon_bid_btc_strategy():
     assert strategy.side == SideTypeEnum.BID
     assert strategy.instrument == InstrumentTypeEnum.BTC_PLN
     assert strategy.symbol == Symbol.BTC_PLN
+    assert strategy.hidden is True
     assert strategy.state is state
     assert strategy.bitclude_state is bitclude_state
     assert strategy.deribit_state is deribit_state

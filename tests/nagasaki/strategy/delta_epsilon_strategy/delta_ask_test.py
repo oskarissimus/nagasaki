@@ -30,7 +30,7 @@ def test_ask_bidding_over_delta(
     result_order = strategy_ask.execute()
 
     expected_create_order = make_order_maker_ask(
-        Decimal(expected_price), Decimal(expected_amount)
+        Decimal(expected_price), Decimal(expected_amount), hidden=strategy_ask.hidden
     )
 
     assert result_order == expected_create_order

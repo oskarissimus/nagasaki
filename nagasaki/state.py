@@ -40,6 +40,7 @@ class BitcludeState(ExchangeState):
             "orderbooks": {"include": True},
         }
 
+
 class DeribitState(ExchangeState):
     account_summary: Optional[AccountSummary]
 

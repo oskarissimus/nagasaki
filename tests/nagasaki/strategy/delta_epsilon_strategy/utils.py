@@ -48,26 +48,26 @@ def make_account_info(active_pln, inactive_pln, active_btc, inactive_btc):
     )
 
 
-def make_order_maker_ask(price, amount):
+def make_order_maker_ask(price: Decimal, amount: Decimal, hidden: bool):
     return Order(
         price=price,
         amount=amount,
         instrument=InstrumentTypeEnum.BTC_PLN,
         side=SideTypeEnum.ASK,
-        hidden=False,
+        hidden=hidden,
         symbol=Symbol.BTC_PLN,
         type=Type.LIMIT,
         post_only=True,
     )
 
 
-def make_order_maker_bid(price, amount):
+def make_order_maker_bid(price: Decimal, amount: Decimal, hidden: bool):
     return Order(
         price=price,
         amount=amount,
         instrument=InstrumentTypeEnum.BTC_PLN,
         side=SideTypeEnum.BID,
-        hidden=False,
+        hidden=hidden,
         symbol=Symbol.BTC_PLN,
         type=Type.LIMIT,
         post_only=True,

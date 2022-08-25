@@ -91,6 +91,7 @@ def fixture_strategy_ask(
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
         calculators=calculators,
+        hidden=True,
     )
 
 
@@ -115,4 +116,5 @@ def fixture_strategy_bid(
         deribit_state=deribit_state,
         yahoo_finance_state=yahoo_finance_state,
         calculators=calculators,
+        hidden=True,
     )

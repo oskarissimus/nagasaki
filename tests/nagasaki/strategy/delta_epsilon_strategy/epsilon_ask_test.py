@@ -21,7 +21,9 @@ def test_ask_bidding_over_epsilon(
 
     result_order = strategy_ask.execute()
 
-    expected_create_order = make_order_maker_ask(expected_price, expected_amount)
+    expected_create_order = make_order_maker_ask(
+        expected_price, expected_amount, strategy_ask.hidden
+    )
 
     assert result_order == expected_create_order
     dispatcher.dispatch.assert_called_once_with(expected_create_order)

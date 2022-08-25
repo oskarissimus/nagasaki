@@ -51,12 +51,14 @@ class MarketMakingStrategy(AbstractStrategy):
         bitclude_state: BitcludeState,
         deribit_state: DeribitState,
         yahoo_finance_state: YahooFinanceState,
+        hidden: bool = False,
         calculators: List[PriceCalculator] = None,
     ):
         self.dispatcher = dispatcher
         self.side = side
         self.instrument = instrument
         self.symbol = symbol
+        self.hidden = hidden
         self.state = state
         self.bitclude_state = bitclude_state
         self.deribit_state = deribit_state
@@ -75,7 +77,7 @@ class MarketMakingStrategy(AbstractStrategy):
             self.amount,
             self.side,
             self.instrument,
-            hidden=False,
+            hidden=self.hidden,
             symbol=self.symbol,
         )
 

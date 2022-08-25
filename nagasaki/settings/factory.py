@@ -43,6 +43,7 @@ def market_making_strategy_factory(
         side=SideTypeEnum(settings.side.upper()),
         instrument=InstrumentTypeEnum.from_str(settings.instrument),
         symbol=Symbol(settings.symbol),
+        hidden=settings.hidden,
         state=state,
         bitclude_state=bitclude_state,
         deribit_state=deribit_state,
