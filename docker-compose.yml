@@ -4,9 +4,7 @@ services:
   nagasaki:
     build: .
     restart: always
-    depends_on:
-      - db
-    command: [ "./wait-for-it.sh", "db:${DB_PORT}", "--", "./run.sh" ]
+    command: [ "./run.sh" ]
     environment:
       - DERIBIT_URL_BASE=$DERIBIT_URL_BASE
       - DERIBIT_CLIENT_ID=$DERIBIT_CLIENT_ID
