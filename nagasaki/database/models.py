@@ -107,7 +107,7 @@ class TradeDB(Base):
     def from_trade(cls, trade: Trade):
         return cls(
             id=trade.id,
-            timestamp=trade.timestamp,
+            timestamp=datetime.fromtimestamp(trade.timestamp),
             datetime=trade.datetime,
             symbol=trade.symbol,
             side=trade.side,
