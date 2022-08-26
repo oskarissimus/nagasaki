@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 from decimal import Decimal
 from typing import Any, Callable, Dict, List, Optional, Union
 
@@ -38,7 +38,7 @@ class AccountHistoryItem(HashableBaseModel):
     currency1: str
     currency2: str
     amount: Decimal
-    time_close: datetime.datetime
+    time_close: dt.datetime
     price: Decimal
     fee_taker: int
     fee_maker: int
@@ -57,7 +57,7 @@ class Offer(BaseModel):
     amount: Decimal
     price: Decimal
     id_user_open: str
-    time_open: datetime.datetime
+    time_open: dt.datetime
     offertype: SideTypeEnum
 
     @validator("offertype", pre=True)
@@ -171,3 +171,23 @@ class OrderbookResponseDTO(BaseModel):
             OrderbookRestItem(price=price, amount=amount) for price, amount in self.bids
         ]
         return OrderbookRest(asks=asks, bids=bids)
+
+
+class TradeInfo(BaseModel):
+    time: dt.datetime
+    nr: str
+    amount: Decimal
+    price: Decimal
+    type: str
+
+
+class Trade(BaseModel):
+    id: str
+    timestamp: int
+    datetime: dt.datetime
+    symbol: str
+    side: str
+    price: Decimal
+    amount: Decimal
+    cost: Decimal
+    info: TradeInfo

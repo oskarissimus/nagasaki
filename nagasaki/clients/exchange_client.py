@@ -14,6 +14,7 @@ from nagasaki.clients.bitclude.dto import (
     CreateRequestDTO,
     Offer,
     OrderbookResponseDTO,
+    Trade,
 )
 from nagasaki.clients.dto import ExchangeBalance
 from nagasaki.enums.common import InstrumentTypeEnum, Symbol
@@ -101,6 +102,11 @@ class ExchangeClient(abc.ABC):
         return Decimal(response["info"]["index_price"])
 
     def fetch_my_trades(self, symbol: Symbol) -> List[AccountHistoryItem]:
-        logger.info(f"fetching {symbol} trades")
+        logger.info(f"fetching my trades for symbol {symbol}")
         my_trades_list = self.ccxt_connector.fetch_my_trades(symbol.value)
         return [AccountHistoryItem(**trade["info"]) for trade in my_trades_list]
+
+    def fetch_trades(self, symbol: Symbol) -> List[Trade]:
+        logger.info(f"fetching trades for symbol {symbol}")
+        trades_list = self.ccxt_connector.fetch_trades(symbol.value)
+        return [Trade(**trade) for trade in trades_list]

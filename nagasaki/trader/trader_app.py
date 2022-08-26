@@ -8,7 +8,7 @@ from nagasaki.clients import ExchangeClient
 from nagasaki.clients.usd_pln_quoting_base_client import UsdPlnQuotingBaseClient
 from nagasaki.containers import Application
 from nagasaki.database import Database
-from nagasaki.database.models import MyTrades
+from nagasaki.database.models import MyTrades, TradeDB
 from nagasaki.enums.common import Symbol
 from nagasaki.event_manager import EventManager
 from nagasaki.logger import logger
@@ -80,6 +80,12 @@ class TraderApp:
             minutes=5,
             next_run_time=datetime.datetime.now(),
         )
+        self.scheduler.add_job(
+            self.save_trades_to_database,
+            "interval",
+            minutes=1,
+            next_run_time=datetime.datetime.now(),
+        )
 
     def fetch_usd_pln_and_write_to_state(self):
         synchronize_yahoo_finance_state()
@@ -99,10 +105,26 @@ class TraderApp:
             Symbol(strategy.symbol)
             for strategy in database.get_newest_settings().strategies.market_making_strategies
         ]
+
         for symbol in set(symbols):
             trades = client.fetch_my_trades(symbol)
             trades_db = [MyTrades(**trade.dict(), id=hash(trade)) for trade in trades]
             database.write_my_trades_to_db(trades_db)
+
+    def save_trades_to_database(
+        self,
+        database: Database = Provide[Application.databases.database_provider],
+        client: ExchangeClient = Provide[Application.clients.bitclude_client_provider],
+    ):
+        symbols = [
+            Symbol(strategy.symbol)
+            for strategy in database.get_newest_settings().strategies.market_making_strategies
+        ]
+
+        for symbol in set(symbols):
+            trades = client.fetch_trades(symbol)
+            trades_db = [TradeDB.from_trade(trade) for trade in trades]
+            database.write_trades_to_db(trades_db)
 
     def run(self):
         initialize_states()

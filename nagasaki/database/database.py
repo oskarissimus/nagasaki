@@ -13,6 +13,7 @@ from nagasaki.database.models import (
     OrderTakerDB,
     Settings,
     Snapshot,
+    TradeDB,
 )
 from nagasaki.enums.common import Type
 from nagasaki.models.bitclude import Order
@@ -86,6 +87,13 @@ class Database:
     def write_my_trades_to_db(self, trades: List[MyTrades]):
         with self.session_maker() as session:
             old_trades_ids = [trade[0] for trade in session.query(MyTrades.id).all()]
+            new_trades = [trade for trade in trades if trade.id not in old_trades_ids]
+            session.add_all(new_trades)
+            session.commit()
+
+    def write_trades_to_db(self, trades: List[TradeDB]):
+        with self.session_maker() as session:
+            old_trades_ids = [trade[0] for trade in session.query(TradeDB.id).all()]
             new_trades = [trade for trade in trades if trade.id not in old_trades_ids]
             session.add_all(new_trades)
             session.commit()
