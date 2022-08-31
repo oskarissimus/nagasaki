@@ -7,6 +7,7 @@ from nagasaki.database import Database
 from nagasaki.exceptions import SkippableStrategyException
 from nagasaki.logger import logger
 from nagasaki.strategy.abstract_strategy import AbstractStrategy
+from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
 
 
 @inject
@@ -23,4 +24,7 @@ def execute_all_strategies(
             if order:
                 database.save_order(order)
         except SkippableStrategyException:
-            logger.info(f"skipping strategy {strategy}")
+            if isinstance(strategy, MarketMakingStrategy):
+                logger.info(f"skipping MarketMakingStrategy: {strategy.side}")
+            else:
+                logger.info(f"skipping strategy: {strategy.__class__.__name__}")
