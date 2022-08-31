@@ -38,5 +38,5 @@ fi
 if [ $MAJOR -eq 1 ]; then
     NEXTVERSION=$(echo ${VERSION} | awk -F. -v OFS=. '{$1 += 1 ; $2 = 0 ; $3 = 0 ; print}')
 fi
-echo $NEXTVERSION
-# git tag $NEXTVERSION && git push origin $NEXTVERSION
+# echo $NEXTVERSION
+git tag $NEXTVERSION && git push origin $NEXTVERSION
