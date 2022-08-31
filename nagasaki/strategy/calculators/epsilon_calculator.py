@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from nagasaki.enums.common import Currency, MarketEnum, SideTypeEnum, Symbol
+from nagasaki.enums.common import Currency, SideTypeEnum, Symbol
 from nagasaki.logger import logger
 from nagasaki.state import BitcludeState, DeribitState, YahooFinanceState
 from nagasaki.strategy.calculators.price_calculator import PriceCalculator

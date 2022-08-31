@@ -79,6 +79,16 @@ class Offer(BaseModel):
             post_only=True,
         )
 
+    def __str__(self) -> str:
+        return (
+            f"{self.offertype} nr={self.nr} "
+            f"date_open={self.time_open.date()} "
+            f"time_open={self.time_open.time()} "
+            f"{self.currency1}/{self.currency2} "
+            f"amount={self.amount:.5f} "
+            f"price={self.price:.2f}"
+        )
+
 
 class CreateRequestDTO(BaseModel):
     price: Optional[Decimal]

@@ -15,6 +15,9 @@ class Tolerance(BaseModel):
     price: Decimal
     amount: Decimal
 
+    def __str__(self):
+        return f"price_tolerance = +/-{self.price:.4f}; amount_tolerance = +/-{self.amount:.4f}"
+
 
 def offer_is_within_tolerance(
     offer: Offer,
@@ -42,14 +45,15 @@ class StrategyOrderDispatcher:
 
     def dispatch(self, desirable_order: Order):
         if self.has_exactly_one_own_offer(desirable_order.side):
-            logger.info("Has exactly one own offer")
+            own_offer = self.get_list_of_active_offers_for_side(desirable_order.side)[0]
+            logger.info(f"Has exactly one own offer: {own_offer}")
             if offer_is_within_tolerance(
                 self.active_offers[0], desirable_order, self.tolerance
             ):
-                logger.info("Offer is within tolerance")
+                logger.info(f"Offer is within tolerance: {self.tolerance}")
                 return
 
-        logger.debug(self.active_offers)
+        logger.info(self.active_offers)
         for offer in self.active_offers:
             if offer.offertype == desirable_order.side:
                 self.client.cancel_order(offer.to_order_maker())
@@ -60,6 +64,9 @@ class StrategyOrderDispatcher:
     def active_offers(self) -> List[Offer]:
         return self.bitclude_state.active_offers or []
 
+    def get_list_of_active_offers_for_side(self, side: SideTypeEnum) -> List[Offer]:
+        return [offer for offer in self.active_offers if offer.offertype == side]
+
     def has_exactly_one_own_offer(self, side: SideTypeEnum) -> bool:
-        offers = [offer for offer in self.active_offers if offer.offertype == side]
+        offers = self.get_list_of_active_offers_for_side(side)
         return len(offers) == 1
