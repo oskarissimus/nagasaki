@@ -79,7 +79,7 @@ class Offer(BaseModel):
             post_only=True,
         )
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return (
             f"{self.offertype} nr={self.nr} "
             f"date_open={self.time_open.date()} "
@@ -88,6 +88,9 @@ class Offer(BaseModel):
             f"amount={self.amount:.5f} "
             f"price={self.price:.2f}"
         )
+
+    def __str__(self) -> str:
+        return self.__repr__()
 
 
 class CreateRequestDTO(BaseModel):
