@@ -39,7 +39,7 @@ class StrategyOrderDispatcher:
     ):
         self.client = client
         self.tolerance = tolerance or Tolerance(
-            price=Decimal("100"), amount=Decimal("0.000_3")
+            price=Decimal("10"), amount=Decimal("0.000_3")
         )
         self.bitclude_state = bitclude_state
 
