@@ -142,12 +142,13 @@ class Order(HashableBaseModel):
     price: Optional[Decimal]
 
     def __repr__(self) -> str:
+        price_formatted = f"{self.price:.2f}" if self.price else f"{self.price}"
         return (
             f"{self.side} "
             f"order_id={self.order_id} "
             f"symbol={self.symbol} "
             f"amount={self.amount:.8f} "
-            f"price={self.price:.2f} "
+            f"price={price_formatted} "
             f"hidden={self.hidden} "
             f"post_only={self.post_only} "
             f"type={self.type}"
