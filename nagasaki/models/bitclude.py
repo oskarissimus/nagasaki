@@ -140,3 +140,18 @@ class Order(HashableBaseModel):
     post_only: Optional[bool]
     type: Type
     price: Optional[Decimal]
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.side} "
+            f"order_id={self.order_id} "
+            f"symbol={self.symbol} "
+            f"amount={self.amount:.8f} "
+            f"price={self.price:.2f} "
+            f"hidden={self.hidden} "
+            f"post_only={self.post_only} "
+            f"type={self.type}"
+        )
+
+    def __str__(self) -> str:
+        return self.__repr__()
