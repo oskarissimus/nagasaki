@@ -53,7 +53,7 @@ class StrategyOrderDispatcher:
                 logger.info(f"Offer is within tolerance: {self.tolerance}")
                 return
 
-        logger.info(self.active_offers)
+        logger.info(f"all active offers: {self.active_offers}")
         for offer in self.active_offers:
             if offer.offertype == desirable_order.side:
                 self.client.cancel_order(offer.to_order_maker())
