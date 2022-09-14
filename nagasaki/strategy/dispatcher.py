@@ -38,9 +38,7 @@ class StrategyOrderDispatcher:
         tolerance: Tolerance = None,
     ):
         self.client = client
-        self.tolerance = tolerance or Tolerance(
-            price=Decimal("10"), amount=Decimal("0.000_3")
-        )
+        self.tolerance = tolerance or Tolerance(price=Decimal("0"), amount=Decimal("0"))
         self.bitclude_state = bitclude_state
 
     def dispatch(self, desirable_order: Order):

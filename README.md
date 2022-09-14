@@ -205,15 +205,15 @@ cat your_dump.sql | docker exec -i your-db-container psql -U postgres
 ## script `./increment_tag_and_push.sh`
 
 script for auto incrementin and tagging
-when current highest tag is: 1.7.12
+when current highest tag is: 0.7.12
 then:
 
 ```sh
 ./increment_tag_and_push.sh
-1.7.13
+0.7.13
 
 ./increment_tag_and_push.sh --patch
-1.7.13
+0.7.13
 
 ./increment_tag_and_push.sh --minor
 0.8.0
