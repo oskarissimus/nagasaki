@@ -39,9 +39,9 @@ class BitcludeWebsocketClient:
         message_json = json.loads(message)
         logger.info(message_json)
 
-        if (
-            message_json["action"] == "orderbook"
-            and message_json["symbol"] == "ETH_PLN"
+        if message_json["action"] == "orderbook" and message_json["symbol"] in (
+            "ETH_PLN",
+            "BTC_PLN",
         ):
             with self.session() as db:
                 db.add(WebsocketEvent(message=message))
