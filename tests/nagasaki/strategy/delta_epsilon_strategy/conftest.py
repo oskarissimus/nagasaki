@@ -6,8 +6,7 @@ import pytest
 from nagasaki.clients.bitclude.dto import AccountInfo, Balance
 from nagasaki.enums.common import InstrumentTypeEnum, SideTypeEnum, Symbol
 from nagasaki.state import BitcludeState, DeribitState, State, YahooFinanceState
-from nagasaki.strategy.calculators.delta_calculator import DeltaCalculator
-from nagasaki.strategy.calculators.epsilon_calculator import EpsilonCalculator
+from nagasaki.strategy.calculators import DeltaCalculator, EpsilonCalculator
 from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
 
 

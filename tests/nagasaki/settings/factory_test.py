@@ -38,6 +38,18 @@ def test_should_create_epsilon_calculator():
     assert calculator.epsilon == Decimal("0.69")
 
 
+def test_should_create_mid_price_calculator():
+    config = CalculatorSettings(
+        calculator_type="mid_price",
+        params={"delta": "0.69"},
+    )
+
+    calculator = calculator_factory(config)
+
+    assert isinstance(calculator, calculators.MidPriceCalculator)
+    assert calculator.delta == Decimal("0.69")
+
+
 def test_should_create_delta_epsilon_bid_btc_strategy():
     calculator_configs = [
         CalculatorSettings(calculator_type="epsilon", params={"epsilon": "0.69"}),

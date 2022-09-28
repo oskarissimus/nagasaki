@@ -35,6 +35,9 @@ class BitcludeState(ExchangeState):
     def top_bid(self, asset_symbol):
         return max(self.orderbooks[asset_symbol].bids, key=lambda x: x.price).price
 
+    def mid_price(self, asset_symbol):
+        return (self.top_ask(asset_symbol) + self.top_bid(asset_symbol)) / 2
+
     class Config:
         fields = {
             "orderbooks": {"include": True},

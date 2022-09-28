@@ -17,6 +17,7 @@ from nagasaki.strategy.market_making_strategy import MarketMakingStrategy
 CALCULATOR_TYPE_MAP = {
     "delta": calculators.DeltaCalculator,
     "epsilon": calculators.EpsilonCalculator,
+    "mid_price": calculators.MidPriceCalculator,
 }
 
 
