@@ -221,3 +221,52 @@ then:
 ./increment_tag_and_push.sh --major
 1.0.0
 ```
+
+# continuus agregate
+
+-- SELECT remove_continuous_aggregate_policy('papiez_sra_w_kapelusz')
+-- DROP MATERIALIZED VIEW public.papiez_sra_w_kapelusz;
+CREATE MATERIALIZED VIEW papiez_sra_w_kapelusz WITH (timescaledb.continuous) AS
+SELECT time_bucket('10s', time) AS "bucket",
+(
+(
+(
+AVG(
+(
+state->'exchange_states'->'bitclude'->'exchange_balance'->'total'->>'PLN'
+)::DECIMAL
+)
+) + (
+AVG(
+(
+state->'exchange_states'->'deribit'->'account_summary'->>'equity'
+)::DECIMAL _ (
+state->'exchange_states'->'deribit'->'mark_price'->>'BTC'
+)::DECIMAL _ (
+state->'exchange_states'->'yahoo_finance'->'mark_price'->>'USD/PLN'
+)::DECIMAL
+)
+) + (
+AVG(
+(
+state->'exchange_states'->'bitclude'->'exchange_balance'->'total'->>'BTC'
+)::DECIMAL _ (
+state->'exchange_states'->'deribit'->'mark_price'->>'BTC'
+)::DECIMAL _ (
+state->'exchange_states'->'yahoo_finance'->'mark_price'->>'USD/PLN'
+)::DECIMAL
+)
+)
+) - 4600
+) / 4600 as net_worth
+FROM snapshot_hypertable
+GROUP BY bucket
+
+-- SELECT add_continuous_aggregate_policy('papiez_sra_w_kapelusz',
+-- start_offset => INTERVAL '1 month',
+-- end_offset => INTERVAL '1 day',
+-- schedule_interval => INTERVAL '5 minute');
+
+-- SELECT bucket,net_worth from papiez_sra_w_kapelusz
+-- ORDER BY bucket DESC
+-- LIMIT 1000
